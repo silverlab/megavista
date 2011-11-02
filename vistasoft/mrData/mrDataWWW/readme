@@ -1,0 +1,14 @@
+111703 Added one index per table named textSeach. Allows to run full text mysql searches on text fields in that table. AJM (antoine@psych.stanford.edu)
+120403 Upgraded to mysql 4.0 in order to use boolean (and wildcard) fulltext searches and lower the minimum search string length to 3 as follows:
+       Updated /etc/my.cnf file with the following extra variable definition:
+       [mysqld]
+       ft_min_word_len=3
+	   AJM (antoine@psych.stanford.edu)
+120503 Separated people table into users and subjects tables. Specific changes:
+         * renamed people table to subjects and dropped username, scannerCertified, changed organization to address.
+		 * added users table from a people table copy and dropped species, subjectConsent, deleted all subject records.
+		 * added new field to subjects table named subjectType
+		 * added subjectTypes table
+		 * modified xLinks entries corresponding to all aforementioned changes
+	   All those changes are reflected in the mrDataDB.sql file
+	   Bob and AJM
