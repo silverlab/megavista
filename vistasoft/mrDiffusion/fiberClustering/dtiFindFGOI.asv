@@ -1,0 +1,32 @@
+function fiberindices=dtiFindFGOI(referenceFgE, newFgE)
+
+%Given two sets of embedding vectors, it finds int
+%Arguments: 
+%1. Embedded vectors for Reference FGOI group
+%2. Embedded vectors for the targe space of fibers from where
+%FGOI-corresponding set of fibers will be extracted. 
+
+%Returns fiberindices corresponding to the fibers in matrix E (embedded vectors) contained in newFgEV
+
+%match criteria: 
+%When a fiber's first 5 nvecs fall within the range of 5 first nvecs of
+%referenceFgE
+
+%ER 04/13/2008
+
+lowerbound=min(referenceFgE(:, 1:5));
+upperbound=max(referenceFgE(:, 1:5));
+
+fiberindices=[];
+
+for i=16175:size(E, 1)
+    
+if (sum(E(i, 1:5)>lowerbound)==5) &&(sum(E(i, 1:5)<upperbound)==5)
+
+fiberindices=[fiberindices;i];
+end
+end
+
+
+
+
