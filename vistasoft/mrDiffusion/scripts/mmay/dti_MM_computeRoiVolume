@@ -1,0 +1,69 @@
+% dti_MM_computeRoiVolume
+%
+% This script takes a fiber group and creates an ROI from those fibers.
+% 
+% HISTORY:
+% 05.14.2009 LMP wrote the thing.
+%
+
+%% directory structure
+baseDir = '/biac3/wandell4/data/reading_longitude/';
+yr = {'dti_adults'};
+subs = {'aab050307','ah051003','am090121','ams051015','as050307','aw040809','ct060309','db061209','dl070825','dla050311',...
+   'gd040901','gf050826','gm050308','jl040902','jm061209','jy060309','ka040923','mbs040503','me050126','mo061209',...
+   'mod070307','mz040828','pp050208','rfd040630','rk050524','sc060523','sd050527','sn040831','sp050303','tl051015'};
+% subs = {'bw040922'};
+
+%%  Loops through subs
+rois = {'Mori_Occ_CC_100k_top1000_LEFT_ccRoi.mat'...
+    'Mori_Occ_CC_100k_top1000_RIGHT_ccRoi.mat' ...
+    'Mori_Occ_CC_100k_top10000_LEFT_ccRoi.mat' ...
+    'Mori_Occ_CC_100k_top10000_RIGHT_ccRoi.mat'};
+
+for ii=1:length(subs)
+    for jj=1:length(yr)
+        sub = dir(fullfile(baseDir,yr{jj},[subs{ii} '*']));
+        if ~isempty(sub)
+            subDir = fullfile(baseDir,yr{jj},sub.name);
+            dt6 = fullfile(subDir,'dti06','dt6.mat');
+            roiDir = fullfile(subDir,'dti06','ROIs','Mori_Contrack');
+
+            disp(['Processing ' subDir '...']);
+
+            for kk=1:length(rois)
+                roi =
+                if exist(rois{kk})
+                    disp('Roi found.');
+
+                    roi = dtiReadRoi('dti06/ROIs/Mori_Contrack/Mori_Occ_CC_100k_top1000_RIGHT_fiberROI.mat');
+                    t1 = readFileNifti('t1.nii.gz');
+                    dt = dtiLoadDt6('dti06/dt6.mat');
+
+                    s.subjectName = dt.subName;
+                    s.roiName = roi.name;
+                    s.imgName = t1.fname;
+
+                    anat = double(t1.data);
+                    mmPerVoxel = t1.pixdim;
+                    xform = t1.qto_xyz;
+                    coords = roi.coords;
+
+                    ic = mrAnatXformCoords(inv(xform), coords);
+                    ic = unique(ceil(ic),'rows');
+                    sz = size(anat);
+                    imgIndices = sub2ind(sz(1:3), ic(:,1), ic(:,2), ic(:,3));
+                    n = length(imgIndices);
+                    volume = n*prod(mmPerVoxel);
+                    s.volume = sprintf('%d mm^3', volume);
+
+
+
+                else disp([rois{kk}, ' does not exist']);
+                end
+                else disp('No data for this subject in this year');
+            end
+        end
+
+    end
+disp('Done!');
+
