@@ -13,15 +13,16 @@ function params = rd_mrMakeMrInit2Params
 % ------------------------------------------------------------------------
 % Here we have the most common analysis settings that are specific to an
 % individual experiment
-subjectID = 'AV';
-description = 'AV_20111128 MPLocalizerColor';
+subjectID = 'KS';
+description = 'KS_20111212 MPLocalizerColor_7T';
 comments = '';
 
 % Scan groups
-% scanGroups = {1,2};
-scanGroups = {[1 11], 2:10}; % scan numbers in each scan group
+scanGroups = {[1 6], 2:5};
+% scanGroups = {[1 11], 2:10}; % scan numbers in each scan group
 % Keep frames
-scanGroupKeepFrames = {[6 132], [4 -1]}; % [frames-to-discard frames-to-keep]
+scanGroupKeepFrames = {[8 -1], [4 135]};
+% scanGroupKeepFrames = {[6 132], [4 -1]}; % [frames-to-discard frames-to-keep]
 % Annotations
 scanGroupNames = {'hemi','mp'};
 
@@ -30,7 +31,8 @@ scansWithParfile = scanGroups{2};
 
 % Coherence analysis
 coherenceScanGroups = 1;
-nCycles = 11;
+nCycles = 8;
+% nCycles = 11;
 
 % GLM analysis
 glmScanGroups = 2;
@@ -56,7 +58,8 @@ for iFunc = 1:numel(functionalFiles)
         p, f, niftiDir, functionalFiles(iFunc).name);
 end
 
-vAnatomy = sprintf('%s/%s/Anatomicals/vAnatomy.dat', p, f);
+% vAnatomy = sprintf('%s/%s/Anatomicals/vAnatomy.dat', p, f);
+vAnatomy = sprintf('%s/%s/Anatomicals/ot1mpr.nii.gz', p, f);
 
 % Expect to find parfiles in the specified directory
 parfileDir = 'Stimuli/parfiles';
