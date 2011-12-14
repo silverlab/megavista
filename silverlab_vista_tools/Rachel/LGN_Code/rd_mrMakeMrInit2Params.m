@@ -21,7 +21,7 @@ comments = '';
 scanGroups = {[1 6], 2:5};
 % scanGroups = {[1 11], 2:10}; % scan numbers in each scan group
 % Keep frames
-scanGroupKeepFrames = {[8 -1], [4 135]};
+scanGroupKeepFrames = {[16 -1], [4 135]};
 % scanGroupKeepFrames = {[6 132], [4 -1]}; % [frames-to-discard frames-to-keep]
 % Annotations
 scanGroupNames = {'hemi','mp'};
