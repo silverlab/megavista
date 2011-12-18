@@ -13,14 +13,15 @@ function params = rd_mrMakeMrInit2Params
 % ------------------------------------------------------------------------
 % Here we have the most common analysis settings that are specific to an
 % individual experiment
-subjectID = 'AV';
-description = 'AV_20111213 MPLocalizerColor_7T';
+subjectID = 'KS';
+description = 'KS_20111214 MPLocalizerColor_7T';
 comments = '';
 
 % Scan groups
 % scanGroups = {1:4};
 % scanGroups = {[1 6], 2:5};
-scanGroups = {[1 10], 2:9};
+% scanGroups = {[1 10], 2:9};
+scanGroups = {[1 9], 2:8};
 % scanGroups = {[1 11], 2:10}; % scan numbers in each scan group
 % Keep frames
 % scanGroupKeepFrames = {[4 135]};

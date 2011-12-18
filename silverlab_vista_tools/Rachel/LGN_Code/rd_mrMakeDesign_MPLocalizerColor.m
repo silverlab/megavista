@@ -2,12 +2,13 @@
 
 % cd /Volumes/Plata1/LGN/Expt_Files/AV_20111117/MagnoParvoLocalizer_Color_20111116/
 % cd /Volumes/Plata1/LGN/Expt_Files/AV_20111128/MagnoParvoLocalizer_Color_20111116/
-cd /Volumes/LaCie/fMRI/Expt_Files/KS_20111212/MagnoParvoLocalizer_Color_20111211_7T/
+% cd /Volumes/LaCie/fMRI/Expt_Files/KS_20111212/MagnoParvoLocalizer_Color_20111211_7T/
 % cd /Volumes/LaCie/fMRI/Expt_Files/AV_20111213/MagnoParvoLocalizer_Color_20111211_7T/
+cd /Volumes/Plata1/LGN/Expt_Files/KS_20111214/MagnoParvoLocalizer_Color_20111211_7T/
 
 subjectID = 'KS';
-runs = 2:2:8;
-scanDate = '20111212';
+runs = 1:7;
+scanDate = '20111214';
 
 includeResponseCond = 0;
 includeColors = 1;
