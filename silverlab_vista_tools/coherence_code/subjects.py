@@ -6,6 +6,8 @@
 # 
 
 # For each subject, the first session is the donepezil session
+rois=['R_V1', 'R_V2V', 'R_V3V', 'R_V2D', 'R_V3D','R_V4','R_V7', 'R_IPS1', 'R_IPS2', 'L_V1', 'L_V2',  'L_V3',  'L_V4', ]
+
 subjects = {
     'CG':[['CG011611', dict(loc_nii =['epi01_mcf.nii.gz',
                                       'epi10_mcf.nii.gz'],
