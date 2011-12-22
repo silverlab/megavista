@@ -3,17 +3,20 @@
 %% Setup
 hemi = 2;
 
-varThreshs = [0 .001 .002 .003 .004 .005 .006 .007 .008 .009 .010];
+varThreshs = 0:.001:.05;
 prop = .5;
 voxelSelectionOption = 'varExp'; % all, varExp
 
 plotFigs = 1;
-saveAnalysis = 0;
+% saveAnalysis = 0;
+saveFigs = 1;
 
 %% File I/O
 fileBase = sprintf('lgnROI%d', hemi);
 analysisExtension = '_multiVoxFigData';
 loadPath = sprintf('%s%s.mat', fileBase, analysisExtension);
+
+plotFileBase = sprintf('lgnROI%dPlot_centerOfMass_prop%d_', hemi, round(prop*100));
 
 %% Load data
 load(loadPath)
@@ -56,13 +59,15 @@ end
 
 %% Plot figs
 if plotFigs
-    figure
+    dimLabels = {'X','Y','Z'};
+    f = figure;
     for iDim = 1:3
         subplot(4,1,iDim)
         hold on
         plot(varThreshs, centers1(:,iDim),'r')
         plot(varThreshs, centers2(:,iDim),'b')
-        ylabel(sprintf('Dim %d', iDim))
+%         ylabel(sprintf('Dim %d', iDim))
+        ylabel(dimLabels{iDim})
         
         if iDim==1
             title(sprintf('Hemi %d, %s', hemi, mapName))
@@ -77,6 +82,11 @@ if plotFigs
     xlabel('prop. variance explained threshold')
 end
 
+%% Save figs
+plotSavePath = sprintf('%s%s', plotFileBase, datestr(now,'yyyymmdd'));
 
+if saveFigs
+    print(f,'-djpeg',sprintf('figures/%s', plotSavePath));
+end
 
 

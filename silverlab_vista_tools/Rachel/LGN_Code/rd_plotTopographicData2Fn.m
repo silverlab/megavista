@@ -1,18 +1,30 @@
-% rd_plotTopographicData2.m
+function rd_plotTopographicData2Fn(hemi, voxelSelectionOption, ...
+    betaWeights, name, varThresh, saveFigs)
+%
+% function rd_plotTopographicData2Fn(hemi, voxelSelectionOption, ...
+%     betaWeights, name, varThresh)
 %
 % use this version for GLM data for natural left/right orientations
+%
+% INPUTS:
+% hemi is 1 or 2
+% voxelSelectionOption is typically 'all' or 'varExp'
+% betaWeights is a 1x2 vector with weights for compining M and P betas (eg,
+% [.5 -.5] for M-P)
+% name is the name of this combo (eg, 'betaM-P')
+% varThresh is the variance explained threshold if voxelSelectionOption is
+% 'varExp'. can be [] if voxelSelctionOption is not 'varExp'.
 
 %% Setup
-hemi = 2;
+% hemi = 2;
 
-voxelSelectionOption = 'varExp'; % ['all','anySuperthresh','loadVoxelSelector','training','varExp']
+% voxelSelectionOption = 'varExp'; % ['all','anySuperthresh','loadVoxelSelector','training','varExp']
 voxelSelectorPath = 'voxelSelector1_superthreshAll_AllScans_20110907.mat';
 cmapOption = 'default'; % ['default','thresh']
 cScaleOption = 'scaleToData'; % ['scaleToData','chooseCRange']
 cValRange = [-.95 .95]; % if using chooseCRange
-plotFigs = 1;
 saveAnalysis = 0;
-saveFigs = 0;
+% saveFigs = 1;
 
 iROI = 1; % only plotting one ROI at a time here
 
@@ -28,6 +40,17 @@ fileBase = sprintf('lgnROI%d', hemi);
 analysisExtension = '_multiVoxFigData';
 loadPath = sprintf('%s%s.mat', fileBase, analysisExtension);
 mapFileBase = sprintf('lgnROI%dBrainMapTopoCoronal_', hemi);
+histFileBase = sprintf('lgnROI%dHist_', hemi);
+
+switch voxelSelectionOption
+    case 'all'
+        voxDescrip = 'all';
+    case 'varExp' 
+        threshDescrip = sprintf('%0.03f', varThresh);
+        voxDescrip = ['varThresh' threshDescrip(3:end)];
+    otherwise
+        error('voxelSelectionOption not found when setting voxDescrip.')
+end
 
 %% Load data
 load(loadPath)
@@ -36,10 +59,12 @@ load(loadPath)
 % topoData = contrastData.co(:,1); % vals*coefNow'; % pScores; % corAnal.co; % contrasts.co(8).data; % zoContrasts(:,3); % should be a 1-D vector
 betas = squeeze(figData.glm.betas(1,1:2,:))';
 % topoData = betas*[-.5 .5 -.5 .5]';
-topoData = betas*[.5 -.5]';
+topoData = betas*betaWeights';
+% topoData = betas*[.5 -.5]';
 % topoData = betas*[1 0]';
 % topoData = coData;
-mapName = sprintf('Hemi %d betaM-P', hemi); % sprintf('Hemi %d', hemi); % contrasts.zo(3).name;
+mapName = sprintf('Hemi %d %s %s', hemi, name, voxDescrip);
+% mapName = sprintf('Hemi %d betaM-P', hemi); % sprintf('Hemi %d', hemi); % contrasts.zo(3).name;
 
 %% Any voxel selection?
 switch voxelSelectionOption
@@ -57,15 +82,17 @@ switch voxelSelectionOption
     case 'testing'
         voxelSelector = testingVoxSelector;
     case 'varExp'
-        varThresh = 0.02;
+%         varThresh = 0.02;
         voxelSelector = figData.glm.varianceExplained > varThresh;
     otherwise
         error('voxelSelectionOption not found');
 end
 
 %% Histogram of the values being mapped
-figure
+f0 = figure;
 hist(topoData(voxelSelector))
+xlabel(name)
+ylabel('number of voxels')
 title(mapName)
 
 %% get coordinates and slice numbers of ROI voxels
@@ -186,7 +213,7 @@ dimToSlice = 2;
 nPlotCols = ceil(sqrt(size(brainMapToPlot,dimToSlice)));
 nPlotRows = ceil(size(brainMapToPlot,dimToSlice)/nPlotCols);
 
-f = figure('name',mapName);
+f1 = figure('name',mapName);
 for iSlice = 1:size(brainMapToPlot,dimToSlice)
     brainSliceMap1 = [];
     switch dimToSlice
@@ -222,12 +249,15 @@ for iSlice = 1:size(brainMapToPlot,dimToSlice)
 end
 
 %% save map
-mapSavePath = sprintf('%s%s%s', mapFileBase, mapName, datestr(now,'yyyymmdd'));
+mapSavePath = sprintf('%s%s_%s_%s', mapFileBase, name, voxDescrip, datestr(now,'yyyymmdd'));
+histSavePath = sprintf('%s%s_%s_%s', histFileBase, name, voxDescrip, datestr(now,'yyyymmdd'));
+
 if saveAnalysis
     save(sprintf('mat_files/%s.mat', mapSavePath), 'brainMap')
 end
 if saveFigs
-    print(f,'-djpeg',sprintf('figures/%s', mapSavePath));
+    print(f1,'-djpeg',sprintf('figures/%s', mapSavePath));
+    print(f0,'-djpeg',sprintf('figures/%s', histSavePath));
 end
 
 
