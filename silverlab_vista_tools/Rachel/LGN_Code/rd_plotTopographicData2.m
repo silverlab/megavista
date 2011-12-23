@@ -5,7 +5,7 @@
 %% Setup
 hemi = 2;
 
-voxelSelectionOption = 'varExp'; % ['all','anySuperthresh','loadVoxelSelector','training','varExp']
+voxelSelectionOption = 'all'; % ['all','anySuperthresh','loadVoxelSelector','training','varExp']
 voxelSelectorPath = 'voxelSelector1_superthreshAll_AllScans_20110907.mat';
 cmapOption = 'default'; % ['default','thresh']
 cScaleOption = 'scaleToData'; % ['scaleToData','chooseCRange']
@@ -39,7 +39,7 @@ betas = squeeze(figData.glm.betas(1,1:2,:))';
 topoData = betas*[.5 -.5]';
 % topoData = betas*[1 0]';
 % topoData = coData;
-mapName = sprintf('Hemi %d betaM-P', hemi); % sprintf('Hemi %d', hemi); % contrasts.zo(3).name;
+mapName = sprintf('Hemi %d pMVP', hemi); % sprintf('Hemi %d', hemi); % contrasts.zo(3).name;
 
 %% Any voxel selection?
 switch voxelSelectionOption

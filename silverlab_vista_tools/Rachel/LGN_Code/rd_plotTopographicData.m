@@ -1,7 +1,7 @@
 % rd_plotTopographicData.m
 
 %% Setup
-hemi = 2;
+hemi = 1;
 scanDate = '20111025';
 analysisDate = '20111025';
 
