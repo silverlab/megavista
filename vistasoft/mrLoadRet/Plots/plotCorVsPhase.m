@@ -1,19 +1,25 @@
-function plotCorVsPhase(vw,format, drawROI)
+function vw=plotCorVsPhase(vw,format, drawROI, drawROIPoints)
 %
-% plotCorVsPhase(vw,format)
+% plotCorVsPhase(vw,format, drawROI, drawROIPoints)
 % 
 % Plot of correlation versus phase for the current scan, for all
 % pixels (in all slices) in the current ROI.
 %
 % format can be either 'polar' or 'cartesian'
 %
+% drawROI: option to draw and save new ROI based on coherence threshold.
+%
+% drawROIPoints: option to draw ROI using selected points. GUI will pop up.
+%
 % If there is no current ROI, then the entire data set is plotted.  This is
 % sometimes useful for examining left FLAT, or right FLAT.
 %
+% al 1/2012: added an option to save new ROI
 
 if ieNotDefined('format'), format = 'polar'; end
 if ieNotDefined('vw'), error('View must be defined.'); end
 if ieNotDefined('drawROI'), drawROI = false; end
+if ieNotDefined('drawROIPoints'), drawROIPoints = false; end
 
 curScan = getCurScan(vw);
 
@@ -116,7 +122,14 @@ else
   hold off
 end
 
-if drawROI, 
+% Save ROI either from points or thresholded coordinates
+if drawROI,
+    name=[ROIname '_' num2str(cothresh, 2)];
+    select=1; color=[0 0 1];
+    comments='Made with plotCorVsPhase.m script';
+    vw = newROI(vw,name,select,color, subROICoords, comments);
+    saveROI(vw);
+elseif drawROIPoints
     vw = roiCapturePointsFromPlot(vw, subX, subY, coIndices, ROIcoords);
 end
 
