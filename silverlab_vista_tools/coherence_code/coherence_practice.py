@@ -18,7 +18,43 @@ import subjects
 reload(subjects) # In case you make changes in there while you analyze
 from subjects import subjects, rois
 
+def display_vox(tseries,vox_idx,fig=None):
+    """
+    Display the voxel time-series
+    """
+    if fig is None:
+        fig = plt.figure()
 
+    vox_tseries = ts.TimeSeries(tseries.data[vox_idx],sampling_interval=TR)
+
+    fig = viz.plot_tseries(vox_tseries,fig)
+    fig = viz.plot_tseries(ts.TimeSeries(np.mean(vox_tseries.data,0),
+                                         sampling_interval=TR),
+                           yerror=ts.TimeSeries(stats.sem(vox_tseries.data,0),
+                                                sampling_interval=TR),fig=fig,
+                           error_alpha = 0.3,ylabel='% signal change',
+                           linewidth=4,
+                           color='r')
+    return fig
+
+def reshapeTS(t_fix):
+    segTime=60
+    # Change to an array (numSess, numROIs, numTime points)
+    t_fixArray=np.array(t_fix)
+    #t_fixArrayTP=np.transpose(t_fixArray, (1,0,2))
+    1/0
+    shapeTS=t_fixArray.shape
+    numRuns=shapeTS[2]/segTime
+    # This returns rois x runs x TS with runs collapsed by segTime
+    allROIs2=np.reshape(t_fixArray, [shapeTS[0], shapeTS[1]*numRuns, segTime])
+    return allROIs
+
+def getCorrTS(allROIS):
+    fixTS=ts.TimeSeries(allROIs, sampling_interval=TR)
+    # Get roi correlations
+    C=CorrelationAnalyzer(fixTS)
+    fig01 = drawmatrix_channels(C.corrcoef, roi_names, size=[10., 10.], color_anchor=0)
+    return C    
 
 if __name__ == "__main__":
 
@@ -46,32 +82,29 @@ if __name__ == "__main__":
         ROI_files=[]
         for roi in rois:
             ROI_files.append(fmri_path+sess[0]+'/Inplane/ROIs/' +roi +'.mat')
-            
-        nifti_path = fmri_path +sess[0] + '/%s_nifti/' % sess[0]
 
         # Get the coordinates of the ROIs, while accounting for the
         # up-sampling:
         # 
         ROI_coords = [tsv.upsample_coords(tsv.getROIcoords(f),up_samp)
                            for f in ROI_files]
+        
          # Initialize lists for each behavioral condition:
         t_fix = []
         t_left = []
         t_right = []
-
+        nifti_path = fmri_path +sess[0] + '/%s_nifti/' % sess[0]
         # len(t_fix)= number of ROIs
         for this_fix in sess[1]['fix_nii']:
             t_fix.append(load_nii(nifti_path+this_fix, ROI_coords,TR,
                                     normalize='percent', average=True, verbose=True))
-        # Change to an array (numSess, numROIs, numTime points)
-        t_fixArray=np.array(t_fix)
-        # Swap ROI and session dimension
-        t_fixArray=np.transpose(t_fixArray, (1,0,2))
-        shape=t_fixArray.shape
-        allROIs=np.reshape(t_fixArray, [shape[0], shape[1]*shape[2]])
-        fixTS=ts.TimeSeries(allROIs, sampling_interval=TR)
+        # reshape ROI matrix
+        allROIS=reshapeTS(t_fix)
 
         # Get roi correlations
+        for i in range(allROIS.shape[1]):
+            #need to load timeseries by run
+            fixTS=ts.TimeSeries(allROIs, sampling_interval=TR)
         C=CorrelationAnalyzer(fixTS)
         fig01 = drawmatrix_channels(C.corrcoef, roi_names, size=[10., 10.], color_anchor=0)
         

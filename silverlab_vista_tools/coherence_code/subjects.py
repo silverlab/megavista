@@ -1,13 +1,15 @@
-# Data structure used in all analysis programs, containing the lists of scan
-# numbers in each condition for each subject
-# mcf= already motion corrected
+'''
+ Data structure used in all analysis programs, containing the lists of scan
+ numbers in each condition for each subject
+ mcf= already motion corrected
 
-# Subjects are watching a movie: fix= task at the center, right= attention right, contrast decrement
-# 
+ Subjects are watching a movie: fix= task at the center, right= attention right, contrast decrement
+ 
 
-# For each subject, the first session is the donepezil session
-rois=['R_V1', 'R_V2V', 'R_V3V', 'R_V2D', 'R_V3D','R_V4','R_V7', 'R_IPS1', 'R_IPS2', 'L_V1', 'L_V2',  'L_V3',  'L_V4', ]
-
+ For each subject, the first session is the donepezil session
+ rois=['R_V1', 'R_V2V', 'R_V3V', 'R_V2D', 'R_V3D','R_V4','R_V7', 'R_IPS1', 'R_IPS2', 'L_V1', 'L_V2V', 'L_V2D',  'L_V3V','L_V3D',  'L_V4' ]
+'''
+rois=['R_V1_0.25', 'R_V2V_0.25', 'R_V3V_0.25', 'R_V2D_0.25', 'R_V3D_0.25']   
 subjects = {
     'CG':[['CG011611', dict(loc_nii =['epi01_mcf.nii.gz',
                                       'epi10_mcf.nii.gz'],
