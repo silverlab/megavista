@@ -41,16 +41,14 @@ def reshapeTS(t_fix):
     segTime=60
     # Change to an array (numSess, numROIs, numTime points)
     t_fixArray=np.array(t_fix)
-    #t_fixArrayTP=np.transpose(t_fixArray, (1,0,2))
-    1/0
-    shapeTS=t_fixArray.shape
+    t_fixArrayTP=np.transpose(t_fixArray, (1,0,2))
+    shapeTS=t_fixArrayTP.shape
     numRuns=shapeTS[2]/segTime
     # This returns rois x runs x TS with runs collapsed by segTime
-    allROIs2=np.reshape(t_fixArray, [shapeTS[0], shapeTS[1]*numRuns, segTime])
+    allROIs=np.reshape(t_fixArrayTP, [shapeTS[0], shapeTS[1]*numRuns, segTime])
     return allROIs
 
-def getCorrTS(allROIS):
-    fixTS=ts.TimeSeries(allROIs, sampling_interval=TR)
+def getCorrTS(fixTS):
     # Get roi correlations
     C=CorrelationAnalyzer(fixTS)
     fig01 = drawmatrix_channels(C.corrcoef, roi_names, size=[10., 10.], color_anchor=0)
@@ -98,6 +96,14 @@ if __name__ == "__main__":
         for this_fix in sess[1]['fix_nii']:
             t_fix.append(load_nii(nifti_path+this_fix, ROI_coords,TR,
                                     normalize='percent', average=True, verbose=True))
+
+        for this_fix in sess[1]['right_nii']:
+            t_fix.append(load_nii(nifti_path+this_fix, ROI_coords,TR,
+                                    normalize='percent', average=True, verbose=True))
+
+        for this_fix in sess[1]['left_nii']:
+            t_fix.append(load_nii(nifti_path+this_fix, ROI_coords,TR,
+                                    normalize='percent', average=True, verbose=True))    
         # reshape ROI matrix
         allROIS=reshapeTS(t_fix)
 
@@ -105,8 +111,8 @@ if __name__ == "__main__":
         for i in range(allROIS.shape[1]):
             #need to load timeseries by run
             fixTS=ts.TimeSeries(allROIs, sampling_interval=TR)
-        C=CorrelationAnalyzer(fixTS)
-        fig01 = drawmatrix_channels(C.corrcoef, roi_names, size=[10., 10.], color_anchor=0)
+
+        C=getCorrTS(fixTS)
         
         # Get cross correlations
         xc = C.xcorr_norm
