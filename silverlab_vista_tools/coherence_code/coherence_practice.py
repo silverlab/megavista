@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
+import pickle 
+import datetime
 
 import vista_utils as tsv # Get it at: https://github.com/arokem/vista_utils
 from nitime.fmri.io import time_series_from_file as load_nii 
@@ -45,35 +47,45 @@ def reshapeTS(t_fix):
     shapeTS=t_fixArrayTP.shape
     numRuns=shapeTS[2]/segTime
     # This returns rois x runs x TS with runs collapsed by segTime
-    allROIs=np.reshape(t_fixArrayTP, [shapeTS[0], shapeTS[1]*numRuns, segTime])
-    return allROIs
-
-def getCorrTS(fixTS):
-    # Get roi correlations
-    C=CorrelationAnalyzer(fixTS)
-    fig01 = drawmatrix_channels(C.corrcoef, roi_names, size=[10., 10.], color_anchor=0)
-    return C    
+    allROIS=np.reshape(t_fixArrayTP, [shapeTS[0], shapeTS[1]*numRuns, segTime])
+    return allROIS
+  
 
 if __name__ == "__main__":
+    # Close any opened plots
+    plt.close('all')
 
+    # save filename
+    date=str(datetime.date.today())
+    saveFile=base_path+ 'fmri/Results/' + 'AllSubjects'+ date + '.pck'
+    
     base_path = '/Volumes/Plata1/DorsalVentral/' # Change this to your path
     fmri_path = base_path + 'fmri/'
     session=0 # 0= donepazil, 1=placebo
     TR = 2
+
     # The pass band is f_lb <-> f_ub.
     # Also, see: http://imaging.mrc-cbu.cam.ac.uk/imaging/DesignEfficiency
     f_ub = 0.15
     f_lb = 0.01
+
+    NFFT=32 # 1/64= freq limit lower, .25 hertz is upper limit (1/2 of sampling rate) Nyquist freq
+    n_overlap=16
     
     # The upsample factor between the Inplane and the Gray:
     # Inplane Voxels: .867 x .867 x 3.3, Functional voxels: 3 x 3 x 3.3
     up_samp = [3.4595,3.4595,1.0000]
 
+    # set up dictionaries to store results
+    corr_all=dict()
+    coh_all = dict()
+    
+
     for subject in subjects:
         # len(subjects[subject])= number of session per subject
         # len(subjects[subject][0][1])= number of different types of runs 
         # len(subjects[subject][1][1]['fix_nii'])= number of nifti files for that session
-
+        
         sess = subjects[subject][session]
         # Get ROIs
         roi_names=np.array(rois)
@@ -88,6 +100,7 @@ if __name__ == "__main__":
                            for f in ROI_files]
         
          # Initialize lists for each behavioral condition:
+
         t_fix = []
         t_left = []
         t_right = []
@@ -106,40 +119,42 @@ if __name__ == "__main__":
                                     normalize='percent', average=True, verbose=True))    
         # reshape ROI matrix
         allROIS=reshapeTS(t_fix)
+        numRuns=allROIS.shape[1]
 
-        # Get roi correlations
-        for i in range(allROIS.shape[1]):
+        corr_all[subject] = np.zeros((numRuns,len(rois),len(rois))) * np.nan
+        coh_all[subject] = np.zeros((numRuns,len(rois),len(rois))) * np.nan
+       
+        # Get roi correlations and coherence
+        for run in range(allROIS.shape[1]):
             #need to load timeseries by run
-            fixTS=ts.TimeSeries(allROIs, sampling_interval=TR)
+            fixTS=ts.TimeSeries(allROIS[:,run,:], sampling_interval=TR)
+            fixTS.metadata['roi'] = roi_names
+           
+            # Get plot and correlations
+            C=CorrelationAnalyzer(fixTS)
+            fig01 = drawmatrix_channels(C.corrcoef, roi_names, size=[10., 10.], color_anchor=0,  title='Correlation Results Run %i' % run)
+            plt.show()
+            # Save correlation
+            corr_all[subject][run]=C.corrcoef
 
-        C=getCorrTS(fixTS)
-        
-        # Get cross correlations
-        xc = C.xcorr_norm
-        idx_rv1 = np.where(roi_names == 'R_V1')[0]
-        idx_rv2v = np.where(roi_names == 'R_V2V')[0]
-        idx_rv3v = np.where(roi_names == 'R_V3V')[0]
-        idx_rv4 = np.where(roi_names == 'R_V4')[0]
-        idx_rv2d= np.where(roi_names == 'R_V2D')[0]
-        idx_rv3d = np.where(roi_names == 'R_V3D')[0]
+            # Get coherence
+            Coh = CoherenceAnalyzer(fixTS)
+   
+            Coh.method['NFFT'] = NFFT
+            Coh.method['n_overlap']=n_overlap
 
-        fig02 = plot_xcorr(xc,((idx_rv1, idx_rv2v),(idx_rv1, idx_rv3v)),line_labels=['rV2V', 'rV3V'])
+            # Get the index for the frequencies inside the ub and lb
+            freq_idx = np.where((Coh.frequencies > f_lb) * (Coh.frequencies < f_ub))[0]
+            
+            # Extract coherence
+            coher = np.mean(Coh.coherence[:, :, freq_idx], -1)  # Averaging on the last dimension
+            fig03 = drawmatrix_channels(coher, roi_names, size=[10., 10.], color_anchor=0, title='Coherence Results Run %i' % run)
+            1/0
+            # Save coherence
+            coh_all[subject][run]=coher
 
-        # Get coherence
-        Coh = CoherenceAnalyzer(fixTS)
-
-        # Get the index for the frequencies inside the ub and lb
-        freq_idx = np.where((Coh.frequencies > f_lb) * (Coh.frequencies < f_ub))[0]
-
-        # Extract coherence
-        coher = np.mean(Coh.coherence[:, :, freq_idx], -1)  # Averaging on the last dimension
-        fig03 = drawmatrix_channels(coher, roi_names, size=[10., 10.], color_anchor=0)
-
-        # Focus on areas of interest
-        idx = np.hstack([idx_rv1, idx_rv2v, idx_rv3v, idx_rv4, idx_rv2d, idx_rv3d ])
-        idx1 = np.vstack([[idx[i]] * 6 for i in range(6)]).ravel()
-        idx2 = np.hstack(6 * [idx])
-        coher_specific = Coh.coherence[idx1, idx2].reshape(6, 6, Coh.frequencies.shape[0])
-        coherence = np.mean(coher_specific[:, :, freq_idx], -1)  # Averaging on the last dimension
-        fig04 = drawgraph_channels(coherence, roi_names[idx]) # Draw network
-                                                      
+        file=open(fileName, 'w') # write mode
+        pickle.dump(saveFile, coh_all)
+        pickle.dump(saveFile, corr_all)
+        print 'Saving subject coherence and correlation dictionaries.'
+            

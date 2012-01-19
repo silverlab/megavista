@@ -7,9 +7,9 @@
  
 
  For each subject, the first session is the donepezil session
- rois=['R_V1', 'R_V2V', 'R_V3V', 'R_V2D', 'R_V3D','R_V4','R_V7', 'R_IPS1', 'R_IPS2', 'L_V1', 'L_V2V', 'L_V2D',  'L_V3V','L_V3D',  'L_V4' ]
-'''
-rois=['R_V1_0.25', 'R_V2V_0.25', 'R_V3V_0.25', 'R_V2D_0.25', 'R_V3D_0.25']   
+''' 
+
+rois=['R_V1_0.25', 'R_V2V_0.25', 'R_V3V_0.25', 'R_V4_0.25', 'R_V2D_0.25', 'R_V3D_0.25', 'R_V3A_0.25', 'R_IPS0_0.25', 'R_IPS1_0.25', 'R_IPS2_0.25']
 subjects = {
     'CG':[['CG011611', dict(loc_nii =['epi01_mcf.nii.gz',
                                       'epi10_mcf.nii.gz'],
