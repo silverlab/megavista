@@ -40,6 +40,7 @@ def display_vox(tseries,vox_idx,fig=None):
     return fig
 
 def reshapeTS(t_fix):
+    # TR=2 seconds, 30 TRs in one movie
     segTime=60
     # Change to an array (numSess, numROIs, numTime points)
     t_fixArray=np.array(t_fix)
@@ -52,17 +53,16 @@ def reshapeTS(t_fix):
   
 
 if __name__ == "__main__":
-    # Close any opened plots
-    plt.close('all')
-
-    # save filename
-    date=str(datetime.date.today())
-    saveFile=base_path+ 'fmri/Results/' + 'AllSubjects'+ date + '.pck'
+    
     
     base_path = '/Volumes/Plata1/DorsalVentral/' # Change this to your path
     fmri_path = base_path + 'fmri/'
     session=0 # 0= donepazil, 1=placebo
     TR = 2
+
+    # save filename
+    date=str(datetime.date.today())
+    saveFile=base_path+ 'fmri/Results/' + 'All5Subs'+ date + '.pck'
 
     # The pass band is f_lb <-> f_ub.
     # Also, see: http://imaging.mrc-cbu.cam.ac.uk/imaging/DesignEfficiency
@@ -85,6 +85,9 @@ if __name__ == "__main__":
         # len(subjects[subject])= number of session per subject
         # len(subjects[subject][0][1])= number of different types of runs 
         # len(subjects[subject][1][1]['fix_nii'])= number of nifti files for that session
+
+        # Close any opened plots
+        plt.close('all')
         
         sess = subjects[subject][session]
         # Get ROIs
@@ -105,6 +108,8 @@ if __name__ == "__main__":
         t_left = []
         t_right = []
         nifti_path = fmri_path +sess[0] + '/%s_nifti/' % sess[0]
+
+        # Plot the mean of the TS over SD (SNR) for each ROI
         # len(t_fix)= number of ROIs
         for this_fix in sess[1]['fix_nii']:
             t_fix.append(load_nii(nifti_path+this_fix, ROI_coords,TR,
@@ -117,7 +122,7 @@ if __name__ == "__main__":
         for this_fix in sess[1]['left_nii']:
             t_fix.append(load_nii(nifti_path+this_fix, ROI_coords,TR,
                                     normalize='percent', average=True, verbose=True))    
-        # reshape ROI matrix
+         # reshape ROI matrix
         allROIS=reshapeTS(t_fix)
         numRuns=allROIS.shape[1]
 
@@ -147,14 +152,19 @@ if __name__ == "__main__":
             freq_idx = np.where((Coh.frequencies > f_lb) * (Coh.frequencies < f_ub))[0]
             
             # Extract coherence
+            # Coher[0]= correlations for first ROI in list with others
             coher = np.mean(Coh.coherence[:, :, freq_idx], -1)  # Averaging on the last dimension
             fig03 = drawmatrix_channels(coher, roi_names, size=[10., 10.], color_anchor=0, title='Coherence Results Run %i' % run)
-            1/0
-            # Save coherence
+            # Save coherence (coher is the average of the coherence over the specified frequency)
             coh_all[subject][run]=coher
 
-        file=open(fileName, 'w') # write mode
-        pickle.dump(saveFile, coh_all)
-        pickle.dump(saveFile, corr_all)
-        print 'Saving subject coherence and correlation dictionaries.'
+    file=open(saveFile, 'w') # write mode
+    # First file loaded is coherence
+    pickle.dump(coh_all, file)
+    # Second file loaded is correlation
+    pickle.dump(corr_all, file)
+    # Save roi names
+    pickle.dump(roi_names, file)
+    file.close()
+    print 'Saving subject coherence and correlation dictionaries.'
             
