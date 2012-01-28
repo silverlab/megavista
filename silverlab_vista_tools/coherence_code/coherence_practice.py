@@ -57,12 +57,12 @@ if __name__ == "__main__":
     
     base_path = '/Volumes/Plata1/DorsalVentral/' # Change this to your path
     fmri_path = base_path + 'fmri/'
-    session=0 # 0= donepazil, 1=placebo
+    session=1 # 0= donepazil, 1=placebo
     TR = 2
 
     # save filename
     date=str(datetime.date.today())
-    saveFile=base_path+ 'fmri/Results/' + 'All5Subs'+ date + '.pck'
+    saveFile=base_path+ 'fmri/Results/' + 'CG_all'+ date + '.pck'
 
     # The pass band is f_lb <-> f_ub.
     # Also, see: http://imaging.mrc-cbu.cam.ac.uk/imaging/DesignEfficiency

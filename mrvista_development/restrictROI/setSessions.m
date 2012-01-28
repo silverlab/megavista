@@ -1,10 +1,12 @@
 % Get sessions
-%all=dir('*11*'); allCell=struct2cell(all);
-%sessions=allCell(1,:);
+
+
 sessions={'CG011611' 'CG020611' 'DCA041111' 'DCA042511' ...
 		'SS011011' 'SS012311' 'CHT042111' 'CHT051911'...	
         'WC030311' 'WC031911'}; 
+    
 
+    
 rois={
 {'L_LGN_0.3.mat' 'R_LGN_0.3.mat'...
 'L_IPS0.mat', 'L_IPS1.mat' 'L_IPS2.mat' 'L_LO1.mat' 'L_LO2.mat' 'L_V4.mat'...

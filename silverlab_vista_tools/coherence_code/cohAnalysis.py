@@ -24,7 +24,7 @@ if __name__ == "__main__":
     
 	base_path = '/Volumes/Plata1/DorsalVentral/' # Change this to your path
 	fmri_path = base_path + 'fmri/'
-	fileName='AllSubjects2012-01-24.pck'
+	fileName='CG_all2012-01-27.pck'
 	loadFile=fmri_path+'Results/' +fileName
 
 	# Load the data
