@@ -5,7 +5,8 @@ voxSelectOptions = {'all','varExp'};
 betaSettings = {[.5 -.5], 'betaM-P'; ...
                 [1 0], 'betaM'; ...
                 [0 1], 'betaP'};
-varThreshs = [.005 .01 .02 .05];
+% varThreshs = [.005 .01 .02 .05];
+varThreshs = [.005 .01];
 
 saveFigs = 1;
 

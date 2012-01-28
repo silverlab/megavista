@@ -3,7 +3,7 @@
 % use this version for GLM data for natural left/right orientations
 
 %% Setup
-hemi = 2;
+hemi = 1;
 
 voxelSelectionOption = 'all'; % ['all','anySuperthresh','loadVoxelSelector','training','varExp']
 voxelSelectorPath = 'voxelSelector1_superthreshAll_AllScans_20110907.mat';
@@ -12,7 +12,7 @@ cScaleOption = 'scaleToData'; % ['scaleToData','chooseCRange']
 cValRange = [-.95 .95]; % if using chooseCRange
 plotFigs = 1;
 saveAnalysis = 0;
-saveFigs = 0;
+saveFigs = 1;
 
 iROI = 1; % only plotting one ROI at a time here
 
@@ -39,7 +39,7 @@ betas = squeeze(figData.glm.betas(1,1:2,:))';
 topoData = betas*[.5 -.5]';
 % topoData = betas*[1 0]';
 % topoData = coData;
-mapName = sprintf('Hemi %d pMVP', hemi); % sprintf('Hemi %d', hemi); % contrasts.zo(3).name;
+mapName = sprintf('Hemi %d betaM-P', hemi); % sprintf('Hemi %d', hemi); % contrasts.zo(3).name;
 
 %% Any voxel selection?
 switch voxelSelectionOption

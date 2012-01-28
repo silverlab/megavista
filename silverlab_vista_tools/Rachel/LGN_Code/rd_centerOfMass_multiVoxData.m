@@ -3,7 +3,7 @@
 %% Setup
 hemi = 2;
 
-varThreshs = 0:.001:.05;
+varThreshs = 0:.001:.01;
 prop = .5;
 voxelSelectionOption = 'varExp'; % all, varExp
 

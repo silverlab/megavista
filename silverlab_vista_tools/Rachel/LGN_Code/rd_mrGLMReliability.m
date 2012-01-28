@@ -1,5 +1,9 @@
 % rd_mrGLMReliability.m
 
+hemi = 2;
+
+load(sprintf('lgnROI%d_multiVoxFigData', hemi))
+
 nConds = 2;
 
 varExp = figData.glm.varianceExplained;
@@ -9,6 +13,10 @@ betas5 = betas(:,varExp>.005);
 
 betas5mean = repmat(mean(betas5,2),1,size(betas5,2));
 betas5norm = betas5-betas5mean;
+
+figure
+hist(varExp)
+xlabel('variance explained')
 
 figure
 bar(betas5')
