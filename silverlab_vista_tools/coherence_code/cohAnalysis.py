@@ -1,3 +1,4 @@
+#Changed on 1/30
 import numpy as np
 import scipy.stats as stats
 import pickle 
@@ -148,17 +149,64 @@ def makePlot(in_m, channel_names=None, fig=None, x_tick_rot=0, size=None,
 
 	return fig
 
-def makeBarPlots(in_d):
-	#Make a copy of the input, so that you don't make changes to the original                               
-	#data provided                                                                                          
-	dat = in_d.copy()
+   
 
-	#Null the upper triangle, so that you don't get the redundant and
+def getNetworkWithin(dat, roiIndx):
+
+        #Null the upper triangle, so that you don't get the redundant and
 	#the diagonal values:                                                                            
 	idx_null = triu_indices(dat.shape[0])
 	dat[idx_null] = np.nan
 
-	
+        #Extract network values
+        allNet=[]
+        numROIs=roiIndx[1:]
+        numStart=0
+        while len(numROIs)>0:
+            for jj in numROIs:
+                allNet.append(dat[jj][roiIndx[numStart]])
+            numStart+=1
+            numROIs=numROIs[1:]
+        return allNet
+
+def getNetworkBtw(data, net1, net2):
+    allBtw=[]
+    1/0
+    #for roiIndx1 in net1:
+    # for roiIndx2 in net2:
+    #  allBtw.append(data[roiIndx1][roiIndx2]                  
+    return allBtw
+
+def makeBarPlots(means, stds, title,labels):
+    N=len(means)
+    ind = np.arange(N)  # the x locations for the groups
+    width = 0.35       # the width of the bars
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    rects1 = ax.bar(ind, means, width, color='r', yerr=stds)
+
+    # add some
+    ax.set_ylabel('Means')
+    ax.set_title(title)
+    ax.set_xticks(ind+width)
+    ax.set_xticklabels( labels )
+
+    #ax.legend( (rects1[0], rects2[0]), ('Men', 'Women') )
+
+    def autolabel(rects):
+        # attach some text labels
+        for rect in rects:
+            height = rect.get_height()
+            ax.text(rect.get_x()+rect.get_width()/2., 1.05*height, '%d'%int(height*100),
+                ha='center', va='bottom')
+
+    autolabel(rects1)
+    #autolabel(rects2)
+
+    plt.show()
+
+
 if __name__ == "__main__":
 
 	# Close any opened plots
@@ -166,7 +214,7 @@ if __name__ == "__main__":
     
 	base_path = '/Volumes/Plata1/DorsalVentral/' # Change this to your path
 	fmri_path = base_path + 'fmri/'
-	fileName='CG_2_1run_2012-01-28.pck'
+	fileName='CG_21runs_2012-01-30.pck'
 	loadFile=fmri_path+'Results/' +fileName
 
 	figSize=[10., 10.]
@@ -181,20 +229,53 @@ if __name__ == "__main__":
 	file.close()
 
 	#Define the streams
-	Ventral=[2,3,4, 6, 7, 8, 9]
-	Dorsal=[11, 12, 13, 14, 15, 16]
-	Lateral=[5, 10, 17]
+	Ventral=[1,2,3, 5, 6, 7, 8]
+	Dorsal=[10, 11, 12, 13, 14, 15]
+	Lateral=[4, 9, 16]
 
 	for sub in cohAll:
 		print sub
 		numRuns=cohAll[sub].shape[0]
 		# Average over runs (the first dimension)
 		coherAvg=np.mean(cohAll[sub][:], 0)
+                coherSTD=np.std(cohAll[sub][:], 0)
 		corrAvg=np.mean(corrAll[sub][:],0)
-		# Plot graph
+                corrSTD=np.std(corrAll[sub][:], 0)
+
+		# Plot graph of coherence and correlation values
 		fig1 = makePlot(coherAvg, roiNames, size=[10., 10.], color_anchor=0,
 				title='Average Coherence Results over ' +str(numRuns) + ' runs for ' + sub, max_val=1, min_val=0)
-		fig2=makePlot(corrAvg, roiNames, size=[10., 10.], color_anchor=0,
+                fig2=makePlot(coherSTD, roiNames, size=[10., 10.], color_anchor=0,
+				title='Average Coherence STD over ' +str(numRuns) + ' runs for ' + sub)
+		fig3=makePlot(corrAvg, roiNames, size=[10., 10.], color_anchor=0,
 			      title='Average Correlation Results over ' +str(numRuns) + ' runs for ' + sub, max_val=1, min_val=0)
+                fig4=makePlot(corrSTD, roiNames, size=[10., 10.], color_anchor=0,
+			      title='Average Correlation STD over ' +str(numRuns) + ' runs for ' + sub)
 		plt.show()
+
+                #Fisher transform the data
+                coherAvg_t = np.arctanh(coherAvg)
+                corrAvg_t=np.arctanh(corrAvg)
+
+                #replace all inf with nan
+                ind = np.where(coherAvg_t == np.Infinity)
+                coherAvg_t[ind] = np.nan
+                ind = np.where(corrAvg_t == np.Infinity)
+                corrAvg_t[ind] = np.nan
+                
+                # Get network averages
+                lateralCoher=getNetworkWithin(coherAvg_t, Lateral)
+                dorsalCoher=getNetworkWithin(coherAvg_t, Ventral)
+                ventralCoher=getNetworkWithin(coherAvg_t, Dorsal)
+                allMeans=(np.mean(lateralCoher), np.mean(dorsalCoher), np.mean(ventralCoher))
+                allSTD=(np.std(lateralCoher), np.std(dorsalCoher), np.std(ventralCoher))
+
+                latBtwCoher=getNetworkBtw(coherAvg_t, Lateral, Ventral+Dorsal)
+
+                # Make bar graph
+                title='Mean Coherence by Network'; labels=('Lateral', 'Dorsal', 'Ventral')
+                makeBarPlots(allMeans, allSTD, title, labels)
+
+
+                
 

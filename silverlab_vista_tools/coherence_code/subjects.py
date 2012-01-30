@@ -12,7 +12,7 @@
 
 # 'R_V4_0.25'
 
-rois=['R_LGN_0.3_0.25', 'R_V1_0.25', 'R_V2V_0.25', 'R_V3V_0.25', 'R_V4_0.25', 'r_LOf_p3', 'r_IOG_p3',   'r_pFus_p3', 'r_mFus_p3', 'r_PPA_p4',
+rois=[ 'R_V1_0.25', 'R_V2V_0.25', 'R_V3V_0.25', 'R_V4_0.25', 'r_LOf_p3', 'r_IOG_p3',   'r_pFus_p3', 'r_mFus_p3', 'r_PPA_p4',
       'R_MT_al_.5_0.25', 'R_V2D_0.25', 'R_V3D_0.25', 'R_V3A_0.25', 'R_IPS0_0.25', 'R_IPS1_0.25', 'R_IPS2_0.25', 'r_pSTS_p3']
 
 subjects = {
