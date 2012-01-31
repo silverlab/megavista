@@ -13,8 +13,8 @@ function params = rd_mrMakeMrInit2Params
 % ------------------------------------------------------------------------
 % Here we have the most common analysis settings that are specific to an
 % individual experiment
-subjectID = 'RD';
-description = 'RD_20111214 MPLocalizerColor_7T';
+subjectID = 'CG';
+description = 'CG_20120130 MPLocalizerColor_3T';
 comments = '';
 
 % Scan groups
@@ -22,12 +22,13 @@ comments = '';
 % scanGroups = {[1 6], 2:5};
 % scanGroups = {[1 10], 2:9};
 % scanGroups = {[1 9], 2:8};
-scanGroups = {[1 14], 2:13};
+scanGroups = {[1 16], 2:15};
+% scanGroups = {[1 14], 2:13};
 % scanGroups = {[1 11], 2:10}; % scan numbers in each scan group
 % Keep frames
 % scanGroupKeepFrames = {[4 135]};
-scanGroupKeepFrames = {[16 -1], [4 135]};
-% scanGroupKeepFrames = {[6 132], [4 -1]}; % [frames-to-discard frames-to-keep]
+% scanGroupKeepFrames = {[16 -1], [4 135]}; % 7T
+scanGroupKeepFrames = {[6 132], [4 -1]}; % 3T [frames-to-discard frames-to-keep]
 % Annotations
 scanGroupNames = {'hemi','mp'};
 
@@ -38,8 +39,8 @@ scansWithParfile = scanGroups{2};
 % Coherence analysis
 % coherenceScanGroups = 0;
 coherenceScanGroups = 1;
-nCycles = 8;
-% nCycles = 11;
+% nCycles = 8; % 7T
+nCycles = 11; % 3T
 
 % GLM analysis
 % glmScanGroups = 1;
