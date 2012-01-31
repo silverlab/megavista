@@ -158,6 +158,8 @@ def getNetworkWithin(dat, roiIndx):
 	idx_null = triu_indices(dat.shape[0])
 	dat[idx_null] = np.nan
 
+        withInvals = dat[roiIndx,:][:,roiIndx]
+        
         #Extract network values
         allNet=[]
         numROIs=roiIndx[1:]
@@ -170,29 +172,29 @@ def getNetworkWithin(dat, roiIndx):
         return allNet
 
 def getNetworkBtw(data, net1, net2):
-    allBtw=[]
-    1/0
-    #for roiIndx1 in net1:
-    # for roiIndx2 in net2:
-    #  allBtw.append(data[roiIndx1][roiIndx2]                  
+    allBtw=data[net1,:][:,net2]
+    allBtw=stats.nanmean(allBtw)
     return allBtw
 
-def makeBarPlots(means, stds, title,labels):
-    N=len(means)
+
+def makeBarPlots(allMeansWithin, allSTDWithin, allMeansBtw, allSTDBtw, title, labels):
+    N=len(allMeansWithin)
     ind = np.arange(N)  # the x locations for the groups
     width = 0.35       # the width of the bars
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    rects1 = ax.bar(ind, means, width, color='r', yerr=stds)
+    rects1 = ax.bar(ind, allMeansWithin, width, color='r', yerr=allSTDWithin)
 
+    rects2 = ax.bar(ind+width, allMeansBtw, width, color='y', yerr=allSTDBtw)
+    
     # add some
     ax.set_ylabel('Means')
     ax.set_title(title)
     ax.set_xticks(ind+width)
     ax.set_xticklabels( labels )
 
-    #ax.legend( (rects1[0], rects2[0]), ('Men', 'Women') )
+    ax.legend( (rects1[0], rects2[0]), ('Within', 'Between') )
 
     def autolabel(rects):
         # attach some text labels
@@ -201,7 +203,7 @@ def makeBarPlots(means, stds, title,labels):
             ax.text(rect.get_x()+rect.get_width()/2., 1.05*height, '%d'%int(height*100),
                 ha='center', va='bottom')
 
-    autolabel(rects1)
+    #autolabel(rects1)
     #autolabel(rects2)
 
     plt.show()
@@ -267,14 +269,21 @@ if __name__ == "__main__":
                 lateralCoher=getNetworkWithin(coherAvg_t, Lateral)
                 dorsalCoher=getNetworkWithin(coherAvg_t, Ventral)
                 ventralCoher=getNetworkWithin(coherAvg_t, Dorsal)
-                allMeans=(np.mean(lateralCoher), np.mean(dorsalCoher), np.mean(ventralCoher))
-                allSTD=(np.std(lateralCoher), np.std(dorsalCoher), np.std(ventralCoher))
+                allMeansWithin=(np.mean(lateralCoher), np.mean(dorsalCoher), np.mean(ventralCoher))
+                allSTDWithin=(np.std(lateralCoher), np.std(dorsalCoher), np.std(ventralCoher))
 
                 latBtwCoher=getNetworkBtw(coherAvg_t, Lateral, Ventral+Dorsal)
+                dorsBtwCoher=getNetworkBtw(coherAvg_t, Dorsal, Lateral+Ventral)
+                ventBtwCoher=getNetworkBtw(coherAvg_t, Ventral, Dorsal+Lateral)
 
+                allMeansBtw=(stats.nanmean(latBtwCoher), stats.nanmean(dorsBtwCoher), stats.nanmean(ventBtwCoher))
+                allSTDBtw=(stats.nanstd(latBtwCoher), stats.nanstd(dorsBtwCoher), stats.nanstd(ventBtwCoher))
+        
                 # Make bar graph
                 title='Mean Coherence by Network'; labels=('Lateral', 'Dorsal', 'Ventral')
-                makeBarPlots(allMeans, allSTD, title, labels)
+                makeBarPlots(allMeansWithin, allSTDWithin, allMeansBtw, allSTDBtw, title, labels)
+
+                
 
 
                 
