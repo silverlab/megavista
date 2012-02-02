@@ -201,7 +201,7 @@ end % end for slice
 
 %% plot brainMap 
 xyCoordsToPlot = {1:size(brainMap,1)-minInplaneCoords(1)+1, ...
-    minInplaneCoords(2)-1:size(brainMap,2)};
+    minInplaneCoords(2):size(brainMap,2)};
 brainMapToPlot = brainMap(xyCoordsToPlot{1},xyCoordsToPlot{2},:,:);
 
 dimLabels = {'Sag','Cor','--','Ax'};
