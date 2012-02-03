@@ -57,13 +57,14 @@ if __name__ == "__main__":
     
     base_path = '/Volumes/Plata1/DorsalVentral/' # Change this to your path
     fmri_path = base_path + 'fmri/'
+    sessionName=['donepazil', 'placebo']
     session=1 # 0= donepazil, 1=placebo
     TR = 2
     allRuns=['fix_nii']
     # save filename
     date=str(datetime.date.today())
-    saveFile=base_path+ 'fmri/Results/' + 'CG_2' +str(len(allRuns))+'runs_'+ date + '.pck'
-
+    saveFile=base_path+ 'fmri/Results/' + 'CG&CHT&DCAallROIsOrderFix_matr'+sessionName[session] +str(len(allRuns))+'runs_'+ date + '.pck'
+    
     # The pass band is f_lb <-> f_ub.
     # Also, see: http://imaging.mrc-cbu.cam.ac.uk/imaging/DesignEfficiency
     f_ub = 0.15
@@ -159,6 +160,8 @@ if __name__ == "__main__":
     pickle.dump(corr_all, file)
     # Save roi names
     pickle.dump(roi_names, file)
+    # save subjects
+    pickle.dump(subjects, file)
     file.close()
     print 'Saving subject coherence and correlation dictionaries.'
             

@@ -68,8 +68,8 @@ def makePlot(in_m, channel_names=None, fig=None, x_tick_rot=0, size=None,
 	
 	#Null the upper triangle, so that you don't get the redundant and
 	#the diagonal values:                                                                            
-	idx_null = triu_indices(m.shape[0])
-	m[idx_null] = np.nan
+	#idx_null = triu_indices(m.shape[0])
+	#m[idx_null] = np.nan
 
 	#Extract the minimum and maximum values for scaling of the
 	#colormap/colorbar:
@@ -149,16 +149,13 @@ def makePlot(in_m, channel_names=None, fig=None, x_tick_rot=0, size=None,
 
 	return fig
 
-   
+def getNetworkWithin_test(in_d, roiIndx):
 
-def getNetworkWithin(dat, roiIndx):
-
+        dat=in_d.copy()
         #Null the upper triangle, so that you don't get the redundant and
 	#the diagonal values:                                                                            
 	idx_null = triu_indices(dat.shape[0])
 	dat[idx_null] = np.nan
-
-        withInvals = dat[roiIndx,:][:,roiIndx]
         
         #Extract network values
         allNet=[]
@@ -170,9 +167,24 @@ def getNetworkWithin(dat, roiIndx):
             numStart+=1
             numROIs=numROIs[1:]
         return allNet
+    
+def getNetworkWithin(in_dat, roiIndx):
 
-def getNetworkBtw(data, net1, net2):
-    allBtw=data[net1,:][:,net2]
+        m=in_dat.copy()
+        #Null the upper triangle, so that you don't get the redundant and
+	#the diagonal values:    
+	idx_null = triu_indices(m.shape[0])
+	m[idx_null] = np.nan
+
+        #Extract network values
+        withinVals = m[roiIndx,:][:,roiIndx]
+
+        return withinVals
+    
+def getNetworkBtw(dataBtw, net1, net2):
+
+    data_b=dataBtw.copy()
+    allBtw=data_b[net1,:][:,net2]
     allBtw=stats.nanmean(allBtw)
     return allBtw
 
@@ -203,11 +215,43 @@ def makeBarPlots(allMeansWithin, allSTDWithin, allMeansBtw, allSTDBtw, title, la
             ax.text(rect.get_x()+rect.get_width()/2., 1.05*height, '%d'%int(height*100),
                 ha='center', va='bottom')
 
-    #autolabel(rects1)
-    #autolabel(rects2)
+    autolabel(rects1)
+    autolabel(rects2)
 
     plt.show()
 
+def get3NetworkAvg(data_t, titleName, roiNames, numRuns):
+    #Define the streams
+    Ventral=[1, 3, 11, 12, 13, 14]
+    Dorsal=[2, 4, 5, 6, 7, 8, 9, 10]
+    Lateral=[0, 1, 2, 3, 4]
+
+    print 'Ventral rois: '+ str(roiNames[Ventral])
+    print 'Dorsal rois: ' + str(roiNames[Dorsal])
+    print 'Early Visual rois: '+ str(roiNames[Lateral])
+    
+    # Get network averages
+    lateralCoher=getNetworkWithin(data_t, Lateral)
+    dorsalCoher=getNetworkWithin(data_t, Ventral)
+    ventralCoher=getNetworkWithin(data_t, Dorsal)
+    #allMeansWithin=(stats.nanmean(lateralCoher.flat), stats.nanmean(dorsalCoher.flat), stats.nanmean(ventralCoher.flat))
+    #allSTDWithin=(stats.nanstd(lateralCoher.flat), stats.nanstd(dorsalCoher.flat), stats.nanstd(ventralCoher.flat))
+    allMeansWithin= (stats.nanmean(dorsalCoher.flat), stats.nanmean(ventralCoher.flat))
+    allSTDWithin=( stats.nanstd(dorsalCoher.flat), stats.nanstd(ventralCoher.flat))
+
+    latBtwCoher=getNetworkBtw(data_t, Lateral, Ventral+Dorsal)
+    dorsBtwCoher=getNetworkBtw(data_t, Dorsal, Ventral)
+    ventBtwCoher=getNetworkBtw(data_t, Ventral, Dorsal)
+
+    #allMeansBtw=(stats.nanmean(latBtwCoher), stats.nanmean(dorsBtwCoher), stats.nanmean(ventBtwCoher))
+    #allSTDBtw=(stats.nanstd(latBtwCoher), stats.nanstd(dorsBtwCoher), stats.nanstd(ventBtwCoher))
+    # Just dorsal versus ventral 
+    allMeansBtw=( stats.nanmean(dorsBtwCoher), stats.nanmean(ventBtwCoher))
+    allSTDBtw=( stats.nanstd(dorsBtwCoher), stats.nanstd(ventBtwCoher))
+
+    # Make bar graph
+    title= titleName+ 'by Network for ' +sub+ ' for '+ str(numRuns)+' runs'; labels=( 'Dorsal', 'Ventral')
+    makeBarPlots(allMeansWithin, allSTDWithin, allMeansBtw, allSTDBtw, title, labels)    
 
 if __name__ == "__main__":
 
@@ -216,25 +260,21 @@ if __name__ == "__main__":
     
 	base_path = '/Volumes/Plata1/DorsalVentral/' # Change this to your path
 	fmri_path = base_path + 'fmri/'
-	fileName='CG_21runs_2012-01-30.pck'
+	fileName='CG&CHT&DCAallROIsOrderFix_matrplacebo1runs_2012-02-02.pck'
+        condition='Placebo_leftFix'
 	loadFile=fmri_path+'Results/' +fileName
 
 	figSize=[10., 10.]
 	# Load the data
 	print 'Loading subject coherence and correlation dictionaries.'
 	file=open(loadFile, 'r')
-	 # First file loaded is coherence
+	# First file loaded is coherence
 	cohAll=pickle.load(file)
 	# Second file loaded is correlation
 	corrAll=pickle.load(file)
 	roiNames=pickle.load(file)
 	file.close()
-
-	#Define the streams
-	Ventral=[1,2,3, 5, 6, 7, 8]
-	Dorsal=[10, 11, 12, 13, 14, 15]
-	Lateral=[4, 9, 16]
-
+        
 	for sub in cohAll:
 		print sub
 		numRuns=cohAll[sub].shape[0]
@@ -245,16 +285,17 @@ if __name__ == "__main__":
                 corrSTD=np.std(corrAll[sub][:], 0)
 
 		# Plot graph of coherence and correlation values
+                '''
 		fig1 = makePlot(coherAvg, roiNames, size=[10., 10.], color_anchor=0,
-				title='Average Coherence Results over ' +str(numRuns) + ' runs for ' + sub, max_val=1, min_val=0)
+				title='Average ' +condition+  ' Coherence Results over ' +str(numRuns) + ' runs for ' + sub, max_val=1, min_val=0)
                 fig2=makePlot(coherSTD, roiNames, size=[10., 10.], color_anchor=0,
-				title='Average Coherence STD over ' +str(numRuns) + ' runs for ' + sub)
+				title='Average ' +condition+ ' Coherence STD over ' +str(numRuns) + ' runs for ' + sub)
 		fig3=makePlot(corrAvg, roiNames, size=[10., 10.], color_anchor=0,
-			      title='Average Correlation Results over ' +str(numRuns) + ' runs for ' + sub, max_val=1, min_val=0)
+			      title='Average ' +condition+ ' Correlation Results over ' +str(numRuns) + ' runs for ' + sub, max_val=1, min_val=0)
                 fig4=makePlot(corrSTD, roiNames, size=[10., 10.], color_anchor=0,
-			      title='Average Correlation STD over ' +str(numRuns) + ' runs for ' + sub)
+			      title='Average ' +condition+ ' Correlation STD over ' +str(numRuns) + ' runs for ' + sub)
 		plt.show()
-
+                '''
                 #Fisher transform the data
                 coherAvg_t = np.arctanh(coherAvg)
                 corrAvg_t=np.arctanh(corrAvg)
@@ -265,26 +306,84 @@ if __name__ == "__main__":
                 ind = np.where(corrAvg_t == np.Infinity)
                 corrAvg_t[ind] = np.nan
                 
+                #Plot data for 3 streams (btw for all)
+                titleName=condition+" coherence "
+                # get3NetworkAvg(coherAvg_t, titleName, roiNames, numRuns)
+                titleName=condition+" correlation "
+                #get3NetworkAvg(corrAvg_t, titleName, roiNames, numRuns)
+
+                
+                #Plot the data for 4 groups
+                #Define the streams
+                earlyVent=[1, 2, 3]
+                earlyDors=[8, 9, 10]
+                parietal=[11, 12, 13, 14, 15]
+                objSel=[4,5,6]
+                
+                print 'Early Ventral rois: '+ str(roiNames[earlyVent])
+                print 'Early Dorsal rois: ' + str(roiNames[earlyDors])
+                print 'Parietal rois: '+ str(roiNames[parietal])
+                print 'Object rois: '+ str(roiNames[objSel])
+    
                 # Get network averages
-                lateralCoher=getNetworkWithin(coherAvg_t, Lateral)
-                dorsalCoher=getNetworkWithin(coherAvg_t, Ventral)
-                ventralCoher=getNetworkWithin(coherAvg_t, Dorsal)
-                allMeansWithin=(np.mean(lateralCoher), np.mean(dorsalCoher), np.mean(ventralCoher))
-                allSTDWithin=(np.std(lateralCoher), np.std(dorsalCoher), np.std(ventralCoher))
+                earlyVentCoher=getNetworkWithin(coherAvg_t, earlyVent)
+                earlyDorsCoher=getNetworkWithin(coherAvg_t, earlyDors)
+                parietalCoher=getNetworkWithin(coherAvg_t, parietal)
+                objSelCoher=getNetworkWithin(coherAvg_t, objSel)
+         
+                allMeansWithin= (stats.nanmean(earlyVentCoher.flat), stats.nanmean(earlyDorsCoher.flat), stats.nanmean(parietalCoher.flat),
+                                 stats.nanmean(objSelCoher.flat))
+                allSTDWithin=(stats.nanstd(earlyVentCoher.flat), stats.nanstd(earlyDorsCoher.flat), stats.nanstd(parietalCoher.flat),
+                                 stats.nanstd(objSelCoher.flat))
+                # Get network btw
+                #Early Visual
+                EVbtwED=coherAvg_t[earlyVent,:][:,earlyDors]; EVbtwEDavg=np.mean(EVbtwED); EVbtwEDstd=np.std(EVbtwED)
+                EVbtwPar=coherAvg_t[earlyVent,:][:, parietal]; EVbtwParavg=np.mean(EVbtwPar); EVbtwParstd=np.std(EVbtwPar)
+                EVbtwObjSel=coherAvg_t[earlyVent,:][:, objSel]; EVbtwObjSelavg=np.mean(EVbtwObjSel); EVbtwObjSelstd=np.std(EVbtwObjSel)
 
-                latBtwCoher=getNetworkBtw(coherAvg_t, Lateral, Ventral+Dorsal)
-                dorsBtwCoher=getNetworkBtw(coherAvg_t, Dorsal, Lateral+Ventral)
-                ventBtwCoher=getNetworkBtw(coherAvg_t, Ventral, Dorsal+Lateral)
+                # Early Dorsal
+                EDbtwEV=coherAvg_t[earlyDors,:][:,earlyVent]; EDbtwEVavg=np.mean(EDbtwEV); EDbtwEVstd=np.std(EDbtwEV)
+                EDbtwPar=coherAvg_t[earlyDors,:][:, parietal]; EDbtwParavg=np.mean(EDbtwPar); EDbtwParstd=np.std(EDbtwPar)
+                EDbtwObjSel=coherAvg_t[earlyDors,:][:, objSel]; EDbtwObjSelavg=np.mean(EDbtwObjSel); EDbtwObjSelstd=np.std(EDbtwObjSel)
 
-                allMeansBtw=(stats.nanmean(latBtwCoher), stats.nanmean(dorsBtwCoher), stats.nanmean(ventBtwCoher))
-                allSTDBtw=(stats.nanstd(latBtwCoher), stats.nanstd(dorsBtwCoher), stats.nanstd(ventBtwCoher))
-        
+                # Parietal
+                ParbtwEV=coherAvg_t[parietal,:][:,earlyVent]; ParbtwEVavg=np.mean(ParbtwEV); ParbtwEVstd=np.std(ParbtwEV)
+                ParbtwED=coherAvg_t[parietal,:][:, earlyDors]; ParbtwEDavg=np.mean(ParbtwED); ParbtwEDstd=np.std(ParbtwED)
+                ParbtwObjSel=coherAvg_t[parietal,:][:, objSel]; ParbtwObjSelavg=np.mean(ParbtwObjSel); ParbtwObjSelstd=np.std(ParbtwObjSel)
+
+                # Object Selective
+                ObjSelbtwEV=coherAvg_t[objSel,:][:,earlyVent]; ObjSelbtwEVavg=np.mean(ObjSelbtwEV); ObjSelbtwEVstd=np.std(ObjSelbtwEV)
+                ObjSelbtwED=coherAvg_t[objSel,:][:, earlyDors]; ObjSelbtwEDavg=np.mean(ObjSelbtwED); ObjSelbtwEDstd=np.std(ObjSelbtwED)
+                ObjSelbtwPar=coherAvg_t[objSel,:][:, parietal]; ObjSelbtwParavg=np.mean(ObjSelbtwPar); ObjSelbtwParstd=np.std(ObjSelbtwPar)
+
+
+                allMeansBtw=([EVbtwEDavg, EDbtwEVavg, ParbtwEVavg, ObjSelbtwEVavg], [EVbtwParavg, EDbtwParavg, ParbtwEDavg, ObjSelbtwParavg],
+                             [EVbtwObjSelavg, EDbtwObjSelavg, ParbtwObjSelavg,  ObjSelbtwEDavg])
+                allSTDBtw=([EVbtwEDstd, EDbtwEVstd, ParbtwEVstd, ObjSelbtwEVstd], [EVbtwParstd, EDbtwParstd, ParbtwEDstd, ObjSelbtwParstd],
+                             [EVbtwObjSelstd, EDbtwObjSelstd, ParbtwObjSelstd,  ObjSelbtwEDstd])
+         
                 # Make bar graph
-                title='Mean Coherence by Network'; labels=('Lateral', 'Dorsal', 'Ventral')
-                makeBarPlots(allMeansWithin, allSTDWithin, allMeansBtw, allSTDBtw, title, labels)
-
+                title= titleName+ 'by Network for ' +sub+ ' for '+ str(numRuns)+' runs'; labels=( 'Early Visual', 'Early Dorsal', 'Parietal', 'Object Selective')
                 
+                N=len(allMeansWithin)
+                ind = np.arange(N)  # the x locations for the groups
+                width = 0.15       # the width of the bars
 
+                fig = plt.figure()
+                ax = fig.add_subplot(111)
+                rects1 = ax.bar(ind, allMeansWithin, width, color='r', yerr=allSTDWithin)
 
+                rects2 = ax.bar(ind+width*1, allMeansBtw[0], width, color='y', yerr=allSTDBtw[0])
+                rects3 = ax.bar(ind+width*2, allMeansBtw[1], width, color='g', yerr=allSTDBtw[1])
+                rects4 = ax.bar(ind+width*3, allMeansBtw[2], width, color='b', yerr=allSTDBtw[2])
+    
+                # add some labels
+                ax.set_ylabel('Means')
+                ax.set_title(title)
+                ax.set_xticks(ind+width*2)
+                ax.set_xticklabels( labels )
+                ax.legend((rects1[0], rects2[0], rects3[0], rects4[0]), ('Within', 'BtwEarlyVisual', 'BtwParietal', 'BtwObjectSel'))
                 
-
+                # Make a connection graph
+                1/0
+                fig04 = drawgraph_channels(cohAll[sub], roiNames, color_anchor=1)
