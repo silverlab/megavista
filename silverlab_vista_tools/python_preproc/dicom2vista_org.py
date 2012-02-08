@@ -63,7 +63,7 @@ if __name__ == "__main__":
         #Run dcm2nii in order to do the conversion:
         if os.path.exists(this_dir + 'nii.gz') == False:
             print os.path.realpath(os.path.curdir)
-            os.system('dcm2nii -f *.dcm this_dir')
+            os.system('dcm2nii -f *.dcm* this_dir')
         #Change the name of the new nii.gz file to match the directory name: 
         try:
             os.system('mv *.nii.gz ' + this_dir + '.nii.gz')

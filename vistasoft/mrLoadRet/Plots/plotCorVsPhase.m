@@ -6,6 +6,10 @@ function vw=plotCorVsPhase(vw,format, drawROI, drawROIPoints)
 % pixels (in all slices) in the current ROI.
 %
 % format can be either 'polar' or 'cartesian'
+% 
+% drawROI: option to draw and save new ROI based on coherence threshold.
+%
+% drawROIPoints: option to draw ROI using selected points. GUI will pop up.
 %
 % drawROI: option to draw and save new ROI based on coherence threshold.
 %
@@ -56,6 +60,8 @@ phWindow = getPhWindow(vw);
 phIndices = phWindowIndices(ph,phWindow);
 coIndices = find(co > cothresh);
 bothIndices = intersect(phIndices,coIndices);
+
+subROICoords=ROIcoords(:,bothIndices);
 
 % Pull out co and ph for desired pixels
 subCo = co(bothIndices);
@@ -132,6 +138,7 @@ if drawROI,
 elseif drawROIPoints
     vw = roiCapturePointsFromPlot(vw, subX, subY, coIndices, ROIcoords);
 end
+
 
 % Save the data in gca('UserData')
 data.co = co;
