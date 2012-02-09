@@ -249,7 +249,7 @@ end
 
 %% save map
 mapSavePath = sprintf('%s%s_%s_%s_%s', mapFileBase, name, voxDescrip, satDescrip, datestr(now,'yyyymmdd'));
-histSavePath = sprintf('%s%s_%s_%s_%s', histFileBase, name, voxDescrip, satDescrip, datestr(now,'yyyymmdd'));
+histSavePath = sprintf('%s%s_%s_%s', histFileBase, name, voxDescrip, datestr(now,'yyyymmdd'));
 
 if saveAnalysis
     save(sprintf('mat_files/%s.mat', mapSavePath), 'brainMap')

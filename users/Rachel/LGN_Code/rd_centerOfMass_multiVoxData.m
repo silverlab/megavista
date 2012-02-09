@@ -1,7 +1,7 @@
 % rd_centerOfMass_multiVoxData.m
 
 %% Setup
-hemi = 2;
+hemi = 1;
 
 varThreshs = 0:.001:.01;
 prop = .5;
