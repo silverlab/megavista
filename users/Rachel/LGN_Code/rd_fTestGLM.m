@@ -1,7 +1,7 @@
 % rd_fTestGLM.m
 
 %% Setup
-hemi = 2;
+hemi = 1;
 roiName = 'ROI X01'; % 'sphere_4mm';
 
 hemoDelays = 0:3; % 0:3
