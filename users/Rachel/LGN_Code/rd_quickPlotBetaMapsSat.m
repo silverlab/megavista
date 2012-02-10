@@ -1,6 +1,6 @@
 % rd_quickPlotBetaMapsSat.m
 
-hemis = [1];
+hemis = [2];
 
 % Full ops:
 % voxSelectOptions = {'all', 'varExp'};
@@ -11,12 +11,11 @@ hemis = [1];
 % varThreshs = [.005 .01 .02 .05];
 
 % Selected ops:
-voxSelectOptions = {'all', 'varExp'};
-saturationOptions = {'full'};
+voxSelectOptions = {'all'};
+saturationOptions = {'varExp'};
 betaSettings = {[.5 -.5], 'betaM-P'; ...
                 [1 0], 'betaM'; ...
                 [0 1], 'betaP'};
-varThreshs = [.005 .01];
 
 saveFigs = 1;
 
