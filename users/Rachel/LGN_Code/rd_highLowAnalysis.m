@@ -1,7 +1,7 @@
 % rd_highLowAnalysis
 
 %% Setup
-hemi = 1;
+hemi = 2;
 
 saveFigs = 1;
 
@@ -26,8 +26,8 @@ f2 = figure;
 
 f3 = figure;
 condPairs = [1 3; 2 4; 1 2; 3 4];
-xlims = [-2 2];
-ylims = [-2 2];
+xlims = [-2.5 2.5];
+ylims = [-2.5 2.5];
 for iPair = 1:size(condPairs,1)
     subplot(2,2,iPair)
     hold on
