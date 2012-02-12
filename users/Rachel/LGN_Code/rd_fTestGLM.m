@@ -102,6 +102,8 @@ ylabel('f statistic')
 title(figTitle)
 legend(delayNames)
 
+% check f-stats (std? var?), make f-test scatter plots (m vs p)
+
 if saveFigs
     print(gcf, '-dtiff', fBlockFigSavePath)
 end
