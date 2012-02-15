@@ -2,7 +2,7 @@
 
 %% Setup
 hemi = 1;
-roiName = 'ROI X01'; % 'sphere_4mm';
+roiName = 'ROIX01'; % 'sphere_4mm';
 
 hemoDelays = 0:3; % 0:3
 nDelays = length(hemoDelays);
