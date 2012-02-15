@@ -1,4 +1,4 @@
-function fStat = ftester(tSeries, blockOrder, hemoDelay, blockTypes, plotFigs, figTitle)
+function fStat = rd_fTester(tSeries, blockOrder, hemoDelay, blockTypes, plotFigs, figTitle)
 %
 % function fStat = ftester(tSeries, blockOrder, hemoDelay, blockTypes, plotFigs, figTitle)
 %
@@ -69,19 +69,20 @@ end
 for iVox = 1:nVox
     voxVals = squeeze(blockVals(:,iVox,:));
     [p table] = anova1(voxVals',[],'off'); % display off
-    fStats(iVox) = table{2,5};
+    anovaFStats(iVox) = table{2,5};
 end
 
 %% Calculate mean and variance of each condition across reps
 blockMean = nanmean(blockVals,3);
 blockVar = nanvar(blockVals,0,3); 
+overallMean = nansum(nansum(blockVals,3),1)/sum(nBlockReps);
 
 %% Calculate F statistic
 % varOfMeans = var(blockMean,0,1); % for each voxel, variance of within-condition means, across conditions
 % meanOfVars = mean(blockVar,1); % for each voxel, mean of within-condition variance, across conditions
 
 dfBetween = nBlockTypes-1;
-SEBetween = (blockMean-repmat(mean(blockMean),nBlockTypes,1)).^2;
+SEBetween = (blockMean-repmat(overallMean,nBlockTypes,1)).^2;
 scaledSEBetween = SEBetween.*repmat(nBlockReps',1,nVox);
 SSEBetween = sum(scaledSEBetween)./dfBetween;
 
