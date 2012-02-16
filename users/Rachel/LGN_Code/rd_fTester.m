@@ -1,6 +1,6 @@
 function fStat = rd_fTester(tSeries, blockOrder, hemoDelay, blockTypes, plotFigs, figTitle)
 %
-% function fStat = ftester(tSeries, blockOrder, hemoDelay, blockTypes, plotFigs, figTitle)
+% function fStat = rd_fTester(tSeries, blockOrder, hemoDelay, blockTypes, plotFigs, figTitle)
 %
 % tSeries is [nTRs x nVoxels]
 % blockOrder is [1 x nBlocks] and gives the condition order, where each

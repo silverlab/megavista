@@ -7,6 +7,8 @@ roiName = 'ROIX01'; % 'sphere_4mm';
 hemoDelays = 0:3; % 0:3
 nDelays = length(hemoDelays);
 
+threshProp = .1; 
+
 saveFigs = 1;
 
 package = 'mrVista'; % 'SPM', 'mrVista'
@@ -57,11 +59,15 @@ stimCondNames = condNames(stimConds);
 for iDelay = 1:nDelays
     hemoDelay = hemoDelays(iDelay);
     
-    fBlock = rd_fTestBlockGLM(tSeries, blockOrder, hemoDelay, [], figTitle);
+%     fBlock = rd_fTestBlockGLM(tSeries, blockOrder, hemoDelay, [], figTitle);
+    fBlock(:,iDelay) = rd_fTester(tSeries, blockOrder, hemoDelay, [], 1, figTitle);
+end
 
-    fBlockMean(iDelay) = mean(fBlock);
-    fBlockMax(iDelay) = max(fBlock);
+fBlockMean = mean(fBlock); % [1 x delay]
+fBlockMax = max(fBlock);
 
+% print results
+for iDelay = 1:nDelays
     fprintf('\nhemoDelay = %d:\n', hemoDelay)
     disp([fBlockMean(iDelay); fBlockMax(iDelay)])
 end
@@ -70,7 +76,7 @@ end
 figure
 bar(hemoDelays,fBlockMean)
 xlabel('delay (TRs)')
-ylabel('f statistic')
+ylabel('F statistic')
 title(figTitle)
 
 %% Calculate f stats for each stim condition compared to blank
@@ -80,31 +86,63 @@ for iDelay = 1:nDelays
     for iCond = 1:length(stimCondNames) % compare each stim cond to blank cond
         condName = stimCondNames{iCond};
         blockTypes = [stimConds(iCond) blankCond];
-        temp = rd_fTestBlockGLM(tSeries, blockOrder, ...
-            hemoDelay, blockTypes, [figTitle ', ' condName]);
-        fBlockByCond(:,iCond) = temp;
+%         temp = rd_fTestBlockGLM(tSeries, blockOrder, ...
+%             hemoDelay, blockTypes, [figTitle ', ' condName]);
+        temp = rd_fTester(tSeries, blockOrder, ...
+            hemoDelay, blockTypes, 1, [figTitle ', ' condName]);
+        fBlockByCond(:,iCond,iDelay) = temp;
     end
-
-    fBlockByCondMean(iDelay, :) = mean(fBlockByCond,1);
-    fBlockByCondMax(iDelay, :) = max(fBlockByCond,[],1);
 end
+
+fBlockByCondMean = squeeze(mean(fBlockByCond,1))'; % [delay x cond]
+fBlockByCondMax = squeeze(max(fBlockByCond,[],1))';
+
+% Look at top voxels
+threshIdx = round(size(fBlockByCond,1)*threshProp);
+fBlockByCondS = sort(fBlockByCond,1,'descend'); % sorts each column independently
+fBlockByCondThreshed = fBlockByCondS(1:threshIdx,:,:);
+fBlockByCondThreshedMean = squeeze(mean(fBlockByCondThreshed,1))'; % [delay x cond]
+fBlockByCondThreshedStd = squeeze(std(fBlockByCondThreshed,1))';
 
 %% Plot mean condition fs by hemoDelay
 for iDelay = 1:nDelays
     delayNames{iDelay} = sprintf('%d TR delay',hemoDelays(iDelay));
 end
 
+% all voxels
 figure
 bar(fBlockByCondMean')
 set(gca,'XTickLabel',stimCondNames)
 xlabel('stim condition vs. blank')
-ylabel('f statistic')
+ylabel('F statistic')
 title(figTitle)
 legend(delayNames)
 
-% check f-stats (std? var?), make f-test scatter plots (m vs p)
+% top voxels
+figure
+bar(fBlockByCondThreshedMean')
+set(gca,'XTickLabel',stimCondNames)
+xlabel('stim condition vs. blank')
+ylabel('F statistic')
+title(sprintf('%s (N=%d)', figTitle, threshIdx))
+legend(delayNames)
+
+% make f-test scatter plots (m vs p)
+figure
+for iDelay = 1:nDelays
+    subplot(1,nDelays,iDelay)
+    plot(fBlockByCond(:,1,iDelay), fBlockByCond(:,2,iDelay),'k.')
+    if iDelay==1
+        xlabel(stimCondNames{1})
+        ylabel(stimCondNames{2})
+    end
+    title(delayNames{iDelay}) 
+    xlim([0 max(fBlockByCondMax(:,1))])
+    ylim([0 max(fBlockByCondMax(:,2))])
+    axis square
+end
 
 if saveFigs
-    print(gcf, '-dtiff', fBlockFigSavePath)
+    print(gcf, '-djpeg', fBlockFigSavePath)
 end
 
