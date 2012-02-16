@@ -8,7 +8,7 @@ function fStat = rd_fTester(tSeries, blockOrder, hemoDelay, blockTypes, plotFigs
 % hemoDelay is the delay between the start of the block and the start of
 %   the time series segment to be used for the F-test, in TRs
 % blockTypes is the conditions to include in the F-test (eg. [2 3]). If 
-%   empty, include all conditions. 
+%   empty, include all conditions. Optional - default is []. 
 % plotFigs is 1 if you want to plot an F-stat histogram, 0 if not.
 %   Optional - default is 1.
 % figTitle is the title for your F-stat histogram, if you plot one.
@@ -18,6 +18,9 @@ function fStat = rd_fTester(tSeries, blockOrder, hemoDelay, blockTypes, plotFigs
 % 13 Feb 2012
 
 %% Supply missing optional arguments
+if nargin < 4
+    blockTypes = [];
+end
 if nargin < 5
     plotFigs = 1;
 end
@@ -66,11 +69,11 @@ for iBlockType = 1:nBlockTypes;
 end
 
 %% ANOVA
-for iVox = 1:nVox
-    voxVals = squeeze(blockVals(:,iVox,:));
-    [p table] = anova1(voxVals',[],'off'); % display off
-    anovaFStats(iVox) = table{2,5};
-end
+% for iVox = 1:nVox
+%     voxVals = squeeze(blockVals(:,iVox,:));
+%     [p table] = anova1(voxVals',[],'off'); % display off
+%     anovaFStats(iVox) = table{2,5};
+% end
 
 %% Calculate mean and variance of each condition across reps
 blockMean = nanmean(blockVals,3);
@@ -83,8 +86,8 @@ overallMean = nansum(nansum(blockVals,3),1)/sum(nBlockReps);
 
 dfBetween = nBlockTypes-1;
 SEBetween = (blockMean-repmat(overallMean,nBlockTypes,1)).^2;
-scaledSEBetween = SEBetween.*repmat(nBlockReps',1,nVox);
-SSEBetween = sum(scaledSEBetween)./dfBetween;
+weightedSEBetween = SEBetween.*repmat(nBlockReps',1,nVox);
+SSEBetween = sum(weightedSEBetween)./dfBetween;
 
 dfWithin = sum(nBlockReps) - nBlockTypes;
 SEWithin = blockVar.*repmat((nBlockReps-1)',1,nVox); % undo N-1 normalization applied by var
@@ -98,7 +101,7 @@ fStat = SSEBetween./SSEWithin;
 if plotFigs
     figure
     hist(fStat)
-    xlabel('f statistic')
+    xlabel('F statistic')
     ylabel('number of voxels')
     title(sprintf('%s, delay = %d', figTitle, hemoDelay))
 end
