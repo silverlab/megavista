@@ -13,9 +13,13 @@ saveFigs = 1;
 
 package = 'mrVista'; % 'SPM', 'mrVista'
 
-figFileBase = sprintf('lgnROI%dBars', hemi);
-fBlockFigSavePath = sprintf('figures/%s_fBlock%s', figFileBase, datestr(now,'yyyymmdd'));
+MCol = [220 20 60]./255; % red
+PCol = [0 0 205]./255; % medium blue
+colors = {MCol, PCol};
 
+figFileBase = sprintf('lgnROI%d', hemi);
+fPlotFigSavePath = sprintf('figures/%sPlot_fBlockMP%s', figFileBase, datestr(now,'yyyymmdd'));
+fScatterFigSavePath = sprintf('figures/%sScatter_fBlockMP%s', figFileBase, datestr(now,'yyyymmdd'));
 
 switch package
     case 'SPM'
@@ -48,7 +52,7 @@ switch package
 end
 
 %% A few more initializations
-figTitle = sprintf('%s, hemi %d', roiName, hemi);
+figTitle = sprintf('Hemi %d', hemi);
 nConditions = length(condNames);
 blankCond = find(strcmp(condNames,'blank'));
 stimConds = 1:nConditions;
@@ -96,9 +100,11 @@ end
 
 fBlockByCondMean = squeeze(mean(fBlockByCond,1))'; % [delay x cond]
 fBlockByCondMax = squeeze(max(fBlockByCond,[],1))';
+fBlockByCondStd = squeeze(std(fBlockByCond,1))';
 
 % Look at top voxels
-threshIdx = round(size(fBlockByCond,1)*threshProp);
+nVox = size(fBlockByCond,1);
+threshIdx = round(nVox*threshProp);
 fBlockByCondS = sort(fBlockByCond,1,'descend'); % sorts each column independently
 fBlockByCondThreshed = fBlockByCondS(1:threshIdx,:,:);
 fBlockByCondThreshedMean = squeeze(mean(fBlockByCondThreshed,1))'; % [delay x cond]
@@ -127,14 +133,33 @@ ylabel('F statistic')
 title(sprintf('%s (N=%d)', figTitle, threshIdx))
 legend(delayNames)
 
+% both
+f1 = figure;
+hold on
+p1 = errorbar(repmat(hemoDelays',1,2), fBlockByCondMean, fBlockByCondStd);
+p2 = errorbar(repmat(hemoDelays',1,2), fBlockByCondThreshedMean, fBlockByCondThreshedStd);
+set(p1(1), 'Color', colors{1}, ...
+    'DisplayName', sprintf('M all (N=%d)', nVox))
+set(p1(2), 'Color', colors{2}, ...
+    'DisplayName', sprintf('P all (N=%d)', nVox))
+set(p2(1), 'Color', colors{1}, 'LineWidth', 2, ...
+    'DisplayName', sprintf('M top (N=%d)', threshIdx))
+set(p2(2), 'Color', colors{2}, 'LineWidth', 2, ...
+    'DisplayName', sprintf('P top (N=%d)', threshIdx))
+set(gca,'XTick',hemoDelays)
+xlabel('delays')
+ylabel('F statistic')
+title(figTitle)
+legend show
+
 % make f-test scatter plots (m vs p)
-figure
+f2 = figure('Position',[0 0 900 250]);
 for iDelay = 1:nDelays
     subplot(1,nDelays,iDelay)
     plot(fBlockByCond(:,1,iDelay), fBlockByCond(:,2,iDelay),'k.')
     if iDelay==1
-        xlabel(stimCondNames{1})
-        ylabel(stimCondNames{2})
+        xlabel([stimCondNames{1} ' F stat'])
+        ylabel([stimCondNames{2} ' F stat'])
     end
     title(delayNames{iDelay}) 
     xlim([0 max(fBlockByCondMax(:,1))])
@@ -143,6 +168,7 @@ for iDelay = 1:nDelays
 end
 
 if saveFigs
-    print(gcf, '-djpeg', fBlockFigSavePath)
+    print(f1, '-djpeg', fPlotFigSavePath)
+    print(f2, '-djpeg', fScatterFigSavePath)
 end
 
