@@ -1,14 +1,15 @@
 % rd_fTestGLM.m
 
 %% Setup
-hemi = 1;
-roiName = 'ROIX01'; % 'sphere_4mm';
+hemi = 2;
+% roiName = 'ROIX01'; % 'sphere_4mm';
 
 hemoDelays = 0:3; % 0:3
 nDelays = length(hemoDelays);
 
 threshProp = .1; 
 
+saveAnalysis = 1;
 saveFigs = 1;
 
 package = 'mrVista'; % 'SPM', 'mrVista'
@@ -17,9 +18,10 @@ MCol = [220 20 60]./255; % red
 PCol = [0 0 205]./255; % medium blue
 colors = {MCol, PCol};
 
-figFileBase = sprintf('lgnROI%d', hemi);
-fPlotFigSavePath = sprintf('figures/%sPlot_fBlockMP%s', figFileBase, datestr(now,'yyyymmdd'));
-fScatterFigSavePath = sprintf('figures/%sScatter_fBlockMP%s', figFileBase, datestr(now,'yyyymmdd'));
+fileBase = sprintf('lgnROI%d', hemi);
+analysisSavePath = sprintf('%s_fTests_%s.mat', fileBase, datestr(now,'yyyymmdd'));
+fPlotFigSavePath = sprintf('figures/%sPlot_fBlockMP_%s', fileBase, datestr(now,'yyyymmdd'));
+fScatterFigSavePath = sprintf('figures/%sScatter_fBlockMP_%s', fileBase, datestr(now,'yyyymmdd'));
 
 switch package
     case 'SPM'
@@ -110,6 +112,24 @@ fBlockByCondThreshed = fBlockByCondS(1:threshIdx,:,:);
 fBlockByCondThreshedMean = squeeze(mean(fBlockByCondThreshed,1))'; % [delay x cond]
 fBlockByCondThreshedStd = squeeze(std(fBlockByCondThreshed,1))';
 
+%% Save data
+F.overall = fBlock;
+F.overallMean = fBlockMean;
+F.overallMax = fBlockMax;
+F.cond = fBlockByCond;
+F.condMean = fBlockByCondMean;
+F.condMax = fBlockByCondMax;
+F.condStd = fBlockByCondStd;
+F.threshIdx = threshIdx;
+F.condSorted = fBlockByCondS;
+F.condThreshed = fBlockByCondThreshed;
+F.condThreshedMean = fBlockByCondThreshedMean;
+F.condThreshedStd = fBlockByCondThreshedStd;
+
+if saveAnalysis
+    save(analysisSavePath,'F','hemi','hemoDelays','threshProp')
+end
+
 %% Plot mean condition fs by hemoDelay
 for iDelay = 1:nDelays
     delayNames{iDelay} = sprintf('%d TR delay',hemoDelays(iDelay));
@@ -160,6 +180,8 @@ for iDelay = 1:nDelays
     if iDelay==1
         xlabel([stimCondNames{1} ' F stat'])
         ylabel([stimCondNames{2} ' F stat'])
+    elseif iDelay==nDelays
+        xlabel(sprintf('Hemi %d', hemi))
     end
     title(delayNames{iDelay}) 
     xlim([0 max(fBlockByCondMax(:,1))])
@@ -171,4 +193,5 @@ if saveFigs
     print(f1, '-djpeg', fPlotFigSavePath)
     print(f2, '-djpeg', fScatterFigSavePath)
 end
+
 
