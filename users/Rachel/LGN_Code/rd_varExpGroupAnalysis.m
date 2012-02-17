@@ -7,12 +7,12 @@ subjectDirs3T = {'AV_20111117_session', 'AV_20111117_n', 'ROIX01';
                 'CG_20120130_session', 'CG_20120130_n_HIGH', 'ROIX01';
                 'RD_20120205_session', 'RD_20120205_n', 'ROIX01'};
             
-subjectDirs7T = {'KS_20111212_session', 'KS_20111212_15mm', 'ROIX01';
-                'AV_20111213_session', 'AV_20111213', 'ROIX01';
-                'KS_20111214_session', 'KS_20111214', 'ROIX01';
-                'RD_20111214_session', 'RD_20111214', 'ROIX01'};
+subjectDirs7T = {'KS_20111212_Session', 'KS_20111212_15mm', 'ROIX01';
+                'AV_20111213_Session', 'AV_20111213', 'ROIX01';
+                'KS_20111214_Session', 'KS_20111214', 'ROIX01';
+                'RD_20111214_Session', 'RD_20111214', 'ROIX01'};
             
-scanner = '3T';
+scanner = '7T';
 
 hemis = [1 2];
 
@@ -27,6 +27,10 @@ end
 
 subjects = 1:size(subjectDirs,1);
 nSubjects = numel(subjects);
+
+for iSubject = 1:nSubjects
+    subjectIDs{iSubject} = subjectDirs{iSubject,2};
+end
             
 %% get data from each subject
 for iSubject = 1:nSubjects
@@ -60,5 +64,14 @@ end
 %% plot figs
 if plotFigs
     figure
-    barweb(varExpMean, varExpStd./sqrt(nVox));
+    h = barweb(varExpMean, varExpStd./sqrt(nVox), [], subjectIDs, ...
+        scanner,[],'prop. variance explained', [.3 .3 .3; .7 .7 .7], [], {'Hemi 1','Hemi 2'});
+
+    set(h.legend,'location','NorthWest')
 end
+
+save(sprintf('/Volumes/Plata1/LGN/Group_Analyses/groupVarExp_%s_N%d_%s.mat',...
+    scanner, nSubjects, datestr(now,'YYYYMMDD')), ...
+    'varExpMean', 'varExpStd', 'nVox', 'scanner', ...
+    'subjectDirs7T', 'subjects', 'hemis');
+
