@@ -1,5 +1,6 @@
 % rd_varExpGroupAnalysis.m
 
+%% setup
 subjectDirs3T = {'AV_20111117_session', 'AV_20111117_n', 'ROIX01';
                 'AV_20111128_session', 'AV_20111128_n', 'ROIX01/Runs1-9';
                 'CG_20120130_session', 'CG_20120130_n_LOW', 'ROIX01';
@@ -13,10 +14,9 @@ subjectDirs7T = {'KS_20111212_session', 'KS_20111212_15mm', 'ROIX01';
             
 scanner = '3T';
 
-subjects = 1:size(subjectDirs,1);
-nSubjects = numel(subjects);
-
 hemis = [1 2];
+
+plotFigs = 1;
 
 switch scanner
     case '3T'
@@ -24,8 +24,11 @@ switch scanner
     case '7T'
         subjectDirs = subjectDirs7T;
 end
+
+subjects = 1:size(subjectDirs,1);
+nSubjects = numel(subjects);
             
-% get data from each subject
+%% get data from each subject
 for iSubject = 1:nSubjects
     subject = subjects(iSubject);
     
@@ -37,12 +40,13 @@ for iSubject = 1:nSubjects
         subjectDir{3} = subjectDirs{subject,3};
         
         fileDirectory = sprintf('/Volumes/Plata1/LGN/Scans/%s/%s/%s/ROIAnalysis/%s',...
-            scanner, subjectDir{1}, subjectDir{2}, subjectDir{3})
+            scanner, subjectDir{1}, subjectDir{2}, subjectDir{3});
         
         fileBase = sprintf('lgnROI%d', hemi);
         analysisExtension = 'multiVoxFigData';
         
-        data = load(sprintf('%s_%s', fileBase. analysisExtension));
+        data = load(sprintf('%s/%s_%s.mat', ...
+            fileDirectory, fileBase, analysisExtension));
         
         varExp = data.figData.glm.varianceExplained;
         
@@ -51,4 +55,10 @@ for iSubject = 1:nSubjects
         nVox(iSubject, iHemi) = numel(varExp);
         
     end
+end
+
+%% plot figs
+if plotFigs
+    figure
+    barweb(varExpMean, varExpStd./sqrt(nVox));
 end
