@@ -30,7 +30,7 @@ rd_tsdiffana(epis)
 
 % add session name to figure
 h1 = axes('Position', [0 0 1 1], 'Visible', 'off');
-text(0.5, 0.01, sprintf('%s First image:%s', f, epis{1}), 'HorizontalAlignment','center');
+text(0.5, 0.01, sprintf('%s  First image: %s', f, epis{1}), 'HorizontalAlignment','center');
 
 %save the output figure
 saveas(gcf,'tsdiffana_output.pdf')
@@ -38,6 +38,10 @@ saveas(gcf,'tsdiffana_output.pdf')
 % make mean image
 % spm_imcalc_ui('epi01_hemi_mcf.nii', 'myseries_mean.nii', 'mean(X)', {1;0;4;0})
 spm_imcalc_ui(epis, ['mean' epis{1}], 'mean(X)', {1;0;4;0})
+
+% make var image
+% spm_imcalc_ui(epis, ['var' epis{1}], 'var(X)', {1;0;4;0}) % identical to
+% tsdiffana's vmean
 
 % delete the epi niftis from the QualityControl directory
 !rm epi*.nii
