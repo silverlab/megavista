@@ -63,8 +63,8 @@ end
 
 % new version of mr vista way, but need to make general
 % we really need to load epi-dimensional inplanes
-niftiDir = dir('../../*_nifti');
-niftiFile = sprintf('../../%s/gems.nii.gz', niftiDir.name);
+niftiDir = dir('../../../*_nifti');
+niftiFile = sprintf('../../../%s/epi01_hemi_mcf_3D_nii/fepi01_hemi_mcf_001.nii', niftiDir.name);
 fprintf('\nReading nifti file: %s\n\n', niftiFile)
 
 inplaneScan = readFileNifti(niftiFile);
