@@ -19,6 +19,7 @@ function rd_plotTopographicData2SatFn(hemi, voxelSelectionOption, ...
 
 %% Setup
 cmapOption = 'default'; % ['default','thresh']
+colormapName = 'whitered';
 cScaleOption = 'scaleToData'; % ['scaleToData','chooseCRange']
 cValRange = [-.95 .95]; % if using chooseCRange
 saveAnalysis = 0;
@@ -113,6 +114,21 @@ end
 %% set up the color mapping
 cmap0 = colormap('jet');
 nCMappings = size(cmap0,1);
+
+switch colormapName
+    case 'whitered'
+        whitered = zeros(size(cmap0));
+        whitered(:,1) = 1;
+        whitered(:,2) = 1:-1/(size(cmap0,1)-1):0;
+        whitered(:,3) = 1:-1/(size(cmap0,1)-1):0;
+        cmap0 = whitered;
+    case 'whiteblue'
+        whiteblue = zeros(size(cmap0));
+        whiteblue(:,3) = 1;
+        whiteblue(:,1) = 1:-1/(size(cmap0,1)-1):0;
+        whiteblue(:,2) = 1:-1/(size(cmap0,1)-1):0;
+        cmap0 = whiteblue;
+end
 
 switch cScaleOption
     case 'scaleToData'
