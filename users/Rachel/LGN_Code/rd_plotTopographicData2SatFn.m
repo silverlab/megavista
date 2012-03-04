@@ -19,7 +19,7 @@ function rd_plotTopographicData2SatFn(hemi, voxelSelectionOption, ...
 
 %% Setup
 cmapOption = 'default'; % ['default','thresh']
-colormapName = 'whitered';
+colormapName = 'whitered'; % ['whitered','whiteblue', otherwise > 'jet']
 cScaleOption = 'scaleToData'; % ['scaleToData','chooseCRange']
 cValRange = [-.95 .95]; % if using chooseCRange
 saveAnalysis = 0;
@@ -272,6 +272,6 @@ if saveAnalysis
 end
 if saveFigs
     print(f1,'-djpeg',sprintf('figures/%s', mapSavePath));
-    print(f0,'-djpeg',sprintf('figures/%s', histSavePath));
+%     print(f0,'-djpeg',sprintf('figures/%s', histSavePath));
 end
 

@@ -1,19 +1,10 @@
 % rd_fStatGroupAnalysis.m
 
 %% setup
-subjectDirs3T = {'AV_20111117_session', 'AV_20111117_n', 'ROIX01';
-                'AV_20111128_session', 'AV_20111128_n', 'ROIX01/Runs1-9';
-                'CG_20120130_session', 'CG_20120130_n_LOW', 'ROIX01';
-                'CG_20120130_session', 'CG_20120130_n_HIGH', 'ROIX01';
-                'RD_20120205_session', 'RD_20120205_n', 'ROIX01'};
-            
-subjectDirs7T = {'KS_20111212_Session', 'KS_20111212_15mm', 'ROIX01';
-                'AV_20111213_Session', 'AV_20111213', 'ROIX01';
-                'KS_20111214_Session', 'KS_20111214', 'ROIX01';
-                'RD_20111214_Session', 'RD_20111214', 'ROIX01'};
+[subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
             
 scanner = '7T';
-
+analysisExtension = 'fTests_*';
 hemis = [1 2];
 
 plotFigs = 1;
@@ -44,21 +35,10 @@ for iSubject = 1:nSubjects
     for iHemi = 1:length(hemis)
         hemi = hemis(iHemi);
         
-        subjectDir{1} = subjectDirs{subject,1};
-        subjectDir{2} = subjectDirs{subject,2};
-        subjectDir{3} = subjectDirs{subject,3};
-        
-        fileDirectory = sprintf('/Volumes/Plata1/LGN/Scans/%s/%s/%s/ROIAnalysis/%s',...
-            scanner, subjectDir{1}, subjectDir{2}, subjectDir{3});
-        
-        fileBase = sprintf('lgnROI%d', hemi);
-        analysisExtension = 'fTests_*';
-        
-        dataDir = dir(sprintf('%s/%s_%s.mat', ...
-            fileDirectory, fileBase, analysisExtension));
-        fileName = dataDir.name;
-        
-        data = load(sprintf('%s/%s', fileDirectory, fileName));
+        filePath = rd_getAnalysisFilePath(subjectDirs, scanner, ...
+            subject, hemi, analysisExtension);
+
+        data = load(filePath);
         
         overallMean = data.F.overallMean;
         condMean = data.F.condMean;

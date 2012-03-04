@@ -1,7 +1,7 @@
 % rd_mrGLMReliability.m
 
 %% Setup
-hemi = 2;
+hemi = 1;
 
 nConds = 2;
 varThresh = .005;
@@ -34,6 +34,11 @@ bar(betasThreshed')
 xlabel('voxel number')
 title(sprintf('Hemi %d betas, varExp > 0.5%%', hemi))
 legend('M','P')
+
+% want M to be red, P to be blue
+y = get(gcf,'colormap');
+redbluemap = y([end 1],:);
+colormap(redbluemap);
 
 %% Save figs
 varPlotSavePath = sprintf('%s%s_%s_%s', fileBase, 'Hist', 'varExp', datestr(now,'yyyymmdd'));
