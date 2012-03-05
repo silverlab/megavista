@@ -6,7 +6,7 @@ hemi = 2;
 varThreshs = 0:.001:.05;
 prop = .5;
 voxelSelectionOption = 'varExp'; % all, varExp
-betaCoefs = [.5 -.5];
+betaCoefs = [0.5 -0.5];
 mapName = 'betaM-P';
 
 plotFigs = 1;
@@ -81,14 +81,14 @@ if plotFigs
     for iDim = 1:3
         subplot(4,1,iDim)
         hold on
-        plot(varThreshs, centers1(:,iDim),'r')
-        plot(varThreshs, centers2(:,iDim),'b')
+        plot(varThreshs, centers1(:,iDim),'r') % r
+        plot(varThreshs, centers2(:,iDim),'b') % b
 %         ylabel(sprintf('Dim %d', iDim))
         ylabel(dimLabels{iDim})
         
         if iDim==1
             title(sprintf('Hemi %d, %s', hemi, mapName))
-            legend('more M','more P','location','Best')
+            legend('more P','less P','location','Best')
         end
     end
     
