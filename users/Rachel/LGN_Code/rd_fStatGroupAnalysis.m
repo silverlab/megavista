@@ -23,10 +23,6 @@ end
 
 subjects = 1:size(subjectDirs,1);
 nSubjects = numel(subjects);
-
-for iSubject = 1:nSubjects
-    subjectIDs{iSubject} = subjectDirs{iSubject,2};
-end
             
 %% get data from each subject
 for iSubject = 1:nSubjects

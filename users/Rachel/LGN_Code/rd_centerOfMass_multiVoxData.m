@@ -3,20 +3,22 @@
 %% Setup
 hemi = 2;
 
-varThreshs = 0:.001:.01;
+varThreshs = 0:.001:.05;
 prop = .5;
 voxelSelectionOption = 'varExp'; % all, varExp
+betaCoefs = [.5 -.5];
+mapName = 'betaM-P';
 
 plotFigs = 1;
-% saveAnalysis = 0;
+saveAnalysis = 1;
 saveFigs = 1;
 
 %% File I/O
 fileBase = sprintf('lgnROI%d', hemi);
 analysisExtension = '_multiVoxFigData';
 loadPath = sprintf('%s%s.mat', fileBase, analysisExtension);
-
-plotFileBase = sprintf('lgnROI%dPlot_centerOfMass_prop%d_', hemi, round(prop*100));
+analysisSavePath = sprintf('%s_centerOfMass_%s_prop%d_%s.mat', fileBase, mapName, round(prop*100), datestr(now,'yyyymmdd'));
+plotSavePath = sprintf('%sPlot_centerOfMass_%s_prop%d_%s', fileBase, mapName, round(prop*100), datestr(now,'yyyymmdd'));
 
 %% Load data
 load(loadPath)
@@ -26,8 +28,7 @@ coords = figData.coordsInplane';
 nVox = size(coords,1);
 
 betas = squeeze(figData.glm.betas(1,1:2,:))';
-topoData = betas*[.5 -.5]';
-mapName = 'betaM-P';
+topoData = betas*betaCoefs';
 
 %% Calculate centers for several varThreshs
 for iVar = 1:length(varThreshs)
@@ -57,6 +58,22 @@ for iVar = 1:length(varThreshs)
     
 end
 
+%% Save data
+C.hemi = hemi;
+C.betaCoefs = betaCoefs;
+C.mapName = mapName;
+C.varThreshs = varThreshs;
+C.prop = prop;
+C.voxelSelectionOption = voxelSelectionOption;
+C.centers1 = centers1;
+C.centers2 = centers2;
+C.nSuperthreshVox = nSuperthreshVox;
+C.note = 'centers1 is from the higher-valued voxel group, centers2 from the lower-valued group';
+
+if saveAnalysis
+    save(analysisSavePath,'C')
+end
+
 %% Plot figs
 if plotFigs
     dimLabels = {'X','Y','Z'};
@@ -83,7 +100,7 @@ if plotFigs
 end
 
 %% Save figs
-plotSavePath = sprintf('%s%s', plotFileBase, datestr(now,'yyyymmdd'));
+% plotSavePath = sprintf('%s%s', plotFileBase, datestr(now,'yyyymmdd'));
 
 if saveFigs
     print(f,'-djpeg',sprintf('figures/%s', plotSavePath));
