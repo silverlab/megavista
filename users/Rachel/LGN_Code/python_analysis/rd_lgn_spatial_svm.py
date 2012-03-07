@@ -14,7 +14,7 @@ from sklearn import svm, datasets
 import scipy.io as sio
 
 # import lgn data
-data = sio.loadmat('lgnROI2_comGroupCoords_betaM-P_all_20120305.mat')
+data = sio.loadmat('lgnROI2_comVoxGroupCoords_betaM-P_all_20120305.mat')
 X = data['X']
 Y = data['Y']
 Y = np.squeeze(Y)

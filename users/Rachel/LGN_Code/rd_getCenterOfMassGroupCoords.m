@@ -9,16 +9,17 @@ voxelSelectionOption = 'varExp'; % all, varExp
 betaCoefs = [0.5 -0.5];
 mapName = 'betaM-P';
 
-plotFigs = 1;
 saveAnalysis = 1;
-saveFigs = 1;
+
+threshDescrip = sprintf('%0.03f', varThresh);
+voxDescrip = ['varThresh' threshDescrip(3:end)];
 
 %% File I/O
 fileBase = sprintf('lgnROI%d', hemi);
 analysisExtension = '_multiVoxFigData';
 loadPath = sprintf('%s%s.mat', fileBase, analysisExtension);
-analysisSavePath = sprintf('%s_centerOfMass_%s_prop%d_%s.mat', fileBase, mapName, round(prop*100), datestr(now,'yyyymmdd'));
-plotSavePath = sprintf('%sPlot_centerOfMass_%s_prop%d_%s', fileBase, mapName, round(prop*100), datestr(now,'yyyymmdd'));
+analysisSavePath = sprintf('%s_comVoxGroupCoords_%s_prop%d_%s_%s.mat', ...
+    fileBase, mapName, round(prop*100), voxDescrip, datestr(now,'yyyymmdd'));
 
 %% Load data
 load(loadPath)
