@@ -23,5 +23,5 @@ for iSubject = 1:nSubjects
     cd(fdir)
     
     % run script
-    rd_centerOfMass_multiVoxData
+    rd_getCenterOfMassGroupCoords
 end

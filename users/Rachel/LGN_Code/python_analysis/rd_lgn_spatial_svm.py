@@ -14,10 +14,16 @@ from sklearn import svm, datasets
 import scipy.io as sio
 
 # import lgn data
-data = sio.loadmat('lgnROI2_comVoxGroupCoords_betaM-P_all_20120305.mat')
-X = data['X']
-Y = data['Y']
+data = sio.loadmat('lgnROI2_comVoxGroupCoords_betaM-P_prop30_varThresh000_20120307.mat')
+X = data['voxCoords']
+Y = data['voxGroups']
 Y = np.squeeze(Y)
+
+colors = np.array([[220, 20, 60],[0, 0, 205]])
+colors = colors/255.0
+cols = np.zeros((np.size(Y),3))
+for c in np.arange(np.size(Y)):
+    cols[c,] = colors[Y[c]-1,]
 
 # we create an instance of SVM and fit out data. We do not scale our
 # data since we want to plot the support vectors
@@ -50,7 +56,7 @@ slice_dim is whether slices will be by y (coronal, slice_dime=1)
 """
 n_levels = 1
 slice_dim = 1
-pl.set_cmap(pl.cm.Paired)
+pl.set_cmap(pl.cm.RdBu)
 
 for i, clf in enumerate((lin_svc, rbf_svc, poly3_svc, poly2_svc)):
     # Plot the decision boundary. For that, we will asign a color to each
@@ -70,9 +76,8 @@ for i, clf in enumerate((lin_svc, rbf_svc, poly3_svc, poly2_svc)):
             in_slice = X[:,2]==slices[j]
  
             # Plot the contour and the training points
-            pl.set_cmap(pl.cm.Paired)
             pl.contourf(xx[:,:,j], yy[:,:,j], Z[:,:,j], n_levels)
-            pl.scatter(X[in_slice, 0], X[in_slice, 1], c=Y[in_slice])
+            pl.scatter(X[in_slice, 0], X[in_slice, 1], c=cols[in_slice,])
     
     elif slice_dim == 1:
         if i==0:
@@ -83,9 +88,8 @@ for i, clf in enumerate((lin_svc, rbf_svc, poly3_svc, poly2_svc)):
             in_slice = X[:,1]==slices[j]
 
             # Plot the contour and the training points
-            pl.set_cmap(pl.cm.Paired)
             pl.contourf(xx[:,j,:], zz[:,j,:], Z[:,j,:], n_levels)
-            pl.scatter(X[in_slice, 0], X[in_slice, 2], c=Y[in_slice]) 
+            pl.scatter(X[in_slice, 0], X[in_slice, 2], c=cols[in_slice,]) 
 
     pl.suptitle(titles[i])
     pl.show()

@@ -3,7 +3,7 @@
 %% Setup
 hemi = 2;
 
-varThresh = 0;
+varThresh = 0.005;
 prop = .5;
 voxelSelectionOption = 'varExp'; % all, varExp
 betaCoefs = [0.5 -0.5];
@@ -55,5 +55,13 @@ coords2 = coords(voxsInGroup(:,2),:);
 Y1 = ones(length(coords1),1);
 Y2 = ones(length(coords2),1)*2;
 
-X = [coords1; coords2];
-Y = [Y1; Y2];
+voxCoords = [coords1; coords2]; % X in svm script
+voxGroups = [Y1; Y2]; % Y in svm script
+
+%% Save analysis
+if saveAnalysis
+    save(analysisSavePath, 'betaCoefs','betas','hemi','mapName','prop',...
+        'topoData','varThresh','voxCoords','voxGroups','voxelSelectionOption')
+end
+
+
