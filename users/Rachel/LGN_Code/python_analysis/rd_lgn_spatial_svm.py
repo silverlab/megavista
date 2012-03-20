@@ -13,8 +13,16 @@ import pylab as pl
 from sklearn import svm, datasets
 import scipy.io as sio
 
+# file i/o
+scanner = '7T'
+subjectID = 'KS_20111214'
+hemi = 2
+data_dir = '/Volumes/Plata1/LGN/Scans/{0}/{1}_Session/{1}/ROIAnalysis/ROIX01'.format(scanner,subjectID)
+data_file = 'lgnROI{0}_comVoxGroupCoords_betaM-P_prop50_varThresh000_20120307.mat'.format(hemi)
+data_path = '{0}/{1}'.format(data_dir,data_file)
+
 # import lgn data
-data = sio.loadmat('lgnROI2_comVoxGroupCoords_betaM-P_prop30_varThresh000_20120307.mat')
+data = sio.loadmat(data_path)
 X = data['voxCoords']
 Y = data['voxGroups']
 Y = np.squeeze(Y)
