@@ -4,8 +4,8 @@
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
             
 scanner = '7T';
-mapName = 'betaM-P';
-prop = 0.5;
+mapName = 'betaP';
+prop = 0.8;
 analysisExtension = sprintf('centerOfMass_%s_prop%d_*', mapName, round(prop*100));
 hemis = [1 2];
 
@@ -110,15 +110,15 @@ if plotFigs
 %             plot(varThreshs, groupMean.centers1(:,iDim,hemi),'r')
 %             plot(varThreshs, groupMean.centers2(:,iDim,hemi),'b')
             p1 = shadedErrorBar(varThreshs, groupMean.centers1(:,iDim,hemi), ...
-                normSte.centers1(:,iDim,hemi),{'Color',colors{1}});
+                normSte.centers1(:,iDim,hemi),{'Color',colors{2}});
             p2 = shadedErrorBar(varThreshs, groupMean.centers2(:,iDim,hemi), ...
-                normSte.centers2(:,iDim,hemi),{'Color',colors{2}});
+                normSte.centers2(:,iDim,hemi),{'Color',[0 0 0]});
             ylabel(dimLabels{iDim})
             
             if iDim==1
-                title(sprintf('Hemi %d, %s', hemi, mapName))
+                title(sprintf('Hemi %d, %s, prop %.1f', hemi, mapName, prop))
 %                 legend('more M','more P','location','Best')
-                legend([p1.mainLine p2.mainLine],{'more M','more P'},...
+                legend([p1.mainLine p2.mainLine],{'more P','less P'},...
                     'location','Best')
             end
         end
