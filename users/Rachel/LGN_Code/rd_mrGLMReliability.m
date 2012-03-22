@@ -4,9 +4,9 @@
 hemi = 1;
 
 nConds = 2;
-varThresh = .005;
+varThresh = 0; % eg. 0.005
 
-saveFigs = 1;
+saveFigs = 0;
 
 %% File I/O
 fileBase = sprintf('lgnROI%d', hemi);
@@ -32,7 +32,11 @@ title(sprintf('Hemi %d', hemi))
 f2 = figure;
 bar(betasThreshed')
 xlabel('voxel number')
-title(sprintf('Hemi %d betas, varExp > 0.5%%', hemi))
+if varThresh == 0
+   title(sprintf('Hemi %d betas', hemi)) 
+else
+    title(sprintf('Hemi %d betas, varExp > %.1f%%', hemi, varThresh*100))
+end
 legend('M','P')
 
 % want M to be red, P to be blue

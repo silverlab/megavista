@@ -56,8 +56,8 @@ ylabel('beta P')
 title(sprintf('Hemi %d voxels, varThresh = %.03f, color = kmeans class', hemi, thresh))
 
 %% save figs
-fig1SavePath = sprintf('%sScatter_betaMvsP_varExp_%s_%s', fileBase, mapName, datestr(now,'yyyymmdd'));
-fig2SavePath = sprintf('%sScatter_betaMvsP_kmeans_%s', fileBase, datestr(now,'yyyymmdd'));
+fig1SavePath = sprintf('figures/%sScatter_betaMvsP_varExp_%s_%s', fileBase, mapName, datestr(now,'yyyymmdd'));
+fig2SavePath = sprintf('figures/%sScatter_betaMvsP_kmeans_%s', fileBase, datestr(now,'yyyymmdd'));
 
 if saveFigs
     print(f1,'-djpeg',sprintf(fig1SavePath));

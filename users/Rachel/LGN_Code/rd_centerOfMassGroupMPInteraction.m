@@ -6,8 +6,8 @@ PCol = [0 0 205]./255; % medium blue
 colors = {MCol, PCol};
 
 %% load data
-m = load('groupCenterOfMass_7T_N4_betaM_prop50_20120304');
-p = load('groupCenterOfMass_7T_N4_betaP_prop50_20120304');
+m = load('groupCenterOfMass_7T_N4_betaM_prop20_20120321');
+p = load('groupCenterOfMass_7T_N4_betaP_prop80_20120321');
 
 nSubjects = numel(m.subjects);
 varThreshs = m.groupMean.varThreshs(:,1);
@@ -55,6 +55,7 @@ for hemi = 1:2
 end
 rd_supertitle(sprintf('%s N=%d, %s, prop %.01f', ...
     m.scanner, nSubjects, m.mapName, m.prop))
+% rd_supertitle('7T N=4, betaM/betaP, prop 0.2/0.8')
 
 %% interaction bar plot
 f2 = figure;
