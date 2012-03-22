@@ -24,7 +24,5 @@ for iSubject = 1:nSubjects
     cd(fdir)
     
     % run script
-    hemi = 2;
-    rd_plotTopographicData2SatFn(hemi, 'all', ...
-        'full', [0 1], 'betaP', [], 1);
+    rd_mrGLMReliability
 end

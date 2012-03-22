@@ -1,12 +1,12 @@
 % rd_mrGLMReliability.m
 
 %% Setup
-hemi = 1;
+hemi = 2;
 
 nConds = 2;
-varThresh = 0; % eg. 0.005
+varThresh = 0.02; % eg. 0.005
 
-saveFigs = 0;
+saveFigs = 1;
 
 %% File I/O
 fileBase = sprintf('lgnROI%d', hemi);
