@@ -10,7 +10,7 @@ Modeled on plot_iris.py from scikits-learn
 
 import glob
 import numpy as np
-import pylab as pl
+import matplotlib.pylab as pl
 from sklearn import svm, datasets
 import scipy.io as sio
 
