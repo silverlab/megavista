@@ -8,18 +8,20 @@ Modeled on plot_iris.py from scikits-learn
 """
 # print __doc__
 
+import glob
 import numpy as np
 import pylab as pl
 from sklearn import svm, datasets
 import scipy.io as sio
 
 # file i/o
-scanner = '7T'
-subjectID = 'KS_20111214'
+#scanner = '7T'
+#subjectID = 'KS_20111214'
 hemi = 2
-data_dir = '/Volumes/Plata1/LGN/Scans/{0}/{1}_Session/{1}/ROIAnalysis/ROIX01'.format(scanner,subjectID)
-data_file = 'lgnROI{0}_comVoxGroupCoords_betaM-P_prop50_varThresh000_20120307.mat'.format(hemi)
-data_path = '{0}/{1}'.format(data_dir,data_file)
+#data_dir = '/Volumes/Plata1/LGN/Scans/{0}/{1}_Session/{1}/ROIAnalysis/ROIX01'.format(scanner,subjectID)
+data_file = 'lgnROI{0}_comVoxGroupCoords_betaM-P_prop50_varThresh000'.format(hemi)
+#data_path = glob.glob('{0}/{1}*'.format(data_dir,data_file))[0]
+data_path = glob.glob(data_file + '*')[0]
 
 # import lgn data
 data = sio.loadmat(data_path)
