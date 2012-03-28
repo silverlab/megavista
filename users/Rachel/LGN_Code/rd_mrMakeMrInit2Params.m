@@ -14,7 +14,7 @@ function params = rd_mrMakeMrInit2Params
 % Here we have the most common analysis settings that are specific to an
 % individual experiment
 subjectID = 'RD';
-description = 'RD_20120205 MPLocalizerColor_3T';
+description = 'RD_20120205 MPLocalizerColor_3T SPM-MC';
 comments = '';
 
 % Scan groups
