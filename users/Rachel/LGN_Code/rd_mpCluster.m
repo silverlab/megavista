@@ -38,7 +38,8 @@ title(sprintf('Hemi %d voxels, size = varExp, color = %s', hemi, mapName))
 colorbar
 
 %% k-means (all voxels)
-idx = kmeans(betas,2);
+nClusters = 3;
+idx = kmeans(betas,nClusters);
 
 f2 = figure;
 scatter(betas(:,1),betas(:,2),30,idx,'filled')
@@ -57,10 +58,10 @@ title(sprintf('Hemi %d voxels, varThresh = %.03f, color = kmeans class', hemi, t
 
 %% save figs
 fig1SavePath = sprintf('figures/%sScatter_betaMvsP_varExp_%s_%s', fileBase, mapName, datestr(now,'yyyymmdd'));
-fig2SavePath = sprintf('figures/%sScatter_betaMvsP_kmeans_%s', fileBase, datestr(now,'yyyymmdd'));
+fig2SavePath = sprintf('figures/%sScatter_betaMvsP_kmeans%d_%s', fileBase, nClusters, datestr(now,'yyyymmdd'));
 
 if saveFigs
-    print(f1,'-djpeg',sprintf(fig1SavePath));
+%     print(f1,'-djpeg',sprintf(fig1SavePath));
     print(f2,'-djpeg',sprintf(fig2SavePath));
 end
 

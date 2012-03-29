@@ -4,7 +4,7 @@
 hemi = 2;
 
 nConds = 2;
-varThresh = 0.02; % eg. 0.005
+varThresh = 0.005; % eg. 0.005
 
 saveFigs = 1;
 

@@ -10,7 +10,7 @@ switch scanner
         subjectDirs = subjectDirs7T;
 end
 
-% subjects = [1 2 4 5];
+% subjects = [1 2];
 subjects = 1:size(subjectDirs,1);
 nSubjects = numel(subjects);
 
@@ -24,5 +24,5 @@ for iSubject = 1:nSubjects
     cd(fdir)
     
     % run script
-    rd_mrGLMReliability
+    rd_mpCluster
 end
