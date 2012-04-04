@@ -3,13 +3,13 @@
 %% Setup
 hemi = 2;
 
-varThresh = 0.005;
+varThresh = 0;
 prop = .5;
 voxelSelectionOption = 'varExp'; % all, varExp
 betaCoefs = [0.5 -0.5];
 mapName = 'betaM-P';
 
-saveAnalysis = 1;
+saveAnalysis = 0;
 
 threshDescrip = sprintf('%0.03f', varThresh);
 voxDescrip = ['varThresh' threshDescrip(3:end)];
