@@ -2,12 +2,13 @@
 %
 % The co field of a parameter map is used for thresholding. This code saves
 % your map of choice into the co field of a parameter map.
+%                                                                     
 % 
 % N.B that when viewing parameter maps in the volume, each view is
 % auto-scaled separately, so it's a good idea to set the clip mode to
 % something fixed.
 
-origMapFile = 'Volume/GLMs/betas-M-P.mat';
+origMapFile = 'Volume/GLMs/BetaM-P.mat';
 threshFile = 'Volume/Averages/corAnal.mat';
 newMapFile = 'Volume/GLMs/BetaM-P.mat';
 
