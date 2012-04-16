@@ -1,4 +1,4 @@
-% rd_mrRunMultiVoxelUI.m
+function mvData = rd_mrRunMultiVoxelUI(view, dt, roi, scanSets)
 %
 % INPUTS:
 % view is view, eg. getCurView
@@ -11,22 +11,24 @@
 % see multiVoxelUI for more info.
 %
 % OUTPUTS:
-% tc is a structure of time course info for that ROI
+% mv is a structure of multi voxel info for that ROI
 %
 % Rachel Denison
 % 15 April 2012
 
-view = INPLANE{1};
-dt = 1;
-roi = 'ROI201';
-scanSets = {2,3,4,5,6,7,8,9};
+global dataTYPES
+
+% view = INPLANE{1};
+% dt = 1;
+% roi = 'ROI201';
+% scanSets = {2,3,4,5,6,7,8,9};
 % scanSets = {2};
 
 for iSS = 1:numel(scanSets)
     scans = scanSets{iSS};
     
     % mv figure window
-    mv0 = multiVoxelUI(view, roi , scans, dt);
+    mv0 = multiVoxelUI(view, roi, scans, dt);
     
     % run glm
     mv_selectPlotType(9); 

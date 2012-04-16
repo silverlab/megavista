@@ -1,6 +1,6 @@
 % rd_runIndivAnalysis.m
 
-scanner = '7T';
+scanner = '3T';
 
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
 switch scanner
@@ -10,7 +10,7 @@ switch scanner
         subjectDirs = subjectDirs7T;
 end
 
-% subjects = [1 2];
+% subjects = [2];
 subjects = 1:size(subjectDirs,1);
 nSubjects = numel(subjects);
 
@@ -24,5 +24,6 @@ for iSubject = 1:nSubjects
     cd(fdir)
     
     % run script
-    rd_mpCluster
+    cd ../.. % need to be in subject directory for rd_mrRunUI
+    rd_mrRunUI
 end

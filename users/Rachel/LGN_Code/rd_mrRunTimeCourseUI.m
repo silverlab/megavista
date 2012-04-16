@@ -1,4 +1,4 @@
-% rd_mrRunTimeCourseUI.m
+function tcData = rd_mrRunTimeCourseUI(view, dt, roi, scanSets)
 %
 % INPUTS:
 % view is view, eg. getCurView
@@ -18,14 +18,14 @@
 % Rachel Denison
 % 15 April 2012
 
-view = INPLANE{1};
-dt = 1;
-roi = 'ROI201';
-scanSets = {2,3,4,5,6,7,8,9};
+global dataTYPES
+
+% view = INPLANE{1};
+% dt = 1;
+% roi = 'ROI201';
+% scanSets = {2,3,4,5,6,7,8,9};
 % scanSets = {2};
 queryFlag = 1;
-
-
 
 for iSS = 1:numel(scanSets)
     scans = scanSets{iSS};
