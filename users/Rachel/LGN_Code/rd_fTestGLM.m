@@ -1,7 +1,7 @@
 % rd_fTestGLM.m
 
 %% Setup
-hemi = 1;
+hemi = 2;
 % roiName = 'ROIX01'; % 'sphere_4mm';
 
 hemoDelays = 0:3; % 0:3
@@ -9,7 +9,7 @@ nDelays = length(hemoDelays);
 
 threshProp = .1; 
 
-saveAnalysis = 1;
+saveAnalysis = 0;
 saveFigs = 0;
 
 package = 'mrVista'; % 'SPM', 'mrVista'

@@ -24,14 +24,15 @@ for iSubject = 1:nSubjects
     cd(fdir)
     
     % run script
-    cd ../.. % need to be in subject directory for rd_mrRunUI
-    rd_mrRunUI
+%     % timeCourse or multiVoxel UI
+%     cd ../.. % need to be in subject directory for rd_mrRunUI
+%     rd_mrRunUI
     
-%     % F-tests on indiv scans
-%     load lgnROI1_indivScanData_multiVoxel_20120415
-%     for iScan = 1:numel(uiData)
-%         iScan
-%         rd_fTestGLM
-%         close('all')
-%     end
+    % F-tests on indiv scans
+    load lgnROI1_indivScanData_multiVoxel_20120417
+    for iScan = 1:numel(uiData)
+        iScan
+        rd_fTestGLM
+        close('all')
+    end
 end
