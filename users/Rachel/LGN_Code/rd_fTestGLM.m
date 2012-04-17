@@ -1,7 +1,7 @@
 % rd_fTestGLM.m
 
 %% Setup
-hemi = 2;
+hemi = 1;
 % roiName = 'ROIX01'; % 'sphere_4mm';
 
 hemoDelays = 0:3; % 0:3
@@ -10,16 +10,23 @@ nDelays = length(hemoDelays);
 threshProp = .1; 
 
 saveAnalysis = 1;
-saveFigs = 1;
+saveFigs = 0;
 
 package = 'mrVista'; % 'SPM', 'mrVista'
+dataStorage = 'uiData'; % 'figData', 'uiData' (relevant to mrVista only)
+% iScan = 1; % scan index for uiData
 
 MCol = [220 20 60]./255; % red
 PCol = [0 0 205]./255; % medium blue
 colors = {MCol, PCol};
 
 fileBase = sprintf('lgnROI%d', hemi);
-analysisSavePath = sprintf('%s_fTests_%s.mat', fileBase, datestr(now,'yyyymmdd'));
+if strcmp(package,'mrVista') && strcmp(dataStorage,'uiData')
+    analysisSavePath = sprintf('%s_fTests_run%02d_%s.mat', ...
+        fileBase, iScan, datestr(now,'yyyymmdd'));
+else
+    analysisSavePath = sprintf('%s_fTests_%s.mat', fileBase, datestr(now,'yyyymmdd'));
+end
 fPlotFigSavePath = sprintf('figures/%sPlot_fBlockMP_%s', fileBase, datestr(now,'yyyymmdd'));
 fScatterFigSavePath = sprintf('figures/%sScatter_fBlockMP_%s', fileBase, datestr(now,'yyyymmdd'));
 
@@ -40,12 +47,26 @@ switch package
 
     case 'mrVista'
         blocksPerRun = 15;
-        multiVoxFile = sprintf('lgnROI%d_multiVoxFigData.mat', hemi);
-        dataDesign = load(multiVoxFile);
         
-        condNames = dataDesign.figData.trials.condNames;
-        tSeries = dataDesign.figData.tSeries;
-        blockOrder = dataDesign.figData.trials.cond;
+        switch dataStorage
+            case 'figData'
+                multiVoxFile = sprintf('lgnROI%d_multiVoxFigData.mat', hemi);
+                dataDesign = load(multiVoxFile);
+                figData = dataDesign.figData;
+            case 'uiData'
+                multiVoxFiles = dir(sprintf('lgnROI%d_indivScanData_multiVoxel*', hemi));
+                if numel(multiVoxFiles)~=1
+                    error('Too many or too few data files found.')
+                end
+                dataDesign = load(multiVoxFiles.name);
+                figData = dataDesign.uiData(iScan).mv;
+            otherwise
+                error('dataStorage not recognized.')
+        end
+        
+        condNames = figData.trials.condNames;
+        tSeries = figData.tSeries;
+        blockOrder = figData.trials.cond;
         blockOrder(blocksPerRun+1:blocksPerRun+1:end) = []; % mrVista adds an 'end of run' label for the last TR of the run
         blockOrder = blockOrder + 1; % mrVista also uses zero indexing for condition numbers
     
@@ -60,8 +81,10 @@ blankCond = find(strcmp(condNames,'blank'));
 stimConds = 1:nConditions;
 stimConds(blankCond) = [];
 stimCondNames = condNames(stimConds);
+nVox = size(tSeries,2);
 
 %% Calculate f stats across all conditions
+fBlock = nan(nVox,nDelays);
 for iDelay = 1:nDelays
     hemoDelay = hemoDelays(iDelay);
     
@@ -86,6 +109,7 @@ ylabel('F statistic')
 title(figTitle)
 
 %% Calculate f stats for each stim condition compared to blank
+fBlockByCond = nan(nVox,length(stimCondNames),nDelays);
 for iDelay = 1:nDelays
     hemoDelay = hemoDelays(iDelay);
     
@@ -131,6 +155,7 @@ if saveAnalysis
 end
 
 %% Plot mean condition fs by hemoDelay
+delayNames = cell(1,nDelays);
 for iDelay = 1:nDelays
     delayNames{iDelay} = sprintf('%d TR delay',hemoDelays(iDelay));
 end
