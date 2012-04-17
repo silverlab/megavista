@@ -25,7 +25,10 @@ global dataTYPES
 % scanSets = {2};
 
 for iSS = 1:numel(scanSets)
+    % set scans and view
     scans = scanSets{iSS};
+    view = viewSet(view, 'curScan', scans(1));
+    view = refreshScreen(view);
     
     % mv figure window
     mv0 = multiVoxelUI(view, roi, scans, dt);

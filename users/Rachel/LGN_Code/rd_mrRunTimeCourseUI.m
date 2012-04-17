@@ -28,7 +28,12 @@ global dataTYPES
 queryFlag = 1;
 
 for iSS = 1:numel(scanSets)
+    % set scans and view
     scans = scanSets{iSS};
+    view = viewSet(view, 'curScan', scans(1));
+    view = refreshScreen(view);
+    
+    % run time course ui
     tc0 = timeCourseUI(view, roi, scans, dt, queryFlag);
     tc = tc_visualizeGlm(tc0);
     

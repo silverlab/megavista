@@ -1,7 +1,7 @@
 % rd_mrRunUI.m
 
 %% File I/O
-hemi = 1;
+hemi = 2;
 saveData = 1;
 fileBase = sprintf('ROIAnalysis/ROIX01/lgnROI%d_indivScanData', hemi);
 roiName = sprintf('ROI%d01', hemi);
