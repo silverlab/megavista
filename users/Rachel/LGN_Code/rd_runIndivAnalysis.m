@@ -10,7 +10,7 @@ switch scanner
         subjectDirs = subjectDirs7T;
 end
 
-% subjects = [1];
+% subjects = [2];
 subjects = 1:size(subjectDirs,1);
 nSubjects = numel(subjects);
 
@@ -28,11 +28,18 @@ for iSubject = 1:nSubjects
 %     cd ../.. % need to be in subject directory for rd_mrRunUI
 %     rd_mrRunUI
     
-    % F-tests on indiv scans
-    load lgnROI1_indivScanData_multiVoxel_20120417
-    for iScan = 1:numel(uiData)
-        iScan
-        rd_fTestGLM
-        close('all')
-    end
+%     % F-tests on indiv scans
+%     load lgnROI1_indivScanData_multiVoxel_20120417
+%     for iScan = 1:numel(uiData)
+%         iScan
+%         rd_fTestGLM
+%         close('all')
+%     end
+
+    % plot behavioral results
+    cd ../../Behavior
+    behavFile = dir('*behavData.mat');
+    load(behavFile.name)
+    rd_mpLocalizerBehavAcc(behavData);
+    
 end
