@@ -10,8 +10,8 @@ switch scanner
         subjectDirs = subjectDirs7T;
 end
 
-% subjects = [2];
-subjects = 1:size(subjectDirs,1);
+subjects = [3]; % 3T: deal with 2 (AV2), 3 & 4 (CGh/l); 7T: deal with 1 (KS1) and 4 (RD) 
+% subjects = 1:size(subjectDirs,1);
 nSubjects = numel(subjects);
 
 % run specified individual analysis script in subject directory
@@ -36,10 +36,13 @@ for iSubject = 1:nSubjects
 %         close('all')
 %     end
 
-    % plot behavioral results
-    cd ../../Behavior
-    behavFile = dir('*behavData.mat');
-    load(behavFile.name)
-    rd_mpLocalizerBehavAcc(behavData);
+%     % plot behavioral results
+%     cd ../../Behavior
+%     behavFile = dir('*behavData.mat');
+%     load(behavFile.name)
+%     rd_mpLocalizerBehavAcc(behavData);
+
+    % plot behav/F/varExp comparisons
+    rd_compareIndivRunStats
     
 end

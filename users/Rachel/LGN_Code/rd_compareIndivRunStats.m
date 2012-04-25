@@ -1,0 +1,113 @@
+% rd_compareIndivRunStats
+%
+% compares run-by-run F, var exp, and behav data
+
+hemi = 2;
+
+%% file i/o
+fFiles = dir(sprintf('lgnROI%d_%s', hemi, 'fTests_run*'));
+varExpFile = dir(sprintf('lgnROI%d_%s', hemi, 'indivScanData_timeCourse*'));
+behavFile = '../../Behavior/behavAcc.mat';
+
+nRuns = numel(fFiles);
+
+%% get F data
+for iRun = 1:nRuns
+    load(fFiles(iRun).name)
+
+    fOverallMeans(:,:,iRun) = F.overallMean;
+    fCondMeans(:,:,iRun) = F.condMean;
+    fCondThreshedMeans(:,:,iRun) = F.condThreshedMean;
+end
+delays = hemoDelays;
+nDelays = numel(delays);
+
+%% get var exp data
+if numel(varExpFile) ~= 1
+    error('Too few or too many varExpFiles')
+end
+load(varExpFile(1).name)
+
+for iRun = 1:nRuns
+    varExp(iRun) = uiData(iRun).tc.glm.varianceExplained;
+end
+
+%% get behav data
+load(behavFile)
+overallAcc = acc.overallAcc;
+condAcc = acc.condAcc(:,1:2);
+
+%% plot comparisons
+msize = 20;
+
+%% F overall mean (each delay) vs average behav performance 
+f(1) = figure('Position',[0 0 900 250]);
+for iDelay = 1:nDelays
+    subplot(1,nDelays,iDelay)
+    plot(overallAcc, squeeze(fOverallMeans(1,iDelay,:)), '.k', 'MarkerSize', msize)
+    title(sprintf('Delay = %d TR', delays(iDelay)))
+    if iDelay==1
+        xlabel('behav overall acc')
+        ylabel('overall F')
+    end
+    axis square
+end
+rd_supertitle(sprintf('Hemi %d', hemi))
+
+%% F cond mean (each delay) vs cond behav performance 
+f(2) = figure('Position',[0 0 900 250]);
+for iDelay = 1:nDelays
+    subplot(1,nDelays,iDelay)
+    hold on
+    plot(condAcc(:,1), squeeze(fCondMeans(iDelay,1,:)), '.r', 'MarkerSize', msize)
+    plot(condAcc(:,2), squeeze(fCondMeans(iDelay,2,:)), '.b', 'MarkerSize', msize)
+    title(sprintf('Delay = %d TR', delays(iDelay)))
+    if iDelay==1
+        xlabel('behav cond acc')
+        ylabel('cond F')
+        legend('M','P')
+    end
+    axis square
+end
+rd_supertitle(sprintf('Hemi %d', hemi))
+
+%% F cond threshed mean (each delay) vs cond behav performance
+f(3) = figure('Position',[0 0 900 250]);
+for iDelay = 1:nDelays
+    subplot(1,nDelays,iDelay)
+    hold on
+    plot(condAcc(:,1), squeeze(fCondThreshedMeans(iDelay,1,:)), '.r', 'MarkerSize', msize)
+    plot(condAcc(:,2), squeeze(fCondThreshedMeans(iDelay,2,:)), '.b', 'MarkerSize', msize)
+    title(sprintf('Delay = %d TR', delays(iDelay)))
+    if iDelay==1
+        xlabel('behav cond acc')
+        ylabel(sprintf('cond threshed F, prop = %.02f', threshProp))
+        legend('M','P','Location','best')
+    end
+    axis square
+end
+rd_supertitle(sprintf('Hemi %d', hemi))
+
+%% F overall mean (each delay) vs var exp
+f(4) = figure('Position',[0 0 900 250]);
+for iDelay = 1:nDelays
+    subplot(1,nDelays,iDelay)
+    plot(varExp, squeeze(fOverallMeans(1,iDelay,:)), '.k', 'MarkerSize', msize)
+    title(sprintf('Delay = %d TR', delays(iDelay)))
+    if iDelay==1
+        xlabel('variance explained')
+        ylabel('overall F')
+    end
+    axis square
+end
+rd_supertitle(sprintf('Hemi %d', hemi))
+
+%% Var exp vs average behav performance
+f(5) = figure;
+plot(overallAcc, varExp, '.k', 'MarkerSize', msize)
+xlabel('behav overall acc')
+ylabel('variance explained')
+title(sprintf('Hemi %d', hemi))
+axis square
+
+
