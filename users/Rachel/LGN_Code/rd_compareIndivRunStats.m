@@ -4,6 +4,9 @@
 
 hemi = 2;
 
+saveAnalysis = 1;
+saveFigs = 1;
+
 %% file i/o
 fFiles = dir(sprintf('lgnROI%d_%s', hemi, 'fTests_run*'));
 varExpFile = dir(sprintf('lgnROI%d_%s', hemi, 'indivScanData_timeCourse*'));
@@ -11,7 +14,11 @@ behavFile = '../../Behavior/behavAcc.mat';
 
 nRuns = numel(fFiles);
 
+analysisFile = sprintf('lgnROI%d_indivRunStats_%s', hemi, datestr(now,'yyyymmdd'));
+figFileBase = sprintf('figures/lgnROI%dScatter_indivRuns', hemi);
+
 %% get F data
+clear fOverallMeans fCondMeans fCondThreshedMeans
 for iRun = 1:nRuns
     load(fFiles(iRun).name)
 
@@ -28,6 +35,7 @@ if numel(varExpFile) ~= 1
 end
 load(varExpFile(1).name)
 
+clear varExp
 for iRun = 1:nRuns
     varExp(iRun) = uiData(iRun).tc.glm.varianceExplained;
 end
@@ -38,7 +46,7 @@ overallAcc = acc.overallAcc;
 condAcc = acc.condAcc(:,1:2);
 
 %% plot comparisons
-msize = 20;
+msize = 12;
 
 %% F overall mean (each delay) vs average behav performance 
 f(1) = figure('Position',[0 0 900 250]);
@@ -65,7 +73,7 @@ for iDelay = 1:nDelays
     if iDelay==1
         xlabel('behav cond acc')
         ylabel('cond F')
-        legend('M','P')
+        legend('M','P','Location','best')
     end
     axis square
 end
@@ -103,11 +111,30 @@ end
 rd_supertitle(sprintf('Hemi %d', hemi))
 
 %% Var exp vs average behav performance
-f(5) = figure;
+f(5) = figure('Position',[0 0 250 250]);
 plot(overallAcc, varExp, '.k', 'MarkerSize', msize)
 xlabel('behav overall acc')
 ylabel('variance explained')
 title(sprintf('Hemi %d', hemi))
 axis square
 
+%% Save analysis
+if saveAnalysis
+    save(analysisFile, 'overallAcc','condAcc','fOverallMeans','fCondMeans',...
+        'fCondThreshedMeans','varExp','delays');
+end
 
+%% Save figs
+if saveFigs
+    figNames = {'overallF_vs_meanBehavAcc',...
+        'condF_vs_condBehavAcc',...
+        'condThreshedF_vs_condBehavAcc',...
+        'overallF_vs_varExp',...
+        'varExp_vs_meanBehavAcc'};
+    figsToSave = 1:numel(figNames);
+    
+    for iF = figsToSave
+        figFile = sprintf('%s_%s_%s', figFileBase, figNames{iF}, datestr(now,'yyyymmdd'));
+        print(f(iF), '-djpeg', figFile)
+    end
+end
