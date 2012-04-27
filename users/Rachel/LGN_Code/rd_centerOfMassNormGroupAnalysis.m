@@ -137,6 +137,8 @@ if plotFigs
         hemi = hemis(iHemi);
         f1(iHemi) = figure;
         hold on
+        
+        % plot each subject with connecting lines
         plot([x1(:,iHemi) x2(:,iHemi)]',[z1(:,iHemi) z2(:,iHemi)]',...
             'Color', [.7 .7 .7], 'LineWidth', 2)
         for iC = 1:size(centersThresh0,1)
@@ -146,10 +148,16 @@ if plotFigs
                 'MarkerFaceColor', lightColors{iC}, ...
                 'LineWidth', 1)
             
+        end
+        
+        % plot mean/ste across subjects, with connecting line
+        plot(xMean(:,iHemi)',zMean(:,iHemi)','k', 'LineWidth', 1.2)
+        for iC = 1:size(centersThresh0,1)
             errorxy([xMean(iC,iHemi),zMean(iC,iHemi),...
                 xSte(iC,iHemi),zSte(iC,iHemi)],...
                 'ColX',1','ColY',2,'ColXe',3,'ColYe',4,...
-                'Marker','.','MarkSize',20,'EdgeColor',colors{iC});
+                'Marker','.','MarkSize',25,'EdgeColor',colors{iC},...
+                'WidthEB',1.2);
         end
         xlim([0 1])
         ylim([0 1])
