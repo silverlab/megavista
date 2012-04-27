@@ -1,6 +1,6 @@
 % rd_runIndivAnalysis.m
 
-scanner = '3T';
+scanner = '7T';
 
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
 switch scanner
@@ -42,7 +42,6 @@ for iSubject = 1:nSubjects
 %     load(behavFile.name)
 %     rd_mpLocalizerBehavAcc(behavData);
 
-    % plot behav/F/varExp comparisons
-    rd_compareIndivRunStats
+    rd_normalizeCenterOfMass
     
 end
