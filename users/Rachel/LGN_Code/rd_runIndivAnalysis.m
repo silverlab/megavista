@@ -1,6 +1,6 @@
 % rd_runIndivAnalysis.m
 
-scanner = '7T';
+scanner = '3T';
 
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
 switch scanner
@@ -10,8 +10,8 @@ switch scanner
         subjectDirs = subjectDirs7T;
 end
 
-% subjects = [2];
-subjects = 1:size(subjectDirs,1);
+subjects = [1 2 4 5];
+% subjects = 1:size(subjectDirs,1);
 nSubjects = numel(subjects);
 
 % run specified individual analysis script in subject directory

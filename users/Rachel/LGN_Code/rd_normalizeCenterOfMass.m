@@ -3,8 +3,8 @@
 %% setup
 hemi = 2;
 
-prop = .2;
-mapName = 'betaM-P';
+prop = .8;
+mapName = 'betaP';
 
 plotFigs = 1;
 saveAnalysis = 1;
@@ -13,10 +13,14 @@ saveFigs = 1;
 %% colors
 MCol = [220 20 60]./255; % red
 PCol = [0 0 205]./255; % medium blue
-colors = {MCol, PCol};
+nullCol = [0 0 0]; % black
+colors = {PCol, nullCol};
 for iCol = 1:numel(colors)
     hsvCol = rgb2hsv(colors{iCol});
     lightColors{iCol} = hsv2rgb([hsvCol(1) .1 1]);
+end
+if all(colors{2}==[0 0 0])
+    lightColors{2}=[.9 .9 .9];
 end
 
 %% file i/o
@@ -77,7 +81,7 @@ if plotFigs
     ylim([0 1])
     xlabel('L-R center (normalized)')
     ylabel('V-D center (normalized)')
-    title(sprintf('Hemi %d, size = number of voxels', hemi))
+    title(sprintf('Hemi %d, %s, prop %.1f\nsize = number of voxels', hemi, mapName, prop))
 end
 
 %% save figs

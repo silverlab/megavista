@@ -3,22 +3,26 @@
 %% setup
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
             
-scanner = '3T';
-mapName = 'betaM-P';
-prop = 0.2;
+scanner = '7T';
+mapName = 'betaP';
+prop = 0.8;
 analysisExtension = sprintf('centerOfMassNorm_%s_prop%d_*', mapName, round(prop*100));
 hemis = [1 2];
 
 plotFigs = 1;
-saveFigs = 0;
-saveAnalysis = 0;
+saveFigs = 1;
+saveAnalysis = 1;
 
 MCol = [220 20 60]./255; % red
 PCol = [0 0 205]./255; % medium blue
-colors = {MCol, PCol};
+nullCol = [0 0 0]; % black
+colors = {PCol, nullCol};
 for iCol = 1:numel(colors)
     hsvCol = rgb2hsv(colors{iCol});
     lightColors{iCol} = hsv2rgb([hsvCol(1) .3 1]);
+end
+if all(colors{2}==[0 0 0])
+    lightColors{2}=[.6 .6 .6];
 end
 
 switch scanner
@@ -28,8 +32,8 @@ switch scanner
         subjectDirs = subjectDirs7T;
 end
 
-% subjects = 1:size(subjectDirs,1);
-subjects = [1 2 4 5];
+subjects = 1:size(subjectDirs,1);
+% subjects = [1 2 4 5];
 nSubjects = numel(subjects);
 
 %% File I/O
@@ -98,6 +102,17 @@ zMean = [mean(z1,1); mean(z2,1)];
 % ste across subjects
 xSte = [std(x1,0,1)./sqrt(nSubjects); std(x2,0,1)./sqrt(nSubjects)];
 zSte = [std(z1,0,1)./sqrt(nSubjects); std(z2,0,1)./sqrt(nSubjects)];
+
+% store x and z coords
+XZ.x1 = x1;
+XZ.z1 = z1;
+XZ.x2 = x2;
+XZ.z2 = z2;
+XZ.xMean = xMean;
+XZ.zMean = zMean;
+XZ.xSte = xSte;
+XZ.zSte = zSte;
+XZ.xzMeanSteDims = {'1st dim = centers group','2nd dim = hemi'};
       
 %% PLOTS
 if plotFigs
@@ -176,6 +191,11 @@ if saveFigs
             fileBaseDir, fileBaseSubjects, iHemi, fileBaseTail);
         print(f0(iHemi),'-djpeg',sprintf(plotSavePath));
     end
+    for iHemi = 1:numel(f1)
+        scatterSavePath = sprintf('%s/figures/groupCenterOfMassNormXZ_%s_hemi%d_%s',...
+            fileBaseDir, fileBaseSubjects, iHemi, fileBaseTail);
+        print(f1(iHemi),'-djpeg',sprintf(scatterSavePath));
+    end
 end
 
 %% save analysis
@@ -183,6 +203,7 @@ if saveAnalysis
     save(sprintf('%s/groupCenterOfMassNorm_%s_%s.mat',...
         fileBaseDir, fileBaseSubjects, fileBaseTail), ...
         'groupData','groupMean','groupStd','groupSte',...
+        'centersThresh0','XZ',...
         'mapName','prop','scanner','subjectDirs','subjects','hemis');
 end
 
