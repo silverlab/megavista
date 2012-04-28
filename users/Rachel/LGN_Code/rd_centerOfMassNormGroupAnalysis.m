@@ -28,8 +28,10 @@ end
 switch scanner
     case '3T'
         subjectDirs = subjectDirs3T;
+        cVarThresh = .004; % for selecting the centers0 coordinate
     case '7T'
         subjectDirs = subjectDirs7T;
+        cVarThresh = .02;
 end
 
 subjects = 1:size(subjectDirs,1);
@@ -39,8 +41,9 @@ nSubjects = numel(subjects);
 %% File I/O
 fileBaseDir = '/Volumes/Plata1/LGN/Group_Analyses';
 fileBaseSubjects = sprintf('%s_N%d', scanner, nSubjects);
-fileBaseTail = sprintf('%s_prop%d_%s',...
-        mapName, round(prop*100), datestr(now,'yyyymmdd'));
+fileBaseTail = sprintf('%s_prop%d_centersThresh%03d_%s',...
+        mapName, round(prop*100), round(cVarThresh*1000),...
+        datestr(now,'yyyymmdd'));
             
 %% get data from each subject
 for iSubject = 1:nSubjects
@@ -81,9 +84,10 @@ for iFn = 1:numel(fn)
 end
 
 %% centers from all voxels (thresh=0) for all subjects and hemispheres 
+threshIdx = find(groupMean.varThreshs(:,1)==cVarThresh);
 for iHemi = 1:numel(hemis)
-    centersThresh0{1,iHemi} = squeeze(groupData.centers1(1,:,:,iHemi))'; % [subject x coord]
-    centersThresh0{2,iHemi} = squeeze(groupData.centers2(1,:,:,iHemi))';
+    centersThresh0{1,iHemi} = squeeze(groupData.centers1(threshIdx,:,:,iHemi))'; % [subject x coord]
+    centersThresh0{2,iHemi} = squeeze(groupData.centers2(threshIdx,:,:,iHemi))';
 end
 
 for iSubject = 1:nSubjects
@@ -162,7 +166,6 @@ if plotFigs
             set(p3(iHemi,iC), 'MarkerEdgeColor', lightColors{iC}, ...
                 'MarkerFaceColor', lightColors{iC}, ...
                 'LineWidth', 1)
-            
         end
         
         % plot mean/ste across subjects, with connecting line
@@ -178,7 +181,8 @@ if plotFigs
         ylim([0 1])
         xlabel('L-R center (normalized)')
         ylabel('V-D center (normalized)')
-        title(sprintf('Hemi %d, %s, prop %.1f', hemi, mapName, prop))
+        title(sprintf('Hemi %d, %s, prop %.1f at varThresh = %.3f', ...
+            hemi, mapName, prop, cVarThresh))
     end
 end
 
@@ -186,11 +190,11 @@ end
 
 %% save figs
 if saveFigs
-    for iHemi = 1:numel(f0)
-        plotSavePath = sprintf('%s/figures/groupCenterOfMassNorm_%s_hemi%d_%s',...
-            fileBaseDir, fileBaseSubjects, iHemi, fileBaseTail);
-        print(f0(iHemi),'-djpeg',sprintf(plotSavePath));
-    end
+%     for iHemi = 1:numel(f0)
+%         plotSavePath = sprintf('%s/figures/groupCenterOfMassNorm_%s_hemi%d_%s',...
+%             fileBaseDir, fileBaseSubjects, iHemi, fileBaseTail);
+%         print(f0(iHemi),'-djpeg',sprintf(plotSavePath));
+%     end
     for iHemi = 1:numel(f1)
         scatterSavePath = sprintf('%s/figures/groupCenterOfMassNormXZ_%s_hemi%d_%s',...
             fileBaseDir, fileBaseSubjects, iHemi, fileBaseTail);
@@ -203,7 +207,7 @@ if saveAnalysis
     save(sprintf('%s/groupCenterOfMassNorm_%s_%s.mat',...
         fileBaseDir, fileBaseSubjects, fileBaseTail), ...
         'groupData','groupMean','groupStd','groupSte',...
-        'centersThresh0','XZ',...
+        'centersThresh0','XZ','cVarThresh',...
         'mapName','prop','scanner','subjectDirs','subjects','hemis');
 end
 

@@ -10,23 +10,36 @@ analysisExtension = sprintf('centerOfMass_%s_prop%d_*', mapName, round(prop*100)
 hemis = [1 2];
 
 plotFigs = 1;
-saveFigs = 0;
+saveFigs = 1;
 saveAnalysis = 1;
 
 MCol = [220 20 60]./255; % red
 PCol = [0 0 205]./255; % medium blue
-colors = {MCol, PCol};
+nullCol = [0 0 0]; % black
+colors = {PCol, nullCol};
+for iCol = 1:numel(colors)
+    hsvCol = rgb2hsv(colors{iCol});
+    lightColors{iCol} = hsv2rgb([hsvCol(1) .3 1]);
+end
+if all(colors{2}==[0 0 0])
+    lightColors{2}=[.6 .6 .6];
+end
 
 switch scanner
     case '3T'
         subjectDirs = subjectDirs3T;
+        voxelSize = [1.75 1.75 1.5];
+        
     case '7T'
         subjectDirs = subjectDirs7T;
+        voxelSize = [1.5 1.5 1.5];
 end
 
 subjects = 1:size(subjectDirs,1);
 % subjects = [1 2 4 5];
 nSubjects = numel(subjects);
+
+mmMat = repmat(voxelSize,nSubjects,1);
 
 %% File I/O
 fileBaseDir = '/Volumes/Plata1/LGN/Group_Analyses';
@@ -97,6 +110,51 @@ for iFn = 1:numel(fn)
     normSte.(fn{iFn}) = normStd.(fn{iFn})./sqrt(nSubjects);
 end
 
+%% centers from all voxels (thresh=0) for all subjects and hemispheres 
+for iHemi = 1:numel(hemis)
+    centersThresh0Raw{1,iHemi} = squeeze(groupData.centers1(1,:,:,iHemi))'; % [subject x coord]
+    centersThresh0Raw{2,iHemi} = squeeze(groupData.centers2(1,:,:,iHemi))';
+    
+    meanCenters0{iHemi} = squeeze((groupData.centers1(1,:,:,iHemi) + groupData.centers2(1,:,:,iHemi))./2)';
+
+    for iC = 1:size(centersThresh0Raw,1)
+        centersThresh0N{iC,iHemi} = centersThresh0Raw{iC,iHemi} - meanCenters0{iHemi};
+        centersThresh0Nmm{iC,iHemi} = centersThresh0N{iC,iHemi}.*mmMat;
+    end
+end
+
+% use centers normalized by the mean coordinate of the two centers groups 
+% at thresh=0
+centersThresh0 = centersThresh0Nmm;
+
+for iSubject = 1:nSubjects
+    for iHemi = 1:numel(hemis)
+        x1(iSubject,iHemi) = centersThresh0{1,iHemi}(iSubject,1);
+        z1(iSubject,iHemi) = centersThresh0{1,iHemi}(iSubject,3);
+        x2(iSubject,iHemi) = centersThresh0{2,iHemi}(iSubject,1);
+        z2(iSubject,iHemi) = centersThresh0{2,iHemi}(iSubject,3);
+    end
+end
+
+% mean across subjects
+xMean = [mean(x1,1); mean(x2,1)]; % [centers group x hemi]
+zMean = [mean(z1,1); mean(z2,1)];
+
+% ste across subjects
+xSte = [std(x1,0,1)./sqrt(nSubjects); std(x2,0,1)./sqrt(nSubjects)];
+zSte = [std(z1,0,1)./sqrt(nSubjects); std(z2,0,1)./sqrt(nSubjects)];
+
+% store x and z coords
+XZ.x1 = x1;
+XZ.z1 = z1;
+XZ.x2 = x2;
+XZ.z2 = z2;
+XZ.xMean = xMean;
+XZ.zMean = zMean;
+XZ.xSte = xSte;
+XZ.zSte = zSte;
+XZ.xzMeanSteDims = {'1st dim = centers group','2nd dim = hemi'};
+
 %% PLOTS
 if plotFigs
     varThreshs = groupMean.varThreshs(:,hemi);
@@ -110,9 +168,9 @@ if plotFigs
 %             plot(varThreshs, groupMean.centers1(:,iDim,hemi),'r')
 %             plot(varThreshs, groupMean.centers2(:,iDim,hemi),'b')
             p1 = shadedErrorBar(varThreshs, groupMean.centers1(:,iDim,hemi), ...
-                normSte.centers1(:,iDim,hemi),{'Color',colors{2}});
+                normSte.centers1(:,iDim,hemi),{'Color',colors{1}});
             p2 = shadedErrorBar(varThreshs, groupMean.centers2(:,iDim,hemi), ...
-                normSte.centers2(:,iDim,hemi),{'Color',[0 0 0]});
+                normSte.centers2(:,iDim,hemi),{'Color',colors{2}});
             ylabel(dimLabels{iDim})
             
             if iDim==1
@@ -129,16 +187,54 @@ if plotFigs
         ylabel('num vox')
         xlabel('prop. variance explained threshold')
     end
+    
+    % XZ scatter plot
+    for iHemi = 1:numel(hemis)
+        hemi = hemis(iHemi);
+        f1(iHemi) = figure;
+        hold on
+        
+        % plot each subject with connecting lines
+        plot([x1(:,iHemi) x2(:,iHemi)]',[z1(:,iHemi) z2(:,iHemi)]',...
+            'Color', [.7 .7 .7], 'LineWidth', 2)
+        for iC = 1:size(centersThresh0,1)
+            p3(iHemi,iC) = scatter(centersThresh0{iC,iHemi}(:,1), ...
+                centersThresh0{iC,iHemi}(:,3), 100);
+            set(p3(iHemi,iC), 'MarkerEdgeColor', lightColors{iC}, ...
+                'MarkerFaceColor', lightColors{iC}, ...
+                'LineWidth', 1)
+        end
+        
+        % plot mean/ste across subjects, with connecting line
+        plot(xMean(:,iHemi)',zMean(:,iHemi)','k', 'LineWidth', 1.2)
+        for iC = 1:size(centersThresh0,1)
+            errorxy([xMean(iC,iHemi),zMean(iC,iHemi),...
+                xSte(iC,iHemi),zSte(iC,iHemi)],...
+                'ColX',1','ColY',2,'ColXe',3,'ColYe',4,...
+                'Marker','.','MarkSize',25,'EdgeColor',colors{iC},...
+                'WidthEB',1.2);
+        end
+        xlim([-1.5 1.5])
+        ylim([-1.5 1.5])
+        xlabel('L-R center (mm)')
+        ylabel('V-D center (mm)')
+        title(sprintf('Hemi %d, %s, prop %.1f', hemi, mapName, prop))
+    end
 end
 
 % set(sp(1,3),'YLim',[10.5 12.5])
 
 %% save figs
 if saveFigs
-    for iHemi = 1:numel(f0)
-        plotSavePath = sprintf('%s/figures/groupCenterOfMass_%s_hemi%d_%s',...
+%     for iHemi = 1:numel(f0)
+%         plotSavePath = sprintf('%s/figures/groupCenterOfMass_%s_hemi%d_%s',...
+%             fileBaseDir, fileBaseSubjects, iHemi, fileBaseTail);
+%         print(f0(iHemi),'-djpeg',sprintf(plotSavePath));
+%     end
+    for iHemi = 1:numel(f1)
+        scatterSavePath = sprintf('%s/figures/groupCenterOfMassXZ_%s_hemi%d_%s',...
             fileBaseDir, fileBaseSubjects, iHemi, fileBaseTail);
-        print(f0(iHemi),'-djpeg',sprintf(plotSavePath));
+        print(f1(iHemi),'-djpeg',sprintf(scatterSavePath));
     end
 end
 
@@ -148,6 +244,8 @@ if saveAnalysis
         fileBaseDir, fileBaseSubjects, fileBaseTail), ...
         'groupData','groupMean','groupStd','groupSte',...
         'normData','normMean','normStd','normSte',...
+        'centersThresh0','XZ','centersThresh0Raw','meanCenters',...
+        'centersThresh0N','centersThresh0Nmm',...
         'mapName','prop','scanner','subjectDirs','subjects','hemis');
 end
 
