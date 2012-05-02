@@ -42,6 +42,10 @@ for iSubject = 1:nSubjects
 %     load(behavFile.name)
 %     rd_mpLocalizerBehavAcc(behavData);
 
-    rd_normalizeCenterOfMass
+    % quick plot F stats for indiv runs
+    load lgnROI2_indivRunStats_20120425
+    fO = squeeze(fOverallMeans)';
+    figure; errorbar(mean(fO),std(fO)./sqrt(size(fO,1))); title(subject)
+    fOMeans(iSubject,:) = mean(fO);
     
 end

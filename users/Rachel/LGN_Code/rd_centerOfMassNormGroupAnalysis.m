@@ -4,19 +4,19 @@
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
             
 scanner = '7T';
-mapName = 'betaP';
-prop = 0.8;
+mapName = 'betaM-P';
+prop = 0.2;
 analysisExtension = sprintf('centerOfMassNorm_%s_prop%d_*', mapName, round(prop*100));
 hemis = [1 2];
 
 plotFigs = 1;
-saveFigs = 1;
-saveAnalysis = 1;
+saveFigs = 0;
+saveAnalysis = 0;
 
 MCol = [220 20 60]./255; % red
 PCol = [0 0 205]./255; % medium blue
 nullCol = [0 0 0]; % black
-colors = {PCol, nullCol};
+colors = {MCol, PCol};
 for iCol = 1:numel(colors)
     hsvCol = rgb2hsv(colors{iCol});
     lightColors{iCol} = hsv2rgb([hsvCol(1) .3 1]);
@@ -28,11 +28,12 @@ end
 switch scanner
     case '3T'
         subjectDirs = subjectDirs3T;
-        cVarThresh = .004; % for selecting the centers0 coordinate
+%         cVarThresh = .004; % for selecting the centers0 coordinate
     case '7T'
         subjectDirs = subjectDirs7T;
-        cVarThresh = .02;
+%         cVarThresh = .02;
 end
+cVarThresh = 0;
 
 subjects = 1:size(subjectDirs,1);
 % subjects = [1 2 4 5];

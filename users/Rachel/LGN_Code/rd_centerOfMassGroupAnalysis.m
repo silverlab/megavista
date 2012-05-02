@@ -4,19 +4,19 @@
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
             
 scanner = '7T';
-mapName = 'betaP';
-prop = 0.8;
+mapName = 'betaM-P';
+prop = 0.2;
 analysisExtension = sprintf('centerOfMass_%s_prop%d_*', mapName, round(prop*100));
 hemis = [1 2];
 
 plotFigs = 1;
-saveFigs = 1;
-saveAnalysis = 1;
+saveFigs = 0;
+saveAnalysis = 0;
 
 MCol = [220 20 60]./255; % red
 PCol = [0 0 205]./255; % medium blue
 nullCol = [0 0 0]; % black
-colors = {PCol, nullCol};
+colors = {MCol, PCol};
 for iCol = 1:numel(colors)
     hsvCol = rgb2hsv(colors{iCol});
     lightColors{iCol} = hsv2rgb([hsvCol(1) .3 1]);
@@ -167,10 +167,18 @@ if plotFigs
             hold on
 %             plot(varThreshs, groupMean.centers1(:,iDim,hemi),'r')
 %             plot(varThreshs, groupMean.centers2(:,iDim,hemi),'b')
-            p1 = shadedErrorBar(varThreshs, groupMean.centers1(:,iDim,hemi), ...
-                normSte.centers1(:,iDim,hemi),{'Color',colors{1}});
-            p2 = shadedErrorBar(varThreshs, groupMean.centers2(:,iDim,hemi), ...
-                normSte.centers2(:,iDim,hemi),{'Color',colors{2}});
+
+%             % units in voxels
+%             p1 = shadedErrorBar(varThreshs, groupMean.centers1(:,iDim,hemi), ...
+%                 normSte.centers1(:,iDim,hemi),{'Color',colors{1}});
+%             p2 = shadedErrorBar(varThreshs, groupMean.centers2(:,iDim,hemi), ...
+%                 normSte.centers2(:,iDim,hemi),{'Color',colors{2}});
+            
+            % units in mm
+            p1 = shadedErrorBar(varThreshs, normMean.centers1(:,iDim,hemi)*voxelSize(iDim), ...
+                normSte.centers1(:,iDim,hemi)*voxelSize(iDim),{'Color',colors{1}});
+            p2 = shadedErrorBar(varThreshs, normMean.centers2(:,iDim,hemi)*voxelSize(iDim), ...
+                normSte.centers2(:,iDim,hemi)*voxelSize(iDim),{'Color',colors{2}});
             ylabel(dimLabels{iDim})
             
             if iDim==1
