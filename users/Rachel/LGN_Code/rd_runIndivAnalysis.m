@@ -10,7 +10,8 @@ switch scanner
         subjectDirs = subjectDirs7T;
 end
 
-subjects = [1 2 4 5];
+subjects = 2
+% subjects = [1 2 4 5];
 % subjects = 1:size(subjectDirs,1);
 nSubjects = numel(subjects);
 
@@ -42,10 +43,12 @@ for iSubject = 1:nSubjects
 %     load(behavFile.name)
 %     rd_mpLocalizerBehavAcc(behavData);
 
-    % quick plot F stats for indiv runs
-    load lgnROI2_indivRunStats_20120425
-    fO = squeeze(fOverallMeans)';
-    figure; errorbar(mean(fO),std(fO)./sqrt(size(fO,1))); title(subject)
-    fOMeans(iSubject,:) = mean(fO);
+%     % quick plot F stats for indiv runs
+%     load lgnROI2_indivRunStats_20120425
+%     fO = squeeze(fOverallMeans)';
+%     figure; errorbar(mean(fO),std(fO)./sqrt(size(fO,1))); title(subject)
+%     fOMeans(iSubject,:) = mean(fO);
+
+    rd_mpBetaReliability
     
 end
