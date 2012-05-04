@@ -1,6 +1,6 @@
 % rd_runIndivAnalysis.m
 
-scanner = '3T';
+scanner = '7T';
 
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
 switch scanner
@@ -10,9 +10,8 @@ switch scanner
         subjectDirs = subjectDirs7T;
 end
 
-subjects = 2
 % subjects = [1 2 4 5];
-% subjects = 1:size(subjectDirs,1);
+subjects = 1:size(subjectDirs,1);
 nSubjects = numel(subjects);
 
 % run specified individual analysis script in subject directory
@@ -49,6 +48,6 @@ for iSubject = 1:nSubjects
 %     figure; errorbar(mean(fO),std(fO)./sqrt(size(fO,1))); title(subject)
 %     fOMeans(iSubject,:) = mean(fO);
 
-    rd_mpBetaReliability
+    rd_getCenterOfMassGroupCoords
     
 end

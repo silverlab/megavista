@@ -4,12 +4,12 @@
 hemi = 2;
 
 varThresh = 0;
-prop = .5;
+prop = .2;
 voxelSelectionOption = 'varExp'; % all, varExp
 betaCoefs = [0.5 -0.5];
 mapName = 'betaM-P';
 
-saveAnalysis = 0;
+saveAnalysis = 1;
 
 threshDescrip = sprintf('%0.03f', varThresh);
 voxDescrip = ['varThresh' threshDescrip(3:end)];
@@ -60,8 +60,9 @@ voxGroups = [Y1; Y2]; % Y in svm script
 
 %% Save analysis
 if saveAnalysis
-    save(analysisSavePath, 'betaCoefs','betas','hemi','mapName','prop',...
-        'topoData','varThresh','voxCoords','voxGroups','voxelSelectionOption')
+    save(analysisSavePath,'hemi','betaCoefs','mapName','prop','varThresh',...
+        'betas','topoData','centers','voxsInGroup',...
+        'voxCoords','voxGroups','voxelSelectionOption')
 end
 
 

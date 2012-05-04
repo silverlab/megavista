@@ -1,15 +1,16 @@
 """
-Now you've moved some ROIs from the flat to inplane space in a subject using
-mrVista.  Here, you'll take those coordinates, transform them, and use them to
-make a volume ROI (mask) for use with AFNI.
+Now you have some ROIs in mrVista's Inplane space.  
+Here, you'll take those coordinates, transform them, and use them to
+make a volume ROI (mask) in nifti format.
 
 Following this, should run a GLM on the localizer data and use that to restrict
 the ROIs.
 
-Note: parts of the script are based off of Ariel's movie_analysis1.py (find in example_scripts/)
+Based on CG's makeROI_fromVista.py
+which in turn was in part based off of Ariel's movie_analysis1.py (find in example_scripts/)
 
-Written by CG
-
+Rachel Denison
+2012 May 03
 """
 
 ## Import libraries
@@ -17,6 +18,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
+import scipy.io as sio
 import os
 
 import vista_utils as tsv # Get it at: https://github.com/arokem/vista_utils
@@ -32,14 +34,26 @@ reload(util) #in case you make changes
 if __name__ == "__main__":
 
     #inputs
-    sub = sys.argv[1]
-    rois = ['RV1','LV1','RV2v','LV2v','RV2d','LV2d','RV3v','LV3v','RV3d','LV3d']
+    scanner = sys.argv[1]
+    subject = sys.argv[2]
+    rois = ['ROI101','ROI201']
+    # rois = ['RV1','LV1','RV2v','LV2v','RV2d','LV2d','RV3v','LV3v','RV3d','LV3d']
 
     #paths
-    studyDir = "/home/despo/cgratton/data/OrientProj/"
-    dataDir = "%sData/%s/vista_analysis/vista_analysis_nifti/" %(studyDir,sub) #CHANGE THIS!!
-    roiDir = "%sInplane/ROIs/" % dataDir
-    outDir = "%sMasks/Ret_ROIs/" %studyDir
+    sdirs = sio.loadmat('/Volumes/Plata1/LGN/Group_Analyses/subjectDirs.mat')
+
+    if scanner=='3T':
+        subject_dirs = sdirs['subjectDirs3T']
+    elif scanner=='7T':
+        subject_dirs = sdirs['subjectDirs7T']
+    
+    data_dir = '/Volumes/Plata1/LGN/Scans/{0}/{1}/{2}/'.format(
+        scanner, subject_dirs[subject,0][0], subject_dirs[subject,1][0])
+    nifti_dir = '{0}/{1}_nifti/'.format(data_dir, subject_dirs[subject,1][0])
+    roiDir = '{0}/Inplane/ROIs/'.format(data_dir)
+    outDir = '{0}/Masks/'.format(data_dir)
+
+    print data_dir
 
     #constants
     up_samp = [2.5606,2.5606,1.0000] #upsample factor from GEM to EPI
