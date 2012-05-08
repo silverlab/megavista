@@ -59,7 +59,7 @@ if __name__ == "__main__":
     up_samp = [2.5606,2.5606,1.0000] #upsample factor from GEM to EPI
     #usually epi: 2.220 x 2.220 x 2.300; gem: 0.867x0.867x2.300
 
-    EPIfname_example = dataDir + 'epi01_mcf.nii.gz'
+    EPIfname_example = nifti_dir + 'epi01_mcf.nii.gz'
 
     #Loop over ROIs
     for roi in rois:
@@ -67,7 +67,8 @@ if __name__ == "__main__":
         ROIfile = roiDir + roi + '.mat'
 
         #get the coordinates for the ROI, accounting for upsampling
-        ROI_coords = tsv.upsample_coords(tsv.getROIcoords(ROIfile),up_samp)
+		# subtract 1 from mrVista coords, since afni uses 0 indexing
+        ROI_coords = tsv.upsample_coords(tsv.getROIcoords(ROIfile),up_samp)-1
 
         #save this to a text file for AFNI
         fout_coords = outDir + sub + '_' + roi + '_coords.txt'

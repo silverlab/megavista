@@ -3,7 +3,7 @@
 %% setup
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
             
-scanner = '7T';
+scanner = '3T';
 mapName = 'betaM-P';
 prop = 0.2;
 analysisExtension = sprintf('centerOfMassNorm_%s_prop%d_*', mapName, round(prop*100));
@@ -35,8 +35,8 @@ switch scanner
 end
 cVarThresh = 0;
 
-subjects = 1:size(subjectDirs,1);
-% subjects = [1 2 4 5];
+% subjects = 1:size(subjectDirs,1);
+subjects = [1 2 4 5];
 nSubjects = numel(subjects);
 
 %% File I/O
@@ -178,8 +178,9 @@ if plotFigs
                 'Marker','.','MarkSize',25,'EdgeColor',colors{iC},...
                 'WidthEB',1.2);
         end
-        xlim([0 1])
-        ylim([0 1])
+        xlim([0.2 0.8])
+        ylim([0.1 0.7])
+        axis square
         xlabel('L-R center (normalized)')
         ylabel('V-D center (normalized)')
         title(sprintf('Hemi %d, %s, prop %.1f at varThresh = %.3f', ...

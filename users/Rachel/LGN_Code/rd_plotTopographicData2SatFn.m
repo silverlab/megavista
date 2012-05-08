@@ -230,6 +230,9 @@ dimToSlice = 2;
 nPlotCols = ceil(sqrt(size(brainMapToPlot,dimToSlice)));
 nPlotRows = ceil(size(brainMapToPlot,dimToSlice)/nPlotCols);
 
+% nPlotCols = size(brainMapToPlot,dimToSlice);
+% nPlotRows = 1;
+
 f1 = figure('name',mapName);
 for iSlice = 1:size(brainMapToPlot,dimToSlice)
     brainSliceMap1 = [];
@@ -255,6 +258,7 @@ for iSlice = 1:size(brainMapToPlot,dimToSlice)
     
     % show slice with colored map
     subplot(nPlotRows, nPlotCols, iSlice)
+%     subplot(nPlotRows, nPlotCols, nPlotCols+1-iSlice)
     image(brainSliceMap)
     if dimToSlice==4
         title(['Slice ' num2str(slices(iSlice))])
@@ -262,6 +266,8 @@ for iSlice = 1:size(brainMapToPlot,dimToSlice)
         title(['Slice ' num2str(iSlice)])
     end
     axis off
+%     axis equal
+%     axis tight
     
 end
 
