@@ -15,8 +15,8 @@ import nitime.fmri.io as ntio
 import rd_nipy_visualize as visualize
 
 # subject and scanner
-scanner = '3T'
-subject = 1
+scanner = '7T'
+subject = 0
 hemi = 1
 
 # ROIs to use as seeds
@@ -40,8 +40,8 @@ if scanner=='3T':
 elif scanner=='7T':
     subject_dirs = sdirs['subjectDirs7T']
 
-session_dir = os.path.join('/Volumes/Plata1/LGN/Scans',
-    scanner, subject_dirs[subject,0][0], subject_dirs[subject,1][0])
+session_dir = str(os.path.join('/Volumes/Plata1/LGN/Scans',
+    scanner, subject_dirs[subject,0][0], subject_dirs[subject,1][0]))
 nifti_dir = os.path.join(session_dir, '{}_nifti'.format(subject_dirs[subject,1][0]))
 
 fmri_file = os.path.join(nifti_dir, 'epi01_hemi_mcf.nii.gz')
