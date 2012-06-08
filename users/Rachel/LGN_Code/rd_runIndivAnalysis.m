@@ -48,6 +48,6 @@ for iSubject = 1:nSubjects
 %     figure; errorbar(mean(fO),std(fO)./sqrt(size(fO,1))); title(subject)
 %     fOMeans(iSubject,:) = mean(fO);
 
-    rd_getCenterOfMassGroupCoords
+    rd_voxTimeCourse
     
 end

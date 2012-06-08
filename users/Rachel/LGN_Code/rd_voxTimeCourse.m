@@ -3,13 +3,13 @@
 % see tc_init.m
 
 %% setup
-hemi = 1;
+hemi = 2;
 voxelSelectionOption = 'varExp';
 varThresh = 0;
 betaThresh = 0;
 
-saveData = 1;
-saveFigs = 1;
+saveData = 0;
+saveFigs = 0;
 
 %% file I/O
 fileBase = sprintf('lgnROI%d', hemi);
