@@ -50,7 +50,10 @@ for iSubject = 1:nSubjects
 
     % aggregate indiv run data from all subjects
     % (first initialize allData to empty)
-    
-    allData = rd_appendSubjectData(dataFilePattern, allData);
-    
+    appendDims = [3 3 3 1 2 1 1];
+    hemi = 2;
+    dataFilePattern = sprintf('lgnROI%d_indivRunStats*', hemi);
+    allData = rd_appendData(dataFilePattern, allData, appendDims);
 end
+
+

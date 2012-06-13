@@ -138,3 +138,19 @@ if saveFigs
         print(f(iF), '-djpeg', figFile)
     end
 end
+
+%% Get vars from allData (from every subject, generated in rd_runIndivAnalysis)
+fOverallMeans = allData.fOverallMeans;
+fCondMeans = allData.fCondMeans;
+fCondThreshedMeans = allData.fCondThreshedMeans;
+varExp = allData.varExp;
+overallAcc = allData.overallAcc;
+condAcc = allData.condAcc;
+delays = [0 1 2 3];
+nDelays = numel(delays);
+threshProp = .1;
+groupFigDir = '/Volumes/Plata1/LGN/Group_Analyses/figures';
+figFileBase = sprintf('%s/groupIndivRuns_%s_N%d_hemi%d', ...
+    groupFigDir, scanner, nSubjects, hemi)
+saveFigs = 1
+
