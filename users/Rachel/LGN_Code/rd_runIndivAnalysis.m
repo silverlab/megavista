@@ -48,6 +48,9 @@ for iSubject = 1:nSubjects
 %     figure; errorbar(mean(fO),std(fO)./sqrt(size(fO,1))); title(subject)
 %     fOMeans(iSubject,:) = mean(fO);
 
-    rd_voxTimeCourse
+    % aggregate indiv run data from all subjects
+    % (first initialize allData to empty)
+    
+    allData = rd_appendSubjectData(dataFilePattern, allData);
     
 end
