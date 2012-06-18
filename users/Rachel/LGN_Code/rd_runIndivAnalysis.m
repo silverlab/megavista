@@ -48,12 +48,14 @@ for iSubject = 1:nSubjects
 %     figure; errorbar(mean(fO),std(fO)./sqrt(size(fO,1))); title(subject)
 %     fOMeans(iSubject,:) = mean(fO);
 
-    % aggregate indiv run data from all subjects
-    % (first initialize allData to empty)
-    appendDims = [3 3 3 1 2 1 1];
-    hemi = 2;
-    dataFilePattern = sprintf('lgnROI%d_indivRunStats*', hemi);
-    allData = rd_appendData(dataFilePattern, allData, appendDims);
+%     % aggregate indiv run data from all subjects
+%     % (first initialize allData to empty)
+%     appendDims = [3 3 3 1 2 1 1];
+%     hemi = 2;
+%     dataFilePattern = sprintf('lgnROI%d_indivRunStats*', hemi);
+%     allData = rd_appendData(dataFilePattern, allData, appendDims);
+
+    rd_mpBetaReliability
 end
 
 

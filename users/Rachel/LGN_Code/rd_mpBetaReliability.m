@@ -3,8 +3,8 @@
 % reliability of betaM,P,M-P, and classification across individual scans
 
 %% setup
-hemi = 1;
-correlationType = 'corrcoef'; % ['corrcoef','rankcorr']
+hemi = 2;
+correlationType = 'rankcorr'; % ['corrcoef' (Pearson), 'rankcorr' (Spearman)]
 
 saveFigs = 1;
 
@@ -18,6 +18,7 @@ condNames = {'M','P','M-P'};
 nRuns = numel(uiData);
 
 %% get betas from each run
+betas = [];
 for iRun = 1:nRuns
     betas(iRun,:,:) = uiData(iRun).mv.glm.betas(:,1:2,:);
 end
@@ -35,17 +36,18 @@ betaValsMean = squeeze(mean(betaVals,1));
 [betaValsMeanS, order] = sort(betaValsMean,2);
 
 %% figures
-% each run sorted by rank order of mean
-for iCond = 1:nConds
-    figure
-    subplot(1,2,1)
-    plot(squeeze(betaVals(:,iCond,order(iCond,:)))','.')
-    axis square
-    subplot(1,2,2)
-    plot(squeeze(betaVals(:,iCond,:))','.')
-    axis square
-    rd_supertitle(condNames{iCond})
-end
+% (this figure works but seems excessive and not that revealing)
+% % each run sorted by rank order of mean
+% for iCond = 1:nConds
+%     figure
+%     subplot(1,2,1)
+%     plot(squeeze(betaVals(:,iCond,order(iCond,:)))','.')
+%     axis square
+%     subplot(1,2,2)
+%     plot(squeeze(betaVals(:,iCond,:))','.')
+%     axis square
+%     rd_supertitle(condNames{iCond})
+% end
 
 % pairwise correlations (plot matrix)
 for iCond = 1:nConds
@@ -55,12 +57,14 @@ for iCond = 1:nConds
 end
 
 %% mean inter-run correlation (mean of pairwise correlations)
+runPairCorrs = [];
+runPairCorrVals = [];
 for iCond = 1:nConds
     switch correlationType
         case 'corrcoef'
             r = corrcoef(squeeze(betaVals(:,iCond,:))'); % [nRuns x nRuns] corrcoef
         case 'rankcorr'
-            r = corr(squeeze(betaVals(:,iCond,:))'); 
+            r = corr(squeeze(betaVals(:,iCond,:))','type','Spearman'); 
         otherwise
             error('correlationType not found')
     end
