@@ -6,6 +6,8 @@
 hemi = 1;
 correlationType = 'corrcoef'; % ['corrcoef','rankcorr']
 
+saveFigs = 1;
+
 dataFile = dir(sprintf('lgnROI%d_indivScanData_multiVoxel*', hemi));
 if numel(dataFile)~=1
     error('Too many or too few matching data files')
@@ -99,9 +101,17 @@ for iCond = 1:nConds
         ylabel('num pairwise correlations')
     end
 end
-rd_supertitle(sprintf('Hemi %d, run-to-run beta correlations',hemi));
+rd_supertitle(sprintf('Hemi %d, run-to-run beta correlations (%s)', ...
+    hemi, correlationType));
 
 % raise title off of subplot titles
 titlePos = get(gca,'Position');
 titlePos(2) = titlePos(2)*1.27;
 set(gca,'Position',titlePos);
+
+%% save figures
+if saveFigs
+    figName = sprintf('figures/lgnROI%dMatHist_indivScanBetaCorrelations_%s_%s', ...
+        hemi, correlationType, datestr(now,'yyyymmdd'));
+    print(f, '-djpeg', figName);
+end
