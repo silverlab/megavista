@@ -70,8 +70,8 @@ for iCond = 1:nConds
     % these lines modified from rd_findCentersOfMass
     valsSorted = sort(vals); % sorts each column
     thresh = valsSorted(round(nVox*(1-prop)),:);
-    voxsInGroup(:,:,iCond,1) = vals>repmat(thresh,nVox,1); % [voxs x runs x groups x conds]
-    voxsInGroup(:,:,iCond,2) = vals<=repmat(thresh,nVox,1);
+    voxsInGroup(:,:,1,iCond) = vals>repmat(thresh,nVox,1); % [voxs x runs x groups x conds]
+    voxsInGroup(:,:,2,iCond) = vals<=repmat(thresh,nVox,1);
 end
 
 %% figures
