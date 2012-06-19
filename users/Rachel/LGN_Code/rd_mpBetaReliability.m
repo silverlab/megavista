@@ -74,6 +74,25 @@ for iCond = 1:nConds
     voxsInGroup(:,:,2,iCond) = vals<=repmat(thresh,nVox,1);
 end
 
+propRunsVoxInGroup = squeeze(mean(voxsInGroup,2));
+
+% find 95% confidence intervals for binomial distribution
+nBinoTrials = 10000;
+binoConfInts = [];
+for iCond = 1:nConds
+    prop = condProps(iCond);
+    bino = binornd(nRuns,prop,nBinoTrials,1)./nRuns;
+    binoSort = sort(bino);
+    binoConfInts(iCond,:) = [binoSort(nBinoTrials*.025) binoSort(nBinoTrials*.975)];
+end
+
+% find significantly reliable voxels
+reliableVoxs = [];
+for iCond = 1:nConds
+    reliableVoxs(:,iCond) = propRunsVoxInGroup(:,1,iCond)<binoConfInts(iCond,1) | ...
+        propRunsVoxInGroup(:,1,iCond)>binoConfInts(iCond,2);
+end
+
 %% figures
 % pairwise correlations (plot matrix)
 for iCond = 1:nConds
@@ -111,6 +130,15 @@ rd_supertitle(sprintf('Hemi %d, run-to-run beta correlations (%s)', ...
 titlePos = get(gca,'Position');
 titlePos(2) = titlePos(2)*1.27;
 set(gca,'Position',titlePos);
+
+% significantly reliable voxels
+figure
+for iCond = 1:nConds
+    subplot(nConds,1,iCond)
+    hold on
+    plot(squeeze(propRunsVoxInGroup(:,1,iCond)));
+    scatter(1:nVox,reliableVoxs(:,iCond),'.');
+end
 
 %% save figures
 if saveFigs
