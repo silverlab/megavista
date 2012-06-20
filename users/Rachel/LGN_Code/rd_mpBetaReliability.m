@@ -3,19 +3,18 @@
 % reliability of betaM,P,M-P, and classification across individual scans
 
 %% setup
-hemi = 2;
+hemi = 1;
 correlationType = 'corrcoef'; % ['corrcoef' (Pearson), 'rankcorr' (Spearman)]
 
 condNames = {'M','P','M-P'};
 condProps = [.2 .8 .2];
-% condProps = [.5 .5 .5];
 
 MCol = [220 20 60]./255; % red
 PCol = [0 0 205]./255; % medium blue
 MPCol = [0 0 0]; % black
 colors = {MCol, PCol, MPCol};
 
-saveFigs = 0;
+saveFigs = 1;
 
 %% load data
 dataFile = dir(sprintf('lgnROI%d_indivScanData_multiVoxel*', hemi));
@@ -113,7 +112,7 @@ for iCond = 1:nConds
 end
 
 %% pairwise correlation values
-f = figure;
+f(1) = figure;
 for iCond = 1:nConds
     subplot(2,nConds,iCond)
     imagesc(runPairCorrs(:,:,iCond),[-1 1]);
@@ -141,25 +140,20 @@ rd_raiseAxis(gca);
 %% proportion of voxels assigned to the same group in every run
 condToPlot = 3;
 prop = condProps(condToPlot);
-binodist = [];
-binodist(:,1) = binornd(nRuns,prop,nBinoTrials,1)./nRuns;
-binodist(:,2) = binornd(nRuns,1-prop,nBinoTrials,1)./nRuns;
-figure
-for iGroup = 1:2
-    subplot(1,2,iGroup)
-    hold on
-    hist(propRunsVoxInGroup(:,iGroup,condToPlot));
-    [binohist x] = hist(binodist(:,iGroup));
-    bar(x, binohist./(nBinoTrials/nVox),'g');
-    xlabel('prop runs with voxel in group')
-    if iGroup==1
-        ylabel('number of voxels')
-        legend('data','binomial','Location','best')
-    end
-    title(sprintf('Group %d', iGroup))
-end
-rd_supertitle(sprintf('Hemi %d, prop = %.2f', hemi, prop));
-rd_raiseAxis(gca);
+binodist = binornd(nRuns,prop,nBinoTrials,1)./nRuns;
+
+f(2) = figure;
+hold on
+group = 1;
+[y x] = hist(propRunsVoxInGroup(:,group,condToPlot));
+hist(propRunsVoxInGroup(:,group,condToPlot));
+binohist = hist(binodist,x);
+bar(x, binohist./(nBinoTrials/nVox),'g');
+xlabel('prop runs with voxel in group')
+ylabel('number of voxels')
+legend('data','binomial','Location','best')
+title(sprintf('Hemi %d, beta%s, prop = %.2f, group %d', ...
+    hemi, condNames{condToPlot}, prop, group));
 
 %% significantly reliable voxels
 figure
@@ -169,6 +163,13 @@ for iCond = 1:nConds
     hold on
     plot(squeeze(propRunsVoxInGroup(:,1,iCond)));
     scatter(sigVoxs,ones(size(sigVoxs)),'.');
+    if iCond==nConds
+        xlabel('voxel')
+    end
+    if iCond==2
+        ylabel('prop runs with voxel in group 1')
+    end
+    title(sprintf('Hemi %d, %s', hemi, condNames{iCond})) 
 end
 
 %% SNR of beta values across runs
@@ -187,9 +188,13 @@ title(sprintf('Hemi %d',hemi))
 
 %% save figures
 if saveFigs
-    figName = sprintf('figures/lgnROI%dMatHist_indivScanBetaCorrelations_%s_%s', ...
+    figName{1} = sprintf('figures/lgnROI%dMatHist_indivScanBetaCorrelations_%s_%s', ...
         hemi, correlationType, datestr(now,'yyyymmdd'));
-    print(f, '-djpeg', figName);
+    figName{2} = sprintf('figures/lgnROI%dHist_indivScanBetaMPClassReliability_%s', ...
+        hemi, datestr(now,'yyyymmdd'));
+    for iF = 2
+        print(f(iF), '-djpeg', figName{iF});
+    end
 end
 
 
