@@ -3,7 +3,7 @@
 % reliability of betaM,P,M-P, and classification across individual scans
 
 %% setup
-hemi = 1;
+hemi = 2;
 correlationType = 'corrcoef'; % ['corrcoef' (Pearson), 'rankcorr' (Spearman)]
 
 condNames = {'M','P','M-P'};
@@ -177,7 +177,7 @@ for iCond = 1:nConds
 end
 
 %% SNR of beta values across runs
-figure
+f(3) = figure;
 hold on
 p = plot(betaValsSNR);
 plot([0 nVox],[0 0],'--k');
@@ -200,12 +200,13 @@ end
 
 %% save figures
 if saveFigs
-    figName{1} = sprintf('figures/lgnROI%dMatHist_indivScanBetaCorrelations_%s_%s', ...
-        hemi, correlationType, datestr(now,'yyyymmdd'));
-    figName{2} = sprintf('figures/lgnROI%dHist_indivScanBetaMPClassReliability_%s', ...
-        hemi, datestr(now,'yyyymmdd'));
-    for iF = 2
-        print(f(iF), '-djpeg', figName{iF});
+    figExt{1} = sprintf('MatHist_indivScanBetaCorrelations_%s',...
+        correlationType);
+    figExt{2} = 'Hist_indivScanBetaMPClassReliability';
+    figExt{3} = 'Plot_indivScanBetaSNR';
+    for iF = 2:3
+        print(f(iF), '-djpeg', sprintf('figures/lgnROI%d%s_%s',...
+            hemi, figExt{iF}, datestr(now,'yyyymmdd')));
     end
 end
 
