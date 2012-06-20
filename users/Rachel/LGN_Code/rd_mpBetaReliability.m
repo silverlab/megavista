@@ -8,6 +8,12 @@ correlationType = 'corrcoef'; % ['corrcoef' (Pearson), 'rankcorr' (Spearman)]
 
 condNames = {'M','P','M-P'};
 condProps = [.2 .8 .2];
+% condProps = [.5 .5 .5];
+
+MCol = [220 20 60]./255; % red
+PCol = [0 0 205]./255; % medium blue
+MPCol = [0 0 0]; % black
+colors = {MCol, PCol, MPCol};
 
 saveFigs = 0;
 
@@ -32,6 +38,11 @@ betaVals = betas;
 % add betaM-P to betaVals as the third condition
 betaVals(:,end+1,:) = betas(:,1,:) - betas(:,2,:);
 nConds = size(betaVals,2);
+
+% mean and std across runs
+betaValsMean = squeeze(mean(betaVals,1))'; 
+betaValsStd = squeeze(std(betaVals,0,1))';
+betaValsSNR = betaValsMean./betaValsStd;
 
 %% mean inter-run correlation (mean of pairwise correlations)
 runPairCorrs = [];
@@ -94,14 +105,14 @@ for iCond = 1:nConds
 end
 
 %% figures
-% pairwise correlations (plot matrix)
+%% pairwise correlations (plot matrix)
 for iCond = 1:nConds
     figure
     plotmatrix(squeeze(betaVals(:,iCond,:))')
     rd_supertitle(condNames{iCond})
 end
 
-% pairwise correlation values
+%% pairwise correlation values
 f = figure;
 for iCond = 1:nConds
     subplot(2,nConds,iCond)
@@ -125,20 +136,54 @@ for iCond = 1:nConds
 end
 rd_supertitle(sprintf('Hemi %d, run-to-run beta correlations (%s)', ...
     hemi, correlationType));
+rd_raiseAxis(gca);
 
-% raise title off of subplot titles
-titlePos = get(gca,'Position');
-titlePos(2) = titlePos(2)*1.27;
-set(gca,'Position',titlePos);
+%% proportion of voxels assigned to the same group in every run
+condToPlot = 3;
+prop = condProps(condToPlot);
+binodist = [];
+binodist(:,1) = binornd(nRuns,prop,nBinoTrials,1)./nRuns;
+binodist(:,2) = binornd(nRuns,1-prop,nBinoTrials,1)./nRuns;
+figure
+for iGroup = 1:2
+    subplot(1,2,iGroup)
+    hold on
+    hist(propRunsVoxInGroup(:,iGroup,condToPlot));
+    [binohist x] = hist(binodist(:,iGroup));
+    bar(x, binohist./(nBinoTrials/nVox),'g');
+    xlabel('prop runs with voxel in group')
+    if iGroup==1
+        ylabel('number of voxels')
+        legend('data','binomial','Location','best')
+    end
+    title(sprintf('Group %d', iGroup))
+end
+rd_supertitle(sprintf('Hemi %d, prop = %.2f', hemi, prop));
+rd_raiseAxis(gca);
 
-% significantly reliable voxels
+%% significantly reliable voxels
 figure
 for iCond = 1:nConds
+    sigVoxs = find(reliableVoxs(:,iCond));
     subplot(nConds,1,iCond)
     hold on
     plot(squeeze(propRunsVoxInGroup(:,1,iCond)));
-    scatter(1:nVox,reliableVoxs(:,iCond),'.');
+    scatter(sigVoxs,ones(size(sigVoxs)),'.');
 end
+
+%% SNR of beta values across runs
+figure
+hold on
+p = plot(betaValsSNR);
+plot([0 100],[0 0],'--k');
+for iP = 1:numel(p)
+    set(p(iP),'Color',colors{iP})
+end
+xlabel('voxel')
+ylabel('SNR of beta value across runs')
+legend(condNames)
+title(sprintf('Hemi %d',hemi))
+
 
 %% save figures
 if saveFigs
