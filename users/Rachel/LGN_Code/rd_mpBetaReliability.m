@@ -14,7 +14,11 @@ PCol = [0 0 205]./255; % medium blue
 MPCol = [0 0 0]; % black
 colors = {MCol, PCol, MPCol};
 
+saveData = 1;
 saveFigs = 1;
+
+%% file i/o
+saveFile = sprintf('lgnROI%d_indivScanBetaReliability_%s',hemi, datestr(now,'yyyymmdd'));
 
 %% load data
 dataFile = dir(sprintf('lgnROI%d_indivScanData_multiVoxel*', hemi));
@@ -176,7 +180,7 @@ end
 figure
 hold on
 p = plot(betaValsSNR);
-plot([0 100],[0 0],'--k');
+plot([0 nVox],[0 0],'--k');
 for iP = 1:numel(p)
     set(p(iP),'Color',colors{iP})
 end
@@ -185,6 +189,14 @@ ylabel('SNR of beta value across runs')
 legend(condNames)
 title(sprintf('Hemi %d',hemi))
 
+%% save data
+if saveData
+    save(saveFile, 'hemi','correlationType','condNames','condProps',...
+            'betas','betaVals','betaValsMean','betaValsStd','betaValsSNR',...
+            'runPairCorrs','runPairCorrVals','runPairCorrMeans',...
+            'voxsInGroup_dimHeaders','voxsInGroup','propRunsVoxInGroup',...
+            'binoConfInts','reliableVoxs')
+end
 
 %% save figures
 if saveFigs
@@ -196,7 +208,6 @@ if saveFigs
         print(f(iF), '-djpeg', figName{iF});
     end
 end
-
 
 %% old code that works but isn't that revealing
 % %% rank order of beta values for plotting
