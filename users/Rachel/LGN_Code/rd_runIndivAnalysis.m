@@ -1,6 +1,6 @@
 % rd_runIndivAnalysis.m
 
-scanner = '7T';
+scanner = '3T';
 
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
 switch scanner
