@@ -1,0 +1,49 @@
+% rd_combineROIs.m
+
+% Combine 2 ROIs, ie. perfom some logical operation on their coordinates,
+% as specified by 'combineMethod'.
+% Make a new ROI with these coordinates and save it.
+% Default is to save the new ROI in the session 1 ROI directory.
+
+%% setup
+combineMethod = 'intersect'; % 'intersect','union','xor','a not b'
+color = 'w';
+
+saveNewROI = 1;
+
+%% file i/o
+roiName = 'ROI101';
+roiSaveName = 'ROI101_i3T7T';
+
+studyDir = '/Volumes/Plata1/LGN/Scans';
+session1Dir = '3T/RD_20120205_session/RD_20120205_n';
+session2Dir = '7T/RD_20111214_session/RD_20111214';
+roiDir = 'Volume/ROIs';
+
+roi1Path = sprintf('%s/%s/%s/%s.mat', studyDir, session1Dir, roiDir, roiName);
+roi2Path = sprintf('%s/%s/%s/%s.mat', studyDir, session2Dir, roiDir, roiName);
+
+roiSavePath = sprintf('%s/%s/%s/%s.mat', studyDir, session1Dir, roiDir, roiSaveName);
+
+%% load ROIs and get coords
+roi1 = load(roi1Path);
+roi2 = load(roi2Path);
+
+coords1 = roi1.ROI.coords;
+coords2 = roi2.ROI.coords;
+
+%% find intersection of coords 
+% use mrVista function combineCoords
+coords = combineCoords(coords1, coords2, combineMethod);
+
+%% make new ROI file
+ROI = roi1.ROI;
+ROI.color = color;
+ROI.coords = coords;
+ROI.created = datestr(now);
+ROI.modified = datestr(now);
+
+%% save ROI
+if saveNewROI
+    save(roiSavePath,'ROI');
+end
