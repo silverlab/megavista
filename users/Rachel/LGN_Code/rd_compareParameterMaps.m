@@ -81,9 +81,18 @@ map2ROIZ = (map2ROIVals - mean(map2ROIVals))./std(map2ROIVals);
 
 mapValCorr = corr(map1ROIVals, map2ROIVals);
 
+%% labeling by m/p class
+% Note: this is class as determined from Volume voxels in this new common
+% ROI -- not the original Inplane-based classification in session-specific
+% ROIs.
+[c1 vig1 th1] = rd_findCentersOfMass(roiCoords', map1ROIVals, .2, 'prop');
+[c2 vig2 th2] = rd_findCentersOfMass(roiCoords', map2ROIVals, .2, 'prop');
+
 %% figure
 figure
-plot(map1ROIVals, map2ROIVals, '.k', 'MarkerSize', 20)
+hold on
+% plot(map1ROIVals, map2ROIVals, '.k', 'MarkerSize', 20)
+scatter(map1ROIVals, map2ROIVals, 20, vig1(:,1)+vig2(:,1), 'filled');
 ax = axis;
 xlabel('map 1 value')
 ylabel('map 2 value')
