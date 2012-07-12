@@ -13,6 +13,7 @@ dataType = 'GLMs';
 mapName = 'BetaM-P';
 subjectID = 'RD';
 roiName = 'ROI101-i3T7T';
+prop = .2;
 
 % set map idxs in case there are multiple scans in this data type
 map1Idx = 1;
@@ -102,8 +103,8 @@ fprintf('CI (95%%) = [%.3f %.3f]\n', corrConf);
 % Note: this is class as determined from Volume voxels in this new common
 % ROI -- not the original Inplane-based classification in session-specific
 % ROIs.
-[c1 vig1 th1] = rd_findCentersOfMass(roiCoords', map1ROIVals, .2, 'prop');
-[c2 vig2 th2] = rd_findCentersOfMass(roiCoords', map2ROIVals, .2, 'prop');
+[c1 vig1 th1] = rd_findCentersOfMass(roiCoords', map1ROIVals, prop, 'prop');
+[c2 vig2 th2] = rd_findCentersOfMass(roiCoords', map2ROIVals, prop, 'prop');
 
 %% how many common class assignments?
 overlap = vig1(:,1)+vig2(:,1);
