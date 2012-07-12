@@ -13,11 +13,22 @@ saveNewROI = 1;
 
 %% file i/o
 roiName = 'ROI201';
-roiSaveName = 'ROI201-i3T7T';
+roiSaveName = 'ROI201-i3T27T';
 
 studyDir = '/Volumes/Plata1/LGN/Scans';
-session1Dir = '3T/RD_20120205_session/RD_20120205_n';
-session2Dir = '7T/RD_20111214_session/RD_20111214';
+
+% session1Dir = '3T/RD_20120205_session/RD_20120205_n';
+% session2Dir = '7T/RD_20111214_session/RD_20111214';
+
+% session1Dir = '3T/AV_20111117_session/AV_20111117_n';
+% session2Dir = '3T/AV_20111128_session/AV_20111128_n';
+
+% session1Dir = '3T/AV_20111117_session/AV_20111117_n';
+% session2Dir = '7T/AV_20111213_session/AV_20111213';
+
+session1Dir = '3T/AV_20111128_session/AV_20111128_n';
+session2Dir = '7T/AV_20111213_session/AV_20111213';
+
 roiDir = 'Volume/ROIs';
 
 roi1Path = sprintf('%s/%s/%s/%s.mat', studyDir, session1Dir, roiDir, roiName);
