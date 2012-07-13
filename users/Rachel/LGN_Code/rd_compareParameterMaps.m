@@ -12,7 +12,7 @@ view = 'Volume';
 dataType = 'GLMs';
 mapName = 'BetaM-P';
 subjectID = 'KS';
-roiName = 'ROI101-i7T17T2';
+roiName = 'ROI201-i7T17T2';
 prop = .2;
 
 % set map idxs in case there are multiple scans in this data type

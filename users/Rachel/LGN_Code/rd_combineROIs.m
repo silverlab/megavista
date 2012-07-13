@@ -12,8 +12,8 @@ color = 'w';
 saveNewROI = 1;
 
 %% file i/o
-roiName = 'ROI101';
-roiSaveName = 'ROI101-i7T17T2';
+roiName = 'ROI201';
+roiSaveName = 'ROI201-i7T17T2';
 
 studyDir = '/Volumes/Plata1/LGN/Scans';
 
