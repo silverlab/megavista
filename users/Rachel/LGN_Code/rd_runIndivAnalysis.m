@@ -1,6 +1,6 @@
 % rd_runIndivAnalysis.m
 
-scanner = '3T';
+scanner = '7T';
 
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
 switch scanner
@@ -55,7 +55,7 @@ for iSubject = 1:nSubjects
 %     dataFilePattern = sprintf('lgnROI%d_indivRunStats*', hemi);
 %     allData = rd_appendData(dataFilePattern, allData, appendDims);
 
-    rd_mpBetaReliability
+    rd_mrMakeMPROIParameterMap
 end
 
 
