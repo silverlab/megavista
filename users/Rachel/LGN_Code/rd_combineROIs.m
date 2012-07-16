@@ -13,7 +13,7 @@ saveNewROI = 1;
 
 %% file i/o
 roiName = 'ROI201';
-roiSaveName = 'ROI201-i7T17T2';
+roiSaveName = 'ROI201-i3T27T';
 
 studyDir = '/Volumes/Plata1/LGN/Scans';
 
@@ -26,11 +26,11 @@ studyDir = '/Volumes/Plata1/LGN/Scans';
 % session1Dir = '3T/AV_20111117_session/AV_20111117_n';
 % session2Dir = '7T/AV_20111213_session/AV_20111213';
 
-% session1Dir = '3T/AV_20111128_session/AV_20111128_n';
-% session2Dir = '7T/AV_20111213_session/AV_20111213';
+session1Dir = '3T/AV_20111128_session/AV_20111128_n';
+session2Dir = '7T/AV_20111213_session/AV_20111213';
 
-session1Dir = '7T/KS_20111212_session/KS_20111212_15mm';
-session2Dir = '7T/KS_20111214_session/KS_20111214';
+% session1Dir = '7T/KS_20111212_session/KS_20111212_15mm';
+% session2Dir = '7T/KS_20111214_session/KS_20111214';
 
 roiDir = 'Volume/ROIs';
 

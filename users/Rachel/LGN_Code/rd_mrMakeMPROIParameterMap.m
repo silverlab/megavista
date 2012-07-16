@@ -7,7 +7,7 @@ voxelSelectionOption = 'varExp'; % all, varExp
 analysisMapName = 'betaM-P';
 templateMapName = 'BetaM-P';
 saveMapName = 'MPClass';
-mapIdx = 1; % the index with the map (in case there are multiple scans in the data type)
+mapIdx = 2; % the index with the map (in case there are multiple scans in the data type)
 
 saveAnalysis = 1;
 
