@@ -11,6 +11,7 @@
 view = 'Volume';
 dataType = 'GLMs';
 mapName = 'BetaM-P';
+classMapName = 'MPClass'; % if no class map, set to []
 subjectID = 'AV';
 roiName = 'ROI101-i3T13T2';
 prop = .2;
@@ -47,6 +48,12 @@ map1Path = sprintf('%s/%s/%s', studyDir, session1Dir, mapExtension);
 map2Path = sprintf('%s/%s/%s', studyDir, session2Dir, mapExtension);
 roiPath = sprintf('%s/%s/%s', studyDir, session1Dir, roiExtension);
 
+if ~isempty(classMapName)
+    classMapExtension = sprintf('%s/%s/%s.mat', view, dataType, classMapName);
+    classMap1Path = sprintf('%s/%s/%s', studyDir, session1Dir, classMapExtension);
+    classMap2Path = sprintf('%s/%s/%s', studyDir, session2Dir, classMapExtension);
+end
+
 %% load coords, maps, roi
 view1Coords = load(view1CoordsPath);
 view1Coords = view1Coords.coords;
@@ -56,12 +63,22 @@ map1 = load(map1Path);
 map2 = load(map2Path);
 roi = load(roiPath);
 
+if ~isempty(classMapName)
+    classMap1 = load(classMap1Path);
+    classMap2 = load(classMap2Path);
+end
+
 %% get map data and ROI coords
 map1Data = map1.map{map1Idx};
 map2Data = map2.map{map2Idx};
 
 roiCoords = roi.ROI.coords;
 nVox = size(roiCoords,2);
+
+if ~isempty(classMapName)
+    classMap1Data = classMap1.map{map1Idx};
+    classMap2Data = classMap2.map{map2Idx};
+end
 
 %% logical maps - 1 if in ROI, 0 if not
 inROIMap1 = zeros(size(map1Data));
@@ -97,6 +114,11 @@ map2ROIZ = (map2ROIVals - mean(map2ROIVals))./std(map2ROIVals);
 
 mapValCorr = corr(map1ROIVals, map2ROIVals);
 
+if ~isempty(classMapName)
+    classMap1ROIVals = classMap1Data(inROIMap1)';
+    classMap2ROIVals = classMap2Data(inROIMap2)';
+end
+
 %% compute 95% confidence interval on the correlation
 corrDist = bootstrp(10000, @(x1,x2) corr(x1,x2), map1ROIVals', map2ROIVals');
 corrConf = prctile(corrDist,[2.5 97.5]);
@@ -110,25 +132,52 @@ fprintf('CI (95%%) = [%.3f %.3f]\n', corrConf);
 [c2 vig2 th2] = rd_findCentersOfMass(roiCoords', map2ROIVals, prop, 'prop');
 
 %% how many common class assignments?
-overlap = vig1(:,1)+vig2(:,1);
+% from Volume assignments
+volumeClassOverlap = vig1(:,1)+vig2(:,1);
 
-propCommonClass1 = nnz(overlap==2)/nVox;
-propDifferentClass = nnz(overlap==1)/nVox;
-propCommonClass2 = nnz(overlap==0)/nVox;
+propCommonVolClass1 = nnz(volumeClassOverlap==2)/nVox;
+propDifferentVolClass = nnz(volumeClassOverlap==1)/nVox;
+propCommonVolClass2 = nnz(volumeClassOverlap==0)/nVox;
+
+volClassProps = [propCommonVolClass1 propCommonVolClass2 propDifferentVolClass];
+volClassPropsHeaders = {'common1','common2','different'};
+
+if ~isempty(classMapName)
+    classMapOverlap = classMap1ROIVals + classMap2ROIVals;
+    classMapProduct = classMap1ROIVals.*classMap2ROIVals;
+    
+    propCommonIPClass1 = nnz(classMapOverlap==2)/nVox;
+    propDifferentIPClass = nnz(classMapOverlap==0 & classMapProduct==-1)/nVox;
+    propCommonIPClass2 = nnz(classMapOverlap==-2)/nVox;
+    propInOnlyOneIPMap = nnz(classMapOverlap==1 | classMapOverlap==-1)/nVox;
+    propInNeitherIPMap = nnz(classMapOverlap==0 & classMapProduct==0)/nVox;
+end
+
+ipClassProps = [propCommonIPClass1 propCommonIPClass2 propDifferentIPClass propInOnlyOneIPMap propInNeitherIPMap];
+ipClassPropsHeaders = {'common1','common2','different','oneMap','neither'};
 
 %% display common class results
-fprintf('\n Common Class 1: %.4f', propCommonClass1)
-fprintf('\n Common Class 2: %.4f', propCommonClass2)
-fprintf('\n Different Class: %.4f\n\n', propDifferentClass)
+fprintf('\nVolume class overlap:\n')
+fprintf('\n Common Class 1: %.4f', propCommonVolClass1)
+fprintf('\n Common Class 2: %.4f', propCommonVolClass2)
+fprintf('\n Different Class: %.4f\n\n', propDifferentVolClass)
 
-%% figure
+if ~isempty(classMapName)
+    fprintf('\nInplane class overlap:\n')
+    fprintf('\n Common Class 1: %.4f', propCommonIPClass1)
+    fprintf('\n Common Class 2: %.4f', propCommonIPClass2)
+    fprintf('\n Different Class: %.4f', propDifferentIPClass)
+    fprintf('\n Classified in only one map: %.4f', propInOnlyOneIPMap)
+    fprintf('\n Classified in neither map: %.4f\n\n', propInNeitherIPMap)
+end
+
+%% figure 1
 figTitle = sprintf('%s %s, %s %s, %d voxels', subjectID, roiName, view, mapName, size(roiCoords,2));
 
-figure
+f(1) = figure;
 subplot('position',[.1 .12 .5 .75])
 hold on
 plot(map1ROIVals, map2ROIVals, '.k', 'MarkerSize', 20)
-% scatter(map1ROIVals, map2ROIVals, 20, overlap, 'filled');
 ax = axis;
 xlabel('map 1 value')
 ylabel('map 2 value')
@@ -143,5 +192,42 @@ errorbar(0, mapValCorr, mapValCorr-corrConf(1), corrConf(2)-mapValCorr, ...
 xlim([-.8 .8])
 set(gca,'XTick',[])
 ylabel('correlation with 95% confidence interval')
+rd_supertitle(figTitle);
+
+%% figure 2
+chanceDifferentLine = [.36 .36];
+
+f(2) = figure('Position',[0 0 800 600]);
+subplot(2,2,1)
+scatter(map1ROIVals, map2ROIVals, 20, volumeClassOverlap, 'filled');
+xlabel('map 1 value')
+ylabel('map 2 value')
+title('Volume Classes')
+
+subplot(2,2,2)
+scatter(map1ROIVals, map2ROIVals, 20, classMapOverlap, 'filled');
+xlabel('map 1 value')
+ylabel('map 2 value')
+title('Inplane Classes')
+
+subplot(2,2,3)
+hold on
+plot([0 length(volClassProps)+1], chanceDifferentLine, '--r', 'LineWidth',2);
+bar(volClassProps)
+ylim([0 1])
+set(gca,'XTick',1:length(volClassProps))
+set(gca,'XTickLabel',volClassPropsHeaders)
+ylabel('proportion of voxels')
+
+subplot(2,2,4)
+hold on
+plot([0 length(ipClassProps)+1], chanceDifferentLine, '--r', 'LineWidth',2);
+bar(ipClassProps)
+ylim([0 1])
+set(gca,'XTick',1:length(ipClassProps))
+set(gca,'XTickLabel',ipClassPropsHeaders)
+ylabel('proportion of voxels')
 
 rd_supertitle(figTitle);
+
+
