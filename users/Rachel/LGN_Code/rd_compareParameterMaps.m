@@ -13,18 +13,18 @@ dataType = 'GLMs';
 mapName = 'BetaM-P';
 classMapName = 'MPClass'; % if no class map, set to []
 subjectID = 'AV';
-roiName = 'ROI101-i3T13T2';
+roiName = 'ROI201-i3T13T2';
 prop = .2;
 
 % set map idxs in case there are multiple scans in this data type
 map1Idx = 1;
 map2Idx = 1; % 2 for RD 7T
 
+saveData = 1;
+saveFigures = 1;
+
 %% file i/o
 studyDir = '/Volumes/Plata1/LGN/Scans';
-
-% session1Dir = '3T/RD_20120205_session/RD_20120205_n';
-% session2Dir = '7T/RD_20111214_session/RD_20111214';
 
 session1Dir = '3T/AV_20111117_session/AV_20111117_n';
 session2Dir = '3T/AV_20111128_session/AV_20111128_n';
@@ -34,6 +34,9 @@ session2Dir = '3T/AV_20111128_session/AV_20111128_n';
 
 % session1Dir = '3T/AV_20111128_session/AV_20111128_n';
 % session2Dir = '7T/AV_20111213_session/AV_20111213';
+
+% session1Dir = '3T/RD_20120205_session/RD_20120205_n';
+% session2Dir = '7T/RD_20111214_session/RD_20111214';
 
 % session1Dir = '7T/KS_20111212_session/KS_20111212_15mm';
 % session2Dir = '7T/KS_20111214_session/KS_20111214';
@@ -53,6 +56,12 @@ if ~isempty(classMapName)
     classMap1Path = sprintf('%s/%s/%s', studyDir, session1Dir, classMapExtension);
     classMap2Path = sprintf('%s/%s/%s', studyDir, session2Dir, classMapExtension);
 end
+
+% file out
+saveDir = '/Volumes/Plata1/LGN/Group_Analyses';
+analysisExtension = sprintf('crossSessionComparison_%s_%s_%s_prop%d', ...
+    subjectID, roiName, mapName, prop*100);
+analysisSavePath = sprintf('%s/%s_%s.mat', saveDir, analysisExtension, datestr(now,'yyyymmdd'));
 
 %% load coords, maps, roi
 view1Coords = load(view1CoordsPath);
@@ -117,6 +126,9 @@ mapValCorr = corr(map1ROIVals, map2ROIVals);
 if ~isempty(classMapName)
     classMap1ROIVals = classMap1Data(inROIMap1)';
     classMap2ROIVals = classMap2Data(inROIMap2)';
+else
+    classMap1ROIVals = [];
+    classMap2ROIVals = [];
 end
 
 %% compute 95% confidence interval on the correlation
@@ -174,6 +186,7 @@ end
 %% figure 1
 figTitle = sprintf('%s %s, %s %s, %d voxels', subjectID, roiName, view, mapName, size(roiCoords,2));
 
+figNames{1} = 'correlationWithConfInt';
 f(1) = figure;
 subplot('position',[.1 .12 .5 .75])
 hold on
@@ -181,7 +194,7 @@ plot(map1ROIVals, map2ROIVals, '.k', 'MarkerSize', 20)
 ax = axis;
 xlabel('map 1 value')
 ylabel('map 2 value')
-text(ax(1)+.05*(ax(2)-ax(1)), ax(4)-.05*(ax(4)-ax(3)),...
+text(ax(1)+.05*(ax(2)-ax(1)), ax(4)+.03*(ax(4)-ax(3)),...
     sprintf('correlation = %.2f', mapValCorr))
 
 subplot('position',[.75 .12 .2 .75])
@@ -195,8 +208,9 @@ ylabel('correlation with 95% confidence interval')
 rd_supertitle(figTitle);
 
 %% figure 2
-chanceDifferentLine = [.36 .36];
+chancePoints = [.0387 .6387 .3226];
 
+figNames{2} = 'correlationWithClassification';
 f(2) = figure('Position',[0 0 800 600]);
 subplot(2,2,1)
 scatter(map1ROIVals, map2ROIVals, 20, volumeClassOverlap, 'filled');
@@ -212,8 +226,8 @@ title('Inplane Classes')
 
 subplot(2,2,3)
 hold on
-plot([0 length(volClassProps)+1], chanceDifferentLine, '--r', 'LineWidth',2);
 bar(volClassProps)
+plot(1:3, chancePoints, '.r', 'MarkerSize', 10)
 ylim([0 1])
 set(gca,'XTick',1:length(volClassProps))
 set(gca,'XTickLabel',volClassPropsHeaders)
@@ -221,13 +235,32 @@ ylabel('proportion of voxels')
 
 subplot(2,2,4)
 hold on
-plot([0 length(ipClassProps)+1], chanceDifferentLine, '--r', 'LineWidth',2);
 bar(ipClassProps)
+plot(1:3, chancePoints, '.r', 'MarkerSize', 10)
 ylim([0 1])
 set(gca,'XTick',1:length(ipClassProps))
 set(gca,'XTickLabel',ipClassPropsHeaders)
 ylabel('proportion of voxels')
 
 rd_supertitle(figTitle);
+rd_raiseAxis(gca);
 
+%% save data
+if saveData
+   save(analysisSavePath,'view', 'dataType', 'mapName', 'classMapName',...
+       'subjectID','roiName','prop', 'map1Idx','map2Idx',...
+       'map1ROIVals','map2ROIVals','classMap1ROIVals','classMap2ROIVals',...
+       'mapValCorr','corrConf','volClassProps','volClassPropsHeaders',...
+       'ipClassProps','ipClassPropsHeaders')
+end
+
+%% save figures
+if saveFigures
+    for iF = 1:numel(f)
+        figName = figNames{iF};
+        figSavePath = sprintf('%s/figures/%s_%s_%s', ...
+            saveDir, analysisExtension, figName, datestr(now,'yyyymmdd'));
+        print(f(iF), '-djpeg', figSavePath)
+    end
+end
 
