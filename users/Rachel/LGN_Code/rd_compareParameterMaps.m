@@ -13,15 +13,15 @@ dataType = 'GLMs';
 mapName = 'BetaM-P';
 classMapName = 'MPClass'; % if no class map, set to []
 subjectID = 'KS';
-roiName = 'ROI201-i7T17T2';
+roiName = 'ROI101-i7T17T2';
 prop = .2;
 
 % set map idxs in case there are multiple scans in this data type
 map1Idx = 1;
 map2Idx = 1; % 2 for RD 7T
 
-saveData = 1;
-saveFigures = 1;
+saveData = 0;
+saveFigures = 0;
 
 %% file i/o
 studyDir = '/Volumes/Plata1/LGN/Scans';
@@ -236,7 +236,7 @@ ylabel('proportion of voxels')
 subplot(2,2,4)
 hold on
 bar(ipClassProps)
-plot(1:3, chancePoints, '.r', 'MarkerSize', 10)
+plot(1:3, chancePoints*sum(ipClassProps(1:3)), '.r', 'MarkerSize', 10)
 ylim([0 1])
 set(gca,'XTick',1:length(ipClassProps))
 set(gca,'XTickLabel',ipClassPropsHeaders)
