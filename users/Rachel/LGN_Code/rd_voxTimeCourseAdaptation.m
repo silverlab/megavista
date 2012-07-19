@@ -4,11 +4,11 @@
 
 %% setup
 hemi = 1;
-voxelSelectionOption = 'varExp'; % varExp, beta, voxGroup
+voxelSelectionOption = 'voxGroup'; % varExp, beta, voxGroup
 varThresh = 0;
 betaThresh = 0;
 betaCoefs = [.5 -.5];
-prop = .2;
+prop = .5;
 group = 2;
 groupNames = {'M','P'};
 
@@ -36,7 +36,7 @@ condNames = trials.condNames;
 params = figData.params;
 
 % reset any params
-params.normBsl = 1;
+params.normBsl = 0;
 
 % calculate frame window (in TRs) used by er_chopTSeries2 (lines 165-171)
 timeWindow = params.timeWindow;
@@ -97,7 +97,7 @@ for iCond = 1:nConds
         'k','LineWidth',2)
     plot(frameWindow*TR, zeros(size(frameWindow)),'--k','LineWidth',1)
     
-    ylim([-8 8])
+    ylim([-6 6])
 end
 
 % %% plot difference tcs
@@ -119,6 +119,7 @@ end
 %% save data
 if saveData
     save(analysisSavePath, 'hemi', 'voxelSelectionOption', 'varThresh', 'betaThresh', ...
+        'betaCoefs','prop','group','groupNames','trials',...
         'frameWindow', 'TR', 'voxMeanTcs', 'voxMeanTcs_dimHeaders');
 end
 

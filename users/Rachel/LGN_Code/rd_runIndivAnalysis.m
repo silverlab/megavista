@@ -55,7 +55,7 @@ for iSubject = 1:nSubjects
 %     dataFilePattern = sprintf('lgnROI%d_indivRunStats*', hemi);
 %     allData = rd_appendData(dataFilePattern, allData, appendDims);
 
-    rd_mrMakeMPROIParameterMap
+    rd_voxTimeCourseAdaptation
 end
 
 
