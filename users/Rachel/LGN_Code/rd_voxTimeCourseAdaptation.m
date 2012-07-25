@@ -3,24 +3,35 @@
 % see tc_init.m
 
 %% setup
-hemi = 1;
+hemi = 2;
 voxelSelectionOption = 'voxGroup'; % varExp, beta, voxGroup
-varThresh = 0;
+varThresh = 0.05;
 betaThresh = 0;
 betaCoefs = [.5 -.5];
-prop = .5;
+prop = .2;
 group = 2;
 groupNames = {'M','P'};
 
 saveData = 0;
-saveFigs = 0;
+saveFigs = 1;
+
+%% analysis description for file saving
+switch voxelSelectionOption
+    case 'voxGroup'
+        analysisDescrip = sprintf('%s%s_prop%d', ...
+            voxelSelectionOption, groupNames{group}, prop*100);
+    otherwise
+        error('voxelSelectionOption not found')
+end
 
 %% file I/O
 fileBase = sprintf('lgnROI%d', hemi);
 analysisExtension = '_multiVoxFigData';
 loadPath = sprintf('%s%s.mat', fileBase, analysisExtension);
-analysisSavePath = sprintf('%s_timeCoursesAdaptation_%s.mat', fileBase, datestr(now,'yyyymmdd'));
-plotSavePath = sprintf('figures/%sPlot_timeCoursesAdaptation', fileBase);
+analysisSavePath = sprintf('%s_timeCoursesAdaptation_%s_%s.mat', ...
+    fileBase, analysisDescrip, datestr(now,'yyyymmdd'));
+plotSavePath = sprintf('figures/%sPlot_timeCoursesAdaptation_%s', ...
+    fileBase, analysisDescrip);
 
 %% load data
 load(loadPath)
@@ -65,8 +76,6 @@ switch voxelSelectionOption
         error('voxelSelectionOption not found')
 end
 
-
-
 %% choose voxels
 voxs = voxs(voxelSelector);
 nVox = numel(voxs);
@@ -97,7 +106,7 @@ for iCond = 1:nConds
         'k','LineWidth',2)
     plot(frameWindow*TR, zeros(size(frameWindow)),'--k','LineWidth',1)
     
-    ylim([-6 6])
+    ylim([-4 4])
 end
 
 % %% plot difference tcs
@@ -125,9 +134,9 @@ end
 
 %% save figs
 if saveFigs
-    for iF = 1:numel(fig1)
-        print(fig1(iF),'-djpeg', sprintf('%s_%s_%s', plotSavePath, condNames{iF}, datestr(now,'yyyymmdd')));
-    end
+
+    print(fig1,'-djpeg', sprintf('%s_%s', plotSavePath, datestr(now,'yyyymmdd')));
+
     
 %     for iF = find(fig2)
 %         print(fig2(iF),'-djpeg', sprintf('%s_%s-%s_%s', plotSavePath, condNames{iF}, condNames{1}, datestr(now,'yyyymmdd')));
