@@ -97,15 +97,16 @@ voxMeanTcs_dimHeaders = {'TR','cond','vox'};
 %% plot mean tcs for all voxels
 fig1 = figure('Position',[0 0 730 890]);
 for iCond = 1:nConds
-%     fig1(iCond) = figure;
+    condIdx = find(strcmp(trials.condNames{iCond}, voxtc.labels)); % iCond and condIdx might be different
+
     subplot(3,2,iCond)
-    plot(frameWindow*TR, squeeze(voxMeanTcs(:,iCond,:)));
+    plot(frameWindow*TR, squeeze(voxMeanTcs(:,condIdx,:)));
     xlabel('time (s)')
     ylabel('BOLD amplitude')
     title(sprintf('Hemi %d, %s, %s', hemi, condNames{iCond}, voxDescrip));
     
     hold on
-    plot(frameWindow*TR, mean(squeeze(voxMeanTcs(:,iCond,:)),2),...
+    plot(frameWindow*TR, mean(squeeze(voxMeanTcs(:,condIdx,:)),2),...
         'k','LineWidth',2)
     plot(frameWindow*TR, zeros(size(frameWindow)),'--k','LineWidth',1)
     
