@@ -3,9 +3,9 @@
 % see tc_init.m
 
 %% setup
-hemi = 2;
-voxelSelectionOption = 'voxGroup'; % varExp, beta, voxGroup
-varThresh = 0.05;
+hemi = 1;
+voxelSelectionOption = 'varExp'; % varExp, beta, voxGroup
+varThresh = 0;
 betaThresh = 0;
 betaCoefs = [.5 -.5];
 prop = .2;
@@ -13,13 +13,16 @@ group = 2;
 groupNames = {'M','P'};
 
 saveData = 0;
-saveFigs = 1;
+saveFigs = 0;
 
 %% analysis description for file saving
 switch voxelSelectionOption
     case 'voxGroup'
         analysisDescrip = sprintf('%s%s_prop%d', ...
             voxelSelectionOption, groupNames{group}, prop*100);
+    case 'varExp'
+        analysisDescrip = sprintf('%s_thresh%03d', ...
+            voxelSelectionOption, varThresh);
     otherwise
         error('voxelSelectionOption not found')
 end
