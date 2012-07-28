@@ -4,12 +4,12 @@
 
 %% setup
 hemi = 1;
-voxelSelectionOption = 'varExp'; % varExp, beta, voxGroup
+voxelSelectionOption = 'voxGroup'; % varExp, beta, voxGroup
 varThresh = 0;
 betaThresh = 0;
 betaCoefs = [.5 -.5];
 prop = .2;
-group = 2;
+group = 1;
 groupNames = {'M','P'};
 
 saveData = 0;

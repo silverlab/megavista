@@ -55,7 +55,18 @@ for iSubject = 1:nSubjects
 %     dataFilePattern = sprintf('lgnROI%d_indivRunStats*', hemi);
 %     allData = rd_appendData(dataFilePattern, allData, appendDims);
 
+%     % delete incorrect figures
+%     cd figures
+%     ls *timeCoursesAdaptation*
+%     ok = input('ok to delete? (y/n)','s');
+%     if ok
+%         !rm *timeCoursesAdaptation*
+%     else
+%         error('exiting ...')
+%     end
+
     rd_voxTimeCourseAdaptation
+    
 end
 
 
