@@ -1,6 +1,8 @@
 % rd_mrMakeMeanEpiAnat.m
 %
 % mrSave will make Inplane/anat.mat in whatever directory you specify
+%
+% use fslmaths to make mean nifti files: fslmaths inputvol -Tmean outputvol
 
 epi01 = mrLoad('epi01_hemi_mcf.nii.gz','nifti');
 epi01_mean = mrComputeMeanMap(epi01);
