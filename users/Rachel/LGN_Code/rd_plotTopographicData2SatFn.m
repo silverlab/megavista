@@ -19,7 +19,7 @@ function rd_plotTopographicData2SatFn(hemi, voxelSelectionOption, ...
 
 %% Setup
 cmapOption = 'default'; % ['default','thresh']
-colormapName = 'whiteblue'; % ['whitered','whiteblue','lbmap', otherwise > 'jet']
+colormapName = 'lbmap'; % ['whitered','whiteblue','lbmap', otherwise > 'jet']
 cScaleOption = 'scaleToData'; % ['scaleToData','chooseCRange']
 cValRange = [-.95 .95]; % if using chooseCRange
 saveAnalysis = 0;
