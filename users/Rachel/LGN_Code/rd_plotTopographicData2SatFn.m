@@ -175,11 +175,15 @@ for iSlice = 1:length(slices)
     
     % find val cmap bins
     clear cBins
-    for iVal = 1:length(vals)
-        try
-            cBins(iVal,1) = find(diff(vals(iVal)>cmapBinEdges));
-        catch
-            cBins(iVal,1) = find(diff(vals(iVal)>=cmapBinEdges));
+    if isempty(vals)
+        cBins = [];
+    else
+        for iVal = 1:length(vals)
+            try
+                cBins(iVal,1) = find(diff(vals(iVal)>cmapBinEdges));
+            catch
+                cBins(iVal,1) = find(diff(vals(iVal)>=cmapBinEdges));
+            end
         end
     end
     
