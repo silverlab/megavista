@@ -1,6 +1,10 @@
 % rd_quickPlotBetaMapsSat.m
 
-hemis = [1 2];
+hemis = [2];
+
+% Some defaults if running rd_plotTopographicData2SatFn directly:
+% hemi = 2; voxelSelectionOption = 'all'; saturationOption = 'full';
+% betaWeights = [.5 -.5]; name = 'betaM-P'; varThresh = 0; saveFigs = 0;
 
 % Full ops:
 % voxSelectOptions = {'all', 'varExp'};
@@ -18,7 +22,7 @@ saturationOptions = {'full'};
 %                 [0 1], 'betaP'};
 betaSettings = {[.5 -.5], 'betaM-P'};
 
-saveFigs = 1;
+saveFigs = 0;
 
 for iHemi = 1:numel(hemis)
     hemi = hemis(iHemi);
