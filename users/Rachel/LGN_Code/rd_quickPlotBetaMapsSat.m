@@ -20,9 +20,9 @@ saturationOptions = {'full'};
 % betaSettings = {[.5 -.5], 'betaM-P'; ...
 %                 [1 0], 'betaM'; ...
 %                 [0 1], 'betaP'};
-betaSettings = {[0 1], 'betaP'};
+betaSettings = {[.5 -.5], 'betaM-P'};
 
-saveFigs = 1;
+saveFigs = 0;
 
 for iHemi = 1:numel(hemis)
     hemi = hemis(iHemi);
