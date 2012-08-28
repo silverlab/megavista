@@ -27,7 +27,7 @@ end
 
 % 2011.07.26 RFD: apply the cannonical transform to handle niftis
 % properly regardless of the data orientation.
-% mr.hdr  = niftiApplyCannonicalXform(mr.hdr); % does not work for coronal slices
+mr.hdr  = niftiApplyCannonicalXform(mr.hdr); %%% does not work for coronal slices
 mr.data = mr.hdr.data;
 mr.hdr  = rmfield(mr.hdr,'data');
 
