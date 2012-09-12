@@ -2,7 +2,7 @@
 
 load mrSESSION.mat
 
-correctTR = 2.25;
+correctTR = 2.25; % 2.25 for WC, 2 for MN
 
 nScans = numel(mrSESSION.functionals);
 
