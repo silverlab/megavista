@@ -1,9 +1,14 @@
 function es = rd_echoSpacingFromDicom(dicomPath, ipat)
 
+% function es = rd_echoSpacingFromDicom(dicomPath, ipat)
+% 
 % echo spacing = 1/({bandwidth per pixel phase encode}*{number of phase
 % encoding samples, first element}) * {ipat factor}
-
+%
 % grappa reduces the number of phase encoding samples
+%
+% Rachel Denison
+% 14 September 2012
 
 dcminf = dicominfo(dicomPath);
 
