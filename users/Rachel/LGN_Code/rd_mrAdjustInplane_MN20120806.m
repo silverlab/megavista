@@ -5,7 +5,7 @@
 load mrSESSION.mat
 
 correctInplaneDim = [160 160];
-correctRes = [1.2 1.2 1.2];
+correctRes = [1.3 1.3 1.3]; % MN [1.2 1.2 1.2] % JN, SB, RD [1.3 1.3 1.3]
 
 mrSESSION.inplanes.fullSize = correctInplaneDim;
 mrSESSION.inplanes.voxelSize = correctRes;

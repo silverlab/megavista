@@ -17,12 +17,14 @@ hemis = [1 2];
 % Selected ops:
 voxSelectOptions = {'all'};
 saturationOptions = {'full'};
-% betaSettings = {[.5 -.5], 'betaM-P'; ...
-%                 [1 0], 'betaM'; ...
-%                 [0 1], 'betaP'};
-betaSettings = {[.5 -.5], 'betaM-P'};
+betaSettings = {[.5 -.5], 'betaM-P'; ...
+                [1 0], 'betaM'; ...
+                [0 1], 'betaP'};
+% betaSettings = {[.5 -.5], 'betaM-P'};
+% betaSettings = {[1 0], 'betaM'};
+% betaSettings = {[0 1], 'betaP'};
 
-saveFigs = 0;
+saveFigs = 1;
 
 for iHemi = 1:numel(hemis)
     hemi = hemis(iHemi);
