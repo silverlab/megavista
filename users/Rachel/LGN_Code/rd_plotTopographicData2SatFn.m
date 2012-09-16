@@ -32,7 +32,7 @@ end
 % colormapName = 'whitered'; % ['whitered','whiteblue','lbmap', otherwise > 'jet']
 cScaleOption = 'scaleToData'; % ['scaleToData','chooseCRange']
 cValRange = [-.95 .95]; % if using chooseCRange
-saveAnalysis = 0;
+saveAnalysis = 1;
 
 iROI = 1; % only plotting one ROI at a time here
 
@@ -57,7 +57,7 @@ switch saturationOption
     case 'full'
         satDescrip = '';
     case 'varExp'
-        satDescrip = 'satVarExp';
+        satDescrip = 'satVarExp_';
     otherwise
         error('saturationOption not found when setting satDescrip.')
 end
@@ -238,7 +238,7 @@ xyCoordsToPlot = {1:size(brainMap,1)-minInplaneCoords(1)+1, ...
 brainMapToPlot = brainMap(xyCoordsToPlot{1},xyCoordsToPlot{2},:,:);
 
 dimLabels = {'Sag','Cor','--','Ax'};
-dimToSlice = 2;
+dimToSlice = 4;
 
 % number of subplots to contain all slices
 nPlotCols = ceil(sqrt(size(brainMapToPlot,dimToSlice)));
@@ -270,6 +270,9 @@ for iSlice = 1:size(brainMapToPlot,dimToSlice)
             brainSliceMap = brainSliceMap1;
     end
     
+    % store brain slice maps
+    brainSliceMaps{iSlice} = brainSliceMap;
+    
     % show slice with colored map
     subplot(nPlotRows, nPlotCols, iSlice)
 %     subplot(nPlotRows, nPlotCols, nPlotCols+1-iSlice)
@@ -286,11 +289,11 @@ for iSlice = 1:size(brainMapToPlot,dimToSlice)
 end
 
 %% save map
-mapSavePath = sprintf('%s%s_%s_%s_%s', mapFileBase, name, voxDescrip, satDescrip, datestr(now,'yyyymmdd'));
+mapSavePath = sprintf('%s%s_%s_%s%s', mapFileBase, name, voxDescrip, satDescrip, datestr(now,'yyyymmdd'));
 histSavePath = sprintf('%s%s_%s_%s', histFileBase, name, voxDescrip, datestr(now,'yyyymmdd'));
 
 if saveAnalysis
-    save(sprintf('mat_files/%s.mat', mapSavePath), 'brainMap')
+    save(sprintf('%s.mat', mapSavePath),'brainMap','brainSliceMaps','dimToSlice','dimLabels','mapName','hemi','name','voxDescrip','satDescrip')
 end
 if saveFigs
     print(f1,'-djpeg',sprintf('figures/%s', mapSavePath));
