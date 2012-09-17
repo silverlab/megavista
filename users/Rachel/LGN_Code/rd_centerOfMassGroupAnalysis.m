@@ -4,19 +4,31 @@
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
             
 scanner = '7T';
-mapName = 'betaM-P';
-prop = 0.2;
+mapName = 'betaP';
+prop = 0.8;
 analysisExtension = sprintf('centerOfMass_%s_prop%d_*', mapName, round(prop*100));
 hemis = [1 2];
 
 plotFigs = 1;
-saveFigs = 0;
-saveAnalysis = 0;
+saveFigs = 1;
+saveAnalysis = 1;
 
 MCol = [220 20 60]./255; % red
 PCol = [0 0 205]./255; % medium blue
 nullCol = [0 0 0]; % black
-colors = {MCol, PCol};
+switch mapName
+    case 'betaM-P'
+        colors = {MCol, PCol};
+        labels = {'more M','more P'};
+    case 'betaM'
+        colors = {MCol, nullCol};
+        labels = {'more M','less M'};
+    case 'betaP'
+        colors = {PCol, nullCol};
+        labels = {'more P','less P'};
+    otherwise
+        error('mapName not recognized')
+end
 for iCol = 1:numel(colors)
     hsvCol = rgb2hsv(colors{iCol});
     lightColors{iCol} = hsv2rgb([hsvCol(1) .3 1]);
@@ -32,11 +44,12 @@ switch scanner
         
     case '7T'
         subjectDirs = subjectDirs7T;
-        voxelSize = [1.5 1.5 1.5];
+%         voxelSize = [1.5 1.5 1.5];
+        voxelSize = [1.3 1.3 1.3];
 end
 
-subjects = 1:size(subjectDirs,1);
-% subjects = [1 2 4 5];
+% subjects = 1:size(subjectDirs,1);
+subjects = 7:8;
 nSubjects = numel(subjects);
 
 mmMat = repmat(voxelSize,nSubjects,1);
@@ -184,7 +197,7 @@ if plotFigs
             if iDim==1
                 title(sprintf('Hemi %d, %s, prop %.1f', hemi, mapName, prop))
 %                 legend('more M','more P','location','Best')
-                legend([p1.mainLine p2.mainLine],{'more P','less P'},...
+                legend([p1.mainLine p2.mainLine],labels,...
                     'location','Best')
             end
         end

@@ -4,10 +4,24 @@
 hemi = 2;
 
 varThreshs = 0:.001:.05;
-prop = .8;
 voxelSelectionOption = 'varExp'; % all, varExp
-betaCoefs = [0 1];
+% prop = .8;
+% betaCoefs = [0 1];
 mapName = 'betaP';
+
+switch mapName
+    case 'betaM-P'
+        prop = 0.2;
+        betaCoefs = [.5 -.5];
+    case 'betaM'
+        prop = 0.2;
+        betaCoefs = [1 0];
+    case 'betaP'
+        prop = 0.8;
+        betaCoefs = [0 1];
+    otherwise
+        error ('mapName not recognized when setting prop and betaCoefs')
+end
 
 plotFigs = 1;
 saveAnalysis = 1;
@@ -81,14 +95,28 @@ if plotFigs
     for iDim = 1:3
         subplot(4,1,iDim)
         hold on
-        plot(varThreshs, centers1(:,iDim),'b') % r
-        plot(varThreshs, centers2(:,iDim),'k') % b
-%         ylabel(sprintf('Dim %d', iDim))
+        switch mapName
+            case 'betaM-P'
+                plot(varThreshs, centers1(:,iDim),'r') % r
+                plot(varThreshs, centers2(:,iDim),'b') % b
+                labels = {'more M','more P'};
+            case 'betaM'
+                plot(varThreshs, centers1(:,iDim),'r') % r
+                plot(varThreshs, centers2(:,iDim),'k') % b
+                labels = {'more M','less M'};
+            case 'betaP'
+                plot(varThreshs, centers1(:,iDim),'b') % r
+                plot(varThreshs, centers2(:,iDim),'k') % b
+                labels = {'more P','less P'};
+            otherwise
+                error('mapName not recognized')
+        end
+        %         ylabel(sprintf('Dim %d', iDim))
         ylabel(dimLabels{iDim})
         
         if iDim==1
             title(sprintf('Hemi %d, %s, prop %.1f', hemi, mapName, prop))
-            legend('more P','less P','location','Best')
+            legend(labels,'location','Best')
         end
     end
     

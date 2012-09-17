@@ -27,7 +27,8 @@ switch name
     case 'betaM-P'
         colormapName = 'lbmap';
     otherwise
-        error('colormapName assignment not found.')
+        fprintf('colormapName assignment not found. Setting colormap = jet')
+        colormapName = 'jet';
 end
 % colormapName = 'whitered'; % ['whitered','whiteblue','lbmap', otherwise > 'jet']
 cScaleOption = 'scaleToData'; % ['scaleToData','chooseCRange']

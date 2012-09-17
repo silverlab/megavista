@@ -6,8 +6,10 @@ PCol = [0 0 205]./255; % medium blue
 colors = {MCol, PCol};
 
 %% load data
-m = load('groupCenterOfMass_7T_N4_betaM_prop20_20120321');
-p = load('groupCenterOfMass_7T_N4_betaP_prop80_20120321');
+% m = load('groupCenterOfMass_7T_N4_betaM_prop20_20120321');
+% p = load('groupCenterOfMass_7T_N4_betaP_prop80_20120321');
+m = load('groupCenterOfMass_7T_N2_betaM_prop20_20120916');
+p = load('groupCenterOfMass_7T_N2_betaP_prop80_20120916');
 
 nSubjects = numel(m.subjects);
 varThreshs = m.groupMean.varThreshs(:,1);

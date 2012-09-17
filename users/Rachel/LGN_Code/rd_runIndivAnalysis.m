@@ -10,8 +10,8 @@ switch scanner
         subjectDirs = subjectDirs7T;
 end
 
-% subjects = [1 2 4 5];
-subjects = 1:size(subjectDirs,1);
+subjects = [5 7:9];
+% subjects = 1:size(subjectDirs,1);
 nSubjects = numel(subjects);
 
 % run specified individual analysis script in subject directory
@@ -65,7 +65,12 @@ for iSubject = 1:nSubjects
 %         error('exiting ...')
 %     end
 
-    rd_voxTimeCourseAdaptation
+%     % center of mass sequence
+%     rd_centerOfMass_multiVoxData
+     rd_normalizeCenterOfMass
+     % rd_centerOfMassNormGroupAnalysis (makes the good XZ plots)
+     % rd_centerOfMassGroupAnalysis (used for center of mass interaction)
+     % rd_centerOfMassGroupMPInteraction
     
 end
 

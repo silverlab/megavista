@@ -14,7 +14,16 @@ saveFigs = 1;
 MCol = [220 20 60]./255; % red
 PCol = [0 0 205]./255; % medium blue
 nullCol = [0 0 0]; % black
-colors = {PCol, nullCol};
+switch mapName
+    case 'betaM-P'
+        colors = {MCol, PCol};
+    case 'betaM'
+        colors = {MCol, nullCol};
+    case 'betaP'
+        colors = {PCol, nullCol};
+    otherwise
+        error('mapName not recognized')
+end
 for iCol = 1:numel(colors)
     hsvCol = rgb2hsv(colors{iCol});
     lightColors{iCol} = hsv2rgb([hsvCol(1) .1 1]);

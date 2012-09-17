@@ -3,20 +3,32 @@
 %% setup
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
             
-scanner = '3T';
-mapName = 'betaM-P';
+scanner = '7T';
+mapName = 'betaM';
 prop = 0.2;
 analysisExtension = sprintf('centerOfMassNorm_%s_prop%d_*', mapName, round(prop*100));
 hemis = [1 2];
 
 plotFigs = 1;
-saveFigs = 0;
-saveAnalysis = 0;
+saveFigs = 1;
+saveAnalysis = 1;
 
 MCol = [220 20 60]./255; % red
 PCol = [0 0 205]./255; % medium blue
 nullCol = [0 0 0]; % black
-colors = {MCol, PCol};
+switch mapName
+    case 'betaM-P'
+        colors = {MCol, PCol};
+        labels = {'more M','more P'};
+    case 'betaM'
+        colors = {MCol, nullCol};
+        labels = {'more M','less M'};
+    case 'betaP'
+        colors = {PCol, nullCol};
+        labels = {'more P','less P'};
+    otherwise
+        error('mapName not recognized')
+end
 for iCol = 1:numel(colors)
     hsvCol = rgb2hsv(colors{iCol});
     lightColors{iCol} = hsv2rgb([hsvCol(1) .3 1]);
@@ -36,7 +48,7 @@ end
 cVarThresh = 0;
 
 % subjects = 1:size(subjectDirs,1);
-subjects = [1 2 4 5];
+subjects = [7 8];
 nSubjects = numel(subjects);
 
 %% File I/O
@@ -140,7 +152,7 @@ if plotFigs
             if iDim==1
                 title(sprintf('Hemi %d, %s, prop %.1f', hemi, mapName, prop))
 %                 legend('more M','more P','location','Best')
-                legend([p1.mainLine p2.mainLine],{'more M','more P'},...
+                legend([p1.mainLine p2.mainLine],labels,...
                     'location','Best')
             end
         end
