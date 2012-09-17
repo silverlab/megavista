@@ -238,7 +238,7 @@ xyCoordsToPlot = {1:size(brainMap,1)-minInplaneCoords(1)+1, ...
 brainMapToPlot = brainMap(xyCoordsToPlot{1},xyCoordsToPlot{2},:,:);
 
 dimLabels = {'Sag','Cor','--','Ax'};
-dimToSlice = 4;
+dimToSlice = 2;
 
 % number of subplots to contain all slices
 nPlotCols = ceil(sqrt(size(brainMapToPlot,dimToSlice)));
