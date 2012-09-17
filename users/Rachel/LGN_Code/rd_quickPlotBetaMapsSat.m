@@ -24,7 +24,7 @@ betaSettings = {[.5 -.5], 'betaM-P'; ...
 % betaSettings = {[1 0], 'betaM'};
 % betaSettings = {[0 1], 'betaP'};
 
-saveFigs = 1;
+saveFigs = 0;
 
 for iHemi = 1:numel(hemis)
     hemi = hemis(iHemi);
