@@ -11,7 +11,7 @@ hemis = [1 2];
 
 plotFigs = 1;
 saveFigs = 1;
-saveAnalysis = 1;
+saveAnalysis = 0;
 
 MCol = [220 20 60]./255; % red
 PCol = [0 0 205]./255; % medium blue
@@ -204,11 +204,11 @@ end
 
 %% save figs
 if saveFigs
-%     for iHemi = 1:numel(f0)
-%         plotSavePath = sprintf('%s/figures/groupCenterOfMassNorm_%s_hemi%d_%s',...
-%             fileBaseDir, fileBaseSubjects, iHemi, fileBaseTail);
-%         print(f0(iHemi),'-djpeg',sprintf(plotSavePath));
-%     end
+    for iHemi = 1:numel(f0)
+        plotSavePath = sprintf('%s/figures/groupCenterOfMassNorm_%s_hemi%d_%s',...
+            fileBaseDir, fileBaseSubjects, iHemi, fileBaseTail);
+        print(f0(iHemi),'-djpeg',sprintf(plotSavePath));
+    end
     for iHemi = 1:numel(f1)
         scatterSavePath = sprintf('%s/figures/groupCenterOfMassNormXZ_%s_hemi%d_%s',...
             fileBaseDir, fileBaseSubjects, iHemi, fileBaseTail);
