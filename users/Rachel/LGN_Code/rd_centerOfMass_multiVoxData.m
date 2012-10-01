@@ -62,7 +62,7 @@ for iVar = 1:length(varThreshs)
     vals = topoData(voxelSelector);
     
     %% Analysis
-    [centers voxsInGroup] = ...
+    [centers voxsInGroup threshVal] = ...
         rd_findCentersOfMass(coords(voxelSelector,:), vals, prop, 'prop');
     
     centers1(iVar,:) = centers{1};
@@ -79,6 +79,7 @@ C.mapName = mapName;
 C.varThreshs = varThreshs;
 C.prop = prop;
 C.voxelSelectionOption = voxelSelectionOption;
+C.threshVal = threshVal;
 C.centers1 = centers1;
 C.centers2 = centers2;
 C.nSuperthreshVox = nSuperthreshVox;
