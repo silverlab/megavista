@@ -19,6 +19,7 @@ function rd_plotTopographicData2SatFn(hemi, voxelSelectionOption, ...
 
 %% Setup
 cmapOption = 'default'; % ['default','thresh']
+plotFormat = 'default'; % ['default','singleRow'] % singleRow plots slices in a row, and in reverse order. only tested for coronal slices.
 switch name
     case 'betaM'
         colormapName = 'whitered';
@@ -33,7 +34,7 @@ end
 % colormapName = 'whitered'; % ['whitered','whiteblue','lbmap', otherwise > 'jet']
 cScaleOption = 'scaleToData'; % ['scaleToData','chooseCRange']
 cValRange = [-.95 .95]; % if using chooseCRange
-saveAnalysis = 1;
+saveAnalysis = 0;
 
 iROI = 1; % only plotting one ROI at a time here
 
@@ -159,7 +160,7 @@ switch cmapOption
     case 'default'
         cmap = cmap0;
     case 'thresh'
-        thresh = 0.7;
+        thresh = 0.66;
         lowZThreshBin = find(diff(cmapBinEdges<thresh)); % use <-thresh to threshold on either side of zero
         highZThreshBin = find(diff(cmapBinEdges>thresh));
         cmap = zeros(size(cmap0));
@@ -242,11 +243,16 @@ dimLabels = {'Sag','Cor','--','Ax'};
 dimToSlice = 2;
 
 % number of subplots to contain all slices
-nPlotCols = ceil(sqrt(size(brainMapToPlot,dimToSlice)));
-nPlotRows = ceil(size(brainMapToPlot,dimToSlice)/nPlotCols);
-
-% nPlotCols = size(brainMapToPlot,dimToSlice);
-% nPlotRows = 1;
+switch plotFormat
+    case 'default'
+        nPlotCols = ceil(sqrt(size(brainMapToPlot,dimToSlice)));
+        nPlotRows = ceil(size(brainMapToPlot,dimToSlice)/nPlotCols);
+    case 'singleRow'
+        nPlotCols = size(brainMapToPlot,dimToSlice);
+        nPlotRows = 1;
+    otherwise
+        error('plotFormat not recognized')
+end
 
 f1 = figure('name',mapName);
 for iSlice = 1:size(brainMapToPlot,dimToSlice)
@@ -275,8 +281,15 @@ for iSlice = 1:size(brainMapToPlot,dimToSlice)
     brainSliceMaps{iSlice} = brainSliceMap;
     
     % show slice with colored map
-    subplot(nPlotRows, nPlotCols, iSlice)
-%     subplot(nPlotRows, nPlotCols, nPlotCols+1-iSlice)
+    switch plotFormat
+        case 'default'
+            subplot(nPlotRows, nPlotCols, iSlice)
+        case 'singleRow' % plots slices in reverse order
+            subplot(nPlotRows, nPlotCols, nPlotCols+1-iSlice)
+        otherwise
+            error('plotFormat not recognized')
+    end
+    
     image(brainSliceMap)
     if dimToSlice==4
         title(['Slice ' num2str(slices(iSlice))])
@@ -284,8 +297,11 @@ for iSlice = 1:size(brainMapToPlot,dimToSlice)
         title(['Slice ' num2str(iSlice)])
     end
     axis off
-%     axis equal
-%     axis tight
+    
+    if strcmp(plotFormat, 'singleRow')
+        axis equal
+        axis tight
+    end
     
 end
 
