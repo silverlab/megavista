@@ -7,7 +7,7 @@ varThreshs = 0:.001:.05;
 voxelSelectionOption = 'varExp'; % all, varExp
 % prop = .8;
 % betaCoefs = [0 1];
-mapName = 'betaP';
+mapName = 'betaM-P';
 
 switch mapName
     case 'betaM-P'
@@ -62,7 +62,7 @@ for iVar = 1:length(varThreshs)
     vals = topoData(voxelSelector);
     
     %% Analysis
-    [centers voxsInGroup threshVal] = ...
+    [centers voxsInGroup threshVal(iVar,1)] = ...
         rd_findCentersOfMass(coords(voxelSelector,:), vals, prop, 'prop');
     
     centers1(iVar,:) = centers{1};
@@ -72,7 +72,7 @@ for iVar = 1:length(varThreshs)
     
 end
 
-%% Save data
+%% Store data
 C.hemi = hemi;
 C.betaCoefs = betaCoefs;
 C.mapName = mapName;
@@ -85,6 +85,7 @@ C.centers2 = centers2;
 C.nSuperthreshVox = nSuperthreshVox;
 C.note = 'centers1 is from the higher-valued voxel group, centers2 from the lower-valued group';
 
+%% Save data
 if saveAnalysis
     save(analysisSavePath,'C')
 end
