@@ -13,14 +13,15 @@ function params = rd_mrMakeMrInit2Params
 % ------------------------------------------------------------------------
 % Here we have the most common analysis settings that are specific to an
 % individual experiment
-subjectID = 'MN';
-description = 'MN_20120806 MPLocalizer_7T';
+subjectID = 'JN';
+description = 'JN_20120808 MPLocalizer_7T SPM distortion-corrected';
 comments = '';
 
 % Scan groups
-scanGroups = {[2 8], 3:7, 1}; % MN {hemi, mp, fix}
+% scanGroups = {[2 8], 3:7, 1}; % MN {hemi, mp, fix}
 % scanGroups = {[2 11], 3:10, [1 13 12 14]}; % RD {hemi, mp, steady [fix M P fullField]}
 % scanGroups = {[2 11], 3:10, 1, 12, 13}; % JN {hemi, mp, fix, M, P}
+scanGroups = {[2 11], 3:10, [1 12 13]}; % JN distortion-corrected {hemi, mp, fix, M, P}
 % scanGroups = {[7 9], 1:6, 8}; % SB {hemi, mp, fix}
 % scanGroups = {1:4}; % KS 1.25
 % scanGroups = {[1 6], 2:5};
@@ -33,7 +34,8 @@ scanGroups = {[2 8], 3:7, 1}; % MN {hemi, mp, fix}
 % Keep frames
 % scanGroupKeepFrames = {[5 -1], [3 90], [10, -1]}; % RD 7T Aug (TR=3s)
 % scanGroupKeepFrames = {[8 128], [4 135], [16 -1], [16 -1], [16 -1]}; % JN 
-scanGroupKeepFrames = {[8 128], [4 135], [16 -1]}; % SB, MN 
+scanGroupKeepFrames = {[8 128], [4 135], [16 -1]}; % JN distortion-corrected
+% scanGroupKeepFrames = {[8 128], [4 135], [16 -1]}; % SB, MN 
 % scanGroupKeepFrames = {[4 135]}; % KS 1.25
 % scanGroupKeepFrames = {[16 -1], [4 135]}; % 7T
 % scanGroupKeepFrames = {[6 132], [4 -1]}; % 3T [frames-to-discard frames-to-keep]
@@ -41,8 +43,8 @@ scanGroupKeepFrames = {[8 128], [4 135], [16 -1]}; % SB, MN
 % Annotations
 % scanGroupNames = {'mp'}; % KS 1.25
 % scanGroupNames = {'hemi','mp','fix','M','P'};
-% scanGroupNames = {'hemi','mp','steady'};
-scanGroupNames = {'hemi','mp','fix'};
+scanGroupNames = {'hemi','mp','steady'};
+% scanGroupNames = {'hemi','mp','fix'};
 
 % Parfiles
 % scansWithParfile = 1:4; % KS 1.25
@@ -74,14 +76,15 @@ niftiDir = [f '_nifti'];
 inplaneFile = dir([niftiDir '/gems*.nii.gz']);
 inplane = sprintf('%s/%s/%s/%s', p, f, niftiDir, inplaneFile.name);
 
-functionalFiles = dir([niftiDir '/*mcf.nii.gz']);
+functionalFiles = dir([niftiDir '/4D*.nii.gz']); % /*mcf.nii.gz
 for iFunc = 1:numel(functionalFiles)
     functionals{iFunc,1} = sprintf('%s/%s/%s/%s', ...
         p, f, niftiDir, functionalFiles(iFunc).name);
 end
 
-vAnatomy = sprintf('%s/%s/Anatomicals/vAnatomy.dat', p, f);
+% vAnatomy = sprintf('%s/%s/Anatomicals/vAnatomy.dat', p, f);
 % vAnatomy = sprintf('%s/%s/Anatomicals/ot1mpr.nii.gz', p, f);
+vAnatomy =  sprintf('/Volumes/Plata1/Anatomies/Anatomicals/%s/vAnatomy.dat', subjectID);
 
 % Expect to find parfiles in the specified directory
 parfileDir = 'Stimuli/parfiles';
