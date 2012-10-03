@@ -2,7 +2,8 @@
 
 load mrSESSION.mat
 
-correctTR = 2.25;
+% correctTR = 2.25; % RD 3T
+correctTR = 2; % JN distortion-corrected
 
 nScans = numel(mrSESSION.functionals);
 
