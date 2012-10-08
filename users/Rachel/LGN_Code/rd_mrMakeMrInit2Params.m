@@ -14,7 +14,7 @@ function params = rd_mrMakeMrInit2Params
 % Here we have the most common analysis settings that are specific to an
 % individual experiment
 subjectID = 'JN';
-description = 'JN_20120808 MPLocalizer_7T SPM distortion-corrected';
+description = 'JN_20120808 MPLocalizer_7T FSL distortion-corrected';
 comments = '';
 
 % Scan groups
@@ -76,7 +76,7 @@ niftiDir = [f '_nifti'];
 inplaneFile = dir([niftiDir '/gems*.nii.gz']);
 inplane = sprintf('%s/%s/%s/%s', p, f, niftiDir, inplaneFile.name);
 
-functionalFiles = dir([niftiDir '/4D*.nii.gz']); % /*mcf.nii.gz
+functionalFiles = dir([niftiDir '/*fsldc.nii.gz']); % /*mcf.nii.gz
 for iFunc = 1:numel(functionalFiles)
     functionals{iFunc,1} = sprintf('%s/%s/%s/%s', ...
         p, f, niftiDir, functionalFiles(iFunc).name);
