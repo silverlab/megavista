@@ -7,7 +7,7 @@ varThreshs = 0:.001:.05;
 voxelSelectionOption = 'varExp'; % all, varExp
 % prop = .8;
 % betaCoefs = [0 1];
-mapName = 'betaM-P';
+mapName = 'betaP';
 
 switch mapName
     case 'betaM-P'

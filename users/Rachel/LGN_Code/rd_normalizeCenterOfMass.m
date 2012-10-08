@@ -3,8 +3,18 @@
 %% setup
 hemi = 2;
 
-prop = .8;
 mapName = 'betaP';
+
+switch mapName
+    case 'betaM-P'
+        prop = 0.2;
+    case 'betaM'
+        prop = 0.2;
+    case 'betaP'
+        prop = 0.8;
+    otherwise
+        error ('mapName not recognized when setting prop and betaCoefs')
+end
 
 plotFigs = 1;
 saveAnalysis = 1;
