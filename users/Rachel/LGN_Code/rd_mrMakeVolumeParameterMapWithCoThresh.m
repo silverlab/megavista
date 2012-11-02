@@ -8,24 +8,31 @@
 % auto-scaled separately, so it's a good idea to set the clip mode to
 % something fixed.
 
-origMapFile = 'Volume/GLMs/BetaM-P.mat';
-threshFile = 'Volume/Averages/corAnal.mat';
-newMapFile = 'Volume/GLMs/BetaM-P.mat';
+viewName = 'Gray'; % 'Volume','Gray'
+mapPath = 'GLMs/MVP'; % 'GLMs/BetaM-P', 'GLMs/MVP'
+threshPath = 'GLMs/Proportion Variance Explained'; % 'Averages.corAnal', 'GLMs/Proportion Variance Explained'
+threshField = 'map'; % 'co', 'map'
+
+% files
+origMapFile = sprintf('%s/%s.mat', viewName, mapPath);
+threshFile = sprintf('%s/%s.mat', viewName, threshPath);
+newMapFile = origMapFile;
 
 % load parameter map
-volumeMap = load(origMapFile);
+viewMap = load(origMapFile);
 
-map = volumeMap.map;
-mapName = volumeMap.mapName;
-mapUnits = volumeMap.mapUnits;
-cmap = volumeMap.cmap;
-clipMode = volumeMap.clipMode;
-numColors = volumeMap.numColors;
-numGrays = volumeMap.numGrays;
+map = viewMap.map; % eg. volume map
+mapName = viewMap.mapName;
+mapUnits = viewMap.mapUnits;
+cmap = viewMap.cmap;
+clipMode = viewMap.clipMode;
+numColors = viewMap.numColors;
+numGrays = viewMap.numGrays;
 
 % load thresh map (eg. corAnal)
-volumeThreshMap = load(threshFile);
-co = volumeThreshMap.co;
+viewThreshMap = load(threshFile);
+co = viewThreshMap.(threshField);
 
 save(newMapFile, 'map', 'mapName', 'mapUnits',...
     'cmap', 'clipMode', 'numColors', 'numGrays', 'co')
+
