@@ -19,5 +19,5 @@ subjectDirs7T = {'KS_20111212_Session', 'KS_20111212_15mm', 'ROIX01';
                 'SB_20120807_Session', 'SB_20120807', 'ROIX01';
                 'JN_20120808_Session', 'JN_20120808', 'ROIX01';
                 'RD_20120809_Session', 'RD_20120809_axial', 'ROIX01';
-                'JN_20120808_Session', 'JN_20120808_spmDC', 'ROIX01';
+%                 'JN_20120808_Session', 'JN_20120808_spmDC', 'ROIX01';
                 'JN_20120808_Session', 'JN_20120808_fslDC', 'ROIX01'};
