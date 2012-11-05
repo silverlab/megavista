@@ -11,30 +11,28 @@ import nibabel as nib
 
 import nitime.analysis as nta
 import nitime.fmri.io as ntio
-import nitime.timeseries as ntts
-import nitime.viz as viz
 
-import vista_utils as tsv
 import rd_nipy_visualize as visualize
 
 # file i/o
 session_dir = '/Volumes/Plata1/LGN/Scans/7T/JN_20120808_Session/JN_20120808_fslDC/'
-roi_dir = os.path.join(session_dir, 'Inplane/ROIs/')
-data_dir = os.path.join(session_dir, 'ConnectivityAnalysis/nifti/')
+# roi_dir = os.path.join(session_dir, 'Masks/')
+roi_dir = '/Volumes/Plata1/motion_prf/subjects/JN_08092012_7T/Masks/'
+data_dir = os.path.join(session_dir, 'JN_20120808_fslDC_nifti/')
 out_dir = os.path.join(session_dir, 'ConnectivityAnalysis/')
 
-data_file = os.path.join(data_dir, 'fix_fsldc_minute2.nii.gz')
+data_file = os.path.join(data_dir, 'epi01_fix_fsldc.nii.gz')
 
 # ROIs to use as seeds
-seed_rois = ['LLGN_ecc0','LLGN_ecc14','LLGN_polar0','LLGN_polar5',
-    'RLGN_ecc2','RLGN_ecc9','RLGN_polar2','RLGN_polar4']
+seed_rois = ['LLGN_ecc0','LLGN_ecc14','LLGN_polar5',
+    'RLGN_ecc2','RLGN_ecc9','RLGN_polar4']
 
 # ROIs to use as targets
 target_rois = ['LV1_ecc0-2', 'LV1_ecc10-18', 'LV1_polar602-026', 'LV1_polar474-526',
      'RV1_ecc1-3', 'RV1_ecc7-11', 'RV1_polar174-226', 'RV1_polar374-426']
 
-# define upsample factor, TR, and frequency band of interest
-upsample_factor = [1.0000,1.0000,1.0000] #upsample factor from EPI to GEM
+# define TR and frequency band of interest
+#roi_name = 'V3'
 TR = 2
 f_lb = 0.01
 f_ub = 0.15
@@ -46,74 +44,64 @@ save_fig = 1
 # load data
 data = nib.load(data_file)
 volume_shape = data.shape[:-1]
-n_TRs = data.shape[-1]
 
 # Get seed data
 # initialize seed time series
-seed_ts = np.zeros((len(seed_rois), n_TRs))
+seed_ts = []
 
-for i_seed, seed_name in enumerate(seed_rois):
+for seed_name in seed_rois:
     print '\n', seed_name
-    seed_file = os.path.join(roi_dir, '{}.mat'.format(seed_name))
+    seed_file = os.path.join(roi_dir, '{}.nii.gz'.format(seed_name))
+
+    # load roi mask
+    seed_mask = nib.load(seed_file)
     
-    # get the coordinates of the seed voxels
-    seed_coords = tsv.upsample_coords(tsv.getROIcoords(seed_file), upsample_factor)
+    # find the coordinates of the seed voxels
+    seed_vals = seed_mask.get_data()
+    seed_coords = np.array(np.where(seed_vals==1))
 
     # make the seed time series (mean of roi time series)
-    # this is a little odd - reads the data as a TimeSeries, then just takes the data ...
-    seed_ts[i_seed] = ntio.time_series_from_file(data_file,
-                        coords=seed_coords,
+    seed_ts.append(ntio.time_series_from_file(data_file,
+                        seed_coords,
                         TR=TR,
-                        normalize='percent',
+                        normalize=None,
                         average=True,
                         filter=dict(lb=f_lb,
                             ub=f_ub,
                             method='boxcar'),
-                        verbose=True).data
-
-seed_T = ntts.TimeSeries(seed_ts, sampling_interval=TR)
-
-seed_Cor = nta.CorrelationAnalyzer(seed_T)
-fig = viz.drawmatrix_channels(seed_Cor.corrcoef, seed_rois, color_anchor=0)
+                        verbose=True))
 
 # Get target data
 # initialize target time series
-target_ts = np.zeros((len(target_rois), n_TRs))
+target_ts = []
 
-for i_target, target_name in enumerate(target_rois):
+for target_name in target_rois:
     print '\n', target_name
-    target_file = os.path.join(roi_dir, '{}.mat'.format(target_name))
+    target_file = os.path.join(roi_dir, '{}.nii.gz'.format(target_name))
+
+    # load roi mask
+    target_mask = nib.load(target_file)
 
     # find the coordinates of cortex voxels
-    target_coords = tsv.upsample_coords(tsv.getROIcoords(target_file), upsample_factor)
+    target_vals = target_mask.get_data()
+    target_coords = np.array(np.where(target_vals==1))
 
     # make the target time series
-    target_ts[i_target] = ntio.time_series_from_file(data_file,
-                        coords=target_coords,
+    target_ts.append(ntio.time_series_from_file(data_file,
+                        target_coords,
                         TR=TR,
-                        normalize='percent',
-                        average = True,
+                        normalize=None,
                         filter=dict(lb=f_lb,
                             ub=f_ub,
                             method='boxcar'),
-                        verbose=True).data
-
-target_T = ntts.TimeSeries(target_ts, sampling_interval=TR)
-
-target_Cor = nta.CorrelationAnalyzer(target_T)
-fig = viz.drawmatrix_channels(target_Cor.corrcoef, target_rois, color_anchor=0)
+                        verbose=True))
 
 # correlation analyzer
-seed_target_Cor = nta.SeedCorrelationAnalyzer(seed_T, target_T)
-fig = viz.drawmatrix_channels(seed_target_Cor.corrcoef, color_anchor=0)
+corA = nta.SeedCorrelationAnalyzer(seed_ts, target_ts)
 
 # coherence analyzer
-seed_target_Coh = nta.SeedCoherenceAnalyzer(seed_T, target_T,
-            method=dict(NFFT=30))
-fig = viz.drawmatrix_channels(np.mean(seed_target_Coh.coherence,2), color_anchor=0)
-
-print 'stopped working here!'
-0/0
+cohA = nta.SeedCoherenceAnalyzer(seed_ts, target_ts,
+            method=dict(NFFT=20))
 
 # select frequency band
 freq_idx = np.where((cohA.frequencies > f_lb) * (cohA.frequencies < f_ub))[0]
