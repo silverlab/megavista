@@ -72,6 +72,7 @@ for i_seed, seed_name in enumerate(seed_rois):
                         verbose=True).data
 
 seed_T = ntts.TimeSeries(seed_ts, sampling_interval=TR)
+fig = viz.plot_tseries(seed_T)
 
 seed_Cor = nta.CorrelationAnalyzer(seed_T)
 fig = viz.drawmatrix_channels(seed_Cor.corrcoef, seed_rois, color_anchor=0)
@@ -88,24 +89,32 @@ for i_target, target_name in enumerate(target_rois):
     target_coords = tsv.upsample_coords(tsv.getROIcoords(target_file), upsample_factor)
 
     # make the target time series
-    target_ts[i_target] = ntio.time_series_from_file(data_file,
+    target_data = ntio.time_series_from_file(data_file,
                         coords=target_coords,
                         TR=TR,
                         normalize='percent',
-                        average = True,
+                        average = False,
                         filter=dict(lb=f_lb,
                             ub=f_ub,
                             method='boxcar'),
                         verbose=True).data
 
+    nan_targets = np.isnan(np.mean(target_data,1))
+    print '\n', nan_targets.sum(), 'voxels with nan values ... removing'
+    target_ts[i_target] = np.mean(target_data[~nan_targets,:],0) # take average across voxels
+
 target_T = ntts.TimeSeries(target_ts, sampling_interval=TR)
+fig = viz.plot_tseries(target_T)
 
 target_Cor = nta.CorrelationAnalyzer(target_T)
 fig = viz.drawmatrix_channels(target_Cor.corrcoef, target_rois, color_anchor=0)
 
 # correlation analyzer
 seed_target_Cor = nta.SeedCorrelationAnalyzer(seed_T, target_T)
-fig = viz.drawmatrix_channels(seed_target_Cor.corrcoef, color_anchor=0)
+
+# show correlation matrix
+visualize.display_matrix(seed_target_Cor.corrcoef, 
+    xlabels=seed_rois, ylabels=target_rois, cmap=plt.cm.RdBu_r,color_anchor=0)
 
 # coherence analyzer
 seed_target_Coh = nta.SeedCoherenceAnalyzer(seed_T, target_T,
