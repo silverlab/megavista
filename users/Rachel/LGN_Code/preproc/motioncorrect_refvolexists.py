@@ -7,9 +7,8 @@ which can be created using dicom2vista_org.py.
 
 This script will attempt to motion correct all files starting with 'epi'
 that are located in the session _nifti directory. It will motion correct
-to a reference volume, which is the first volume in the scan. It expects
-this volume to be found in the session _dicom directory in a subdirectory 
-starting with 'epi01'.
+to a reference volume called ref_vol.nii, which should be in the _nifti
+directory.
 
 2011-Oct-17 RD wrote it, modified from dicom2vista_rd.py
 """ 
