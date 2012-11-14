@@ -119,7 +119,8 @@ visualize.display_matrix(seed_target_Cor.corrcoef,
 # coherence analyzer
 seed_target_Coh = nta.SeedCoherenceAnalyzer(seed_T, target_T,
             method=dict(NFFT=30))
-fig = viz.drawmatrix_channels(np.mean(seed_target_Coh.coherence,2), color_anchor=0)
+visualize.display_matrix(np.mean(seed_target_Coh.coherence,2), 
+    xlabels=seed_rois, ylabels=target_rois, cmap=plt.cm.RdBu_r, color_anchor=0)
 
 print 'stopped working here!'
 0/0
