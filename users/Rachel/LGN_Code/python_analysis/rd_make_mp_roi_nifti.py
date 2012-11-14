@@ -13,15 +13,16 @@ import scipy.io as sio
 import util
 
 def main():
-    scanner = '3T'
-    subject = 4
-    hemi = 2
+    scanner = '7T'
+    subject = 9
+    hemi = 1
     prop = 0.2
     varthresh = 0
     group_names = ['M','P']
+    example_epi_name = 'epi01_fix_fsldc.nii.gz'
 
     # file i/o
-    sdirs = sio.loadmat('/Volumes/Plata1/LGN/Group_Analyses/subjectDirs.mat')
+    sdirs = sio.loadmat('/Volumes/Plata1/LGN/Group_Analyses/subjectDirs_20121103.mat')
 
     if scanner=='3T':
         subject_dirs = sdirs['subjectDirs3T']
@@ -49,7 +50,9 @@ def main():
     Y = np.squeeze(Y)
 
     # example epi to be used in afni 3dUndump
-    example_epi = nifti_dir + 'epi01_hemi_mcf.nii.gz'
+    example_epi = nifti_dir + example_epi_name
+
+    print 'Example epi:', example_epi
     
     # loop over M and P voxel groups
     for group in np.unique(Y):
@@ -81,7 +84,7 @@ def main():
         os.system(command)
 
         # we don't need the orig file anymore, it is L-R reversed
-        util.remove_previous_files(fout_nii)
+        # util.remove_previous_files(fout_nii)
 
 
 if __name__ == '__main__':

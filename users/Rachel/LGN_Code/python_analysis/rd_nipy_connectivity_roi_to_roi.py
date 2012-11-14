@@ -61,14 +61,20 @@ for i_seed, seed_name in enumerate(seed_rois):
 
     # make the seed time series (mean of roi time series)
     # this is a little odd - reads the data as a TimeSeries, then just takes the data ...
+    # seed_ts[i_seed] = ntio.time_series_from_file(data_file,
+    #                     coords=seed_coords,
+    #                     TR=TR,
+    #                     normalize='percent',
+    #                     average=True,
+    #                     filter=dict(lb=f_lb,
+    #                         ub=f_ub,
+    #                         method='boxcar'),
+    #                     verbose=True).data
+
     seed_ts[i_seed] = ntio.time_series_from_file(data_file,
                         coords=seed_coords,
                         TR=TR,
-                        normalize='percent',
                         average=True,
-                        filter=dict(lb=f_lb,
-                            ub=f_ub,
-                            method='boxcar'),
                         verbose=True).data
 
 seed_T = ntts.TimeSeries(seed_ts, sampling_interval=TR)
@@ -144,12 +150,12 @@ cor_im[coords_indices] = cor
    
 # save the images as niftis
 if save_nii:
-	print 'Saving niftis'
-	coh_nii = nib.Nifti1Image(coh_im, data.get_affine())
-	cor_nii = nib.Nifti1Image(cor_im, data.get_affine())
+    print 'Saving niftis'
+    coh_nii = nib.Nifti1Image(coh_im, data.get_affine())
+    cor_nii = nib.Nifti1Image(cor_im, data.get_affine())
 
-	coh_nii.to_filename(coh_nii_file)
-	cor_nii.to_filename(cor_nii_file)
+    coh_nii.to_filename(coh_nii_file)
+    cor_nii.to_filename(cor_nii_file)
 
 # display the coh and coh maps
 fig_coh = visualize.display_slices(coh_im, 0, 1)
@@ -162,8 +168,8 @@ plt.show()
 
 # save the figures
 if save_fig:
-	print 'Saving figs'
-	fig_coh.savefig(coh_fig_file)
-	fig_cor.savefig(cor_fig_file)
+    print 'Saving figs'
+    fig_coh.savefig(coh_fig_file)
+    fig_cor.savefig(cor_fig_file)
    
    
