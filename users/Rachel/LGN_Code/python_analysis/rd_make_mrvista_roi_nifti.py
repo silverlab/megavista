@@ -13,7 +13,6 @@ which in turn was in part based off of Ariel's movie_analysis1.py (find in examp
 Rachel Denison
 2012 May 03
 
-************ CURRENTLY DOES NOT WORK! ******************
 """
 
 ## Import libraries
@@ -34,10 +33,10 @@ def main():
     #inputs
     # scanner = sys.argv[1]
     # subject = sys.argv[2]
-    rois = ['LLGN_ecc0','LLGN_ecc14','LLGN_polar0','LLGN_polar5',
-        'RLGN_ecc2','RLGN_ecc9','RLGN_polar2','RLGN_polar4']
-    # rois = ['LV1_ecc0-2', 'LV1_ecc10-18', 'LV1_polar602-026', 'LV1_polar474-526',
-    #     'RV1_ecc1-3', 'RV1_ecc7-11', 'RV1_polar174-226', 'RV1_polar374-426']
+    # rois = ['LLGN_ecc0','LLGN_ecc14','LLGN_polar0','LLGN_polar5',
+        # 'RLGN_ecc2','RLGN_ecc9','RLGN_polar2','RLGN_polar4']
+    rois = ['LV1_ecc0-2', 'LV1_ecc10-18', 'LV1_polar602-026', 'LV1_polar474-526',
+        'RV1_ecc1-3', 'RV1_ecc7-11', 'RV1_polar174-226', 'RV1_polar374-426']
     # rois = ['RV1','LV1','RV2v','LV2v','RV2d','LV2d','RV3v','LV3v','RV3d','LV3d']
 
     combine_early_vis_rois = False
