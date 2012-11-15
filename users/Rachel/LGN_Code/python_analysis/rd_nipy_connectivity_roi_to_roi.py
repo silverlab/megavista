@@ -61,21 +61,21 @@ for i_seed, seed_name in enumerate(seed_rois):
 
     # make the seed time series (mean of roi time series)
     # this is a little odd - reads the data as a TimeSeries, then just takes the data ...
-    # seed_ts[i_seed] = ntio.time_series_from_file(data_file,
-    #                     coords=seed_coords,
-    #                     TR=TR,
-    #                     normalize='percent',
-    #                     average=True,
-    #                     filter=dict(lb=f_lb,
-    #                         ub=f_ub,
-    #                         method='boxcar'),
-    #                     verbose=True).data
-
     seed_ts[i_seed] = ntio.time_series_from_file(data_file,
                         coords=seed_coords,
                         TR=TR,
+                        normalize='percent',
                         average=True,
+                        filter=dict(lb=f_lb,
+                            ub=f_ub,
+                            method='boxcar'),
                         verbose=True).data
+
+    # seed_ts[i_seed] = ntio.time_series_from_file(data_file,
+    #                     coords=seed_coords,
+    #                     TR=TR,
+    #                     average=True,
+    #                     verbose=True).data
 
 seed_T = ntts.TimeSeries(seed_ts, sampling_interval=TR)
 fig = viz.plot_tseries(seed_T)

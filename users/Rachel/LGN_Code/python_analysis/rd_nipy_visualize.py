@@ -17,7 +17,7 @@ import matplotlib.colors as colors
 from mpl_toolkits.axes_grid import make_axes_locatable
 
 
-def display_tseries(tseries,vox_idx='all',fig=None):
+def display_tseries(tseries,vox_idx='all',fig=None,show_mean=True):
     """
     Display the voxel time-series of all voxels selected with vox_idx,
     along with the mean and sem.
@@ -33,13 +33,14 @@ def display_tseries(tseries,vox_idx='all',fig=None):
         vox_tseries = ts.TimeSeries(tseries.data[vox_idx],sampling_interval=TR)
 
     fig = viz.plot_tseries(vox_tseries,fig)
-    fig = viz.plot_tseries(ts.TimeSeries(np.mean(vox_tseries.data,0),
-                                         sampling_interval=TR),
-                           yerror=ts.TimeSeries(stats.sem(vox_tseries.data,0),
-                                                sampling_interval=TR),fig=fig,
-                           error_alpha = 0.3,
-                           linewidth=4,
-                           color='r')
+    if show_mean:
+        fig = viz.plot_tseries(ts.TimeSeries(np.mean(vox_tseries.data,0),
+                                             sampling_interval=TR),
+                               yerror=ts.TimeSeries(stats.sem(vox_tseries.data,0),
+                                                    sampling_interval=TR),fig=fig,
+                               error_alpha = 0.3,
+                               linewidth=4,
+                               color='r')
     return fig
     
 def display_slices(im, min_val=None, max_val=None, fig=None):
@@ -84,10 +85,10 @@ def display_matrix(m, xlabels=None, ylabels=None, cmap=None, color_anchor=None,
         ax.set_xticks(xrange(len(xlabels)))
         ax.set_xticklabels(xlabels)
         if rotate_xlabels:
-	        rotation=30
-	        for label in ax.get_xticklabels():
-	            label.set_rotation(rotation)
-	            label.set_ha('left')
+            rotation=30
+            for label in ax.get_xticklabels():
+                label.set_rotation(rotation)
+                label.set_ha('left')
 
     if ylabels is not None:
         ax.set_yticks(xrange(len(ylabels)))
@@ -99,6 +100,8 @@ def display_matrix(m, xlabels=None, ylabels=None, cmap=None, color_anchor=None,
 
     for line in ax.yaxis.get_ticklines():
         line.set_markeredgewidth(0)
+    
+    plt.show()
 
     return axx
 
@@ -157,8 +160,8 @@ def display_matrix_INPROGRESS(m, xlabels=None, ylabels=None, fig=None,
     # Set the current figure active axis to be the top-one, which is the one
     # most likely to be operated on by users later on
     fig.sca(ax)
-	
-	
+    
+    
 if __name__ == '__main__':
     main()
 
