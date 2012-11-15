@@ -100,8 +100,6 @@ def display_matrix(m, xlabels=None, ylabels=None, cmap=None, color_anchor=None,
 
     for line in ax.yaxis.get_ticklines():
         line.set_markeredgewidth(0)
-    
-    plt.show()
 
     return axx
 

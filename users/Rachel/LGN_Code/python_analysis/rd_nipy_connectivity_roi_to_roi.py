@@ -23,6 +23,9 @@ roi_dir = os.path.join(session_dir, 'Inplane/ROIs/')
 data_dir = os.path.join(session_dir, 'ConnectivityAnalysis/nifti/')
 out_dir = os.path.join(session_dir, 'ConnectivityAnalysis/')
 
+cor_fig_file = os.path.join(out_dir, 'figures', 'LGN-Vis_eccPolarROIs_cor.png')
+coh_fig_file = os.path.join(out_dir, 'figures', 'LGN-Vis_eccPolarROIs_coh.png')
+
 data_file = os.path.join(data_dir, 'fix_fsldc_minute2.nii.gz')
 
 # ROIs to use as seeds
@@ -39,9 +42,11 @@ TR = 2
 f_lb = 0.01
 f_ub = 0.15
 
+# flip the image in the x dimension? this is needed if working with mrvista rois
+flip_x = True
+
 # save results?
-save_nii = 1
-save_fig = 1
+save_fig = 0
 
 # load data
 data = nib.load(data_file)
@@ -58,6 +63,9 @@ for i_seed, seed_name in enumerate(seed_rois):
     
     # get the coordinates of the seed voxels
     seed_coords = tsv.upsample_coords(tsv.getROIcoords(seed_file), upsample_factor)
+
+    if flip_x:
+	    seed_coords[0] = (volume_shape[0]-1) - (seed_coords[0])
 
     # make the seed time series (mean of roi time series)
     # this is a little odd - reads the data as a TimeSeries, then just takes the data ...
@@ -94,6 +102,9 @@ for i_target, target_name in enumerate(target_rois):
     # find the coordinates of cortex voxels
     target_coords = tsv.upsample_coords(tsv.getROIcoords(target_file), upsample_factor)
 
+    if flip_x:
+	    target_coords[0] = (volume_shape[0]-1) - (target_coords[0])
+
     # make the target time series
     target_data = ntio.time_series_from_file(data_file,
                         coords=target_coords,
@@ -118,58 +129,60 @@ fig = viz.drawmatrix_channels(target_Cor.corrcoef, target_rois, color_anchor=0)
 # correlation analyzer
 seed_target_Cor = nta.SeedCorrelationAnalyzer(seed_T, target_T)
 
-# show correlation matrix
-visualize.display_matrix(seed_target_Cor.corrcoef, 
-    xlabels=seed_rois, ylabels=target_rois, cmap=plt.cm.RdBu_r,color_anchor=0)
-
 # coherence analyzer
 seed_target_Coh = nta.SeedCoherenceAnalyzer(seed_T, target_T,
             method=dict(NFFT=30))
-visualize.display_matrix(np.mean(seed_target_Coh.coherence,2), 
-    xlabels=seed_rois, ylabels=target_rois, cmap=plt.cm.RdBu_r, color_anchor=0)
-
-print 'stopped working here!'
-0/0
 
 # select frequency band
-freq_idx = np.where((cohA.frequencies > f_lb) * (cohA.frequencies < f_ub))[0]
+freq_idx = np.where((seed_target_Coh.frequencies > f_lb) * (seed_target_Coh.frequencies < f_ub))[0]
 
 # extract correlation and coherence values
 print 'Calculating correlation and coherence'
-coh = np.mean(cohA.coherence[:, freq_idx], -1)
-cor = corA.corrcoef
+cor = seed_target_Cor.corrcoef
+coh = np.mean(seed_target_Coh.coherence[:, :, freq_idx], -1)
 
-# make coh and cor images
-coords_indices = list(target_coords)
+# show correlation matrix
+visualize.display_matrix(cor, 
+    xlabels=target_rois, ylabels=seed_rois, cmap=plt.cm.RdBu_r,color_anchor=0)
+fig_cor = plt.gcf()
 
-coh_im = np.zeros(volume_shape)
-cor_im = np.zeros(volume_shape)
-
-coh_im[coords_indices] = coh
-cor_im[coords_indices] = cor
-   
-# save the images as niftis
-if save_nii:
-    print 'Saving niftis'
-    coh_nii = nib.Nifti1Image(coh_im, data.get_affine())
-    cor_nii = nib.Nifti1Image(cor_im, data.get_affine())
-
-    coh_nii.to_filename(coh_nii_file)
-    cor_nii.to_filename(cor_nii_file)
-
-# display the coh and coh maps
-fig_coh = visualize.display_slices(coh_im, 0, 1)
-fig_coh.suptitle('coherence, {0} seed'.format(seed_name))
-plt.show()
-
-fig_cor = visualize.display_slices(cor_im, 0, 1)
-fig_cor.suptitle('correlation {0} seed'.format(seed_name))
-plt.show()
+# show coherence matrix
+visualize.display_matrix(coh, 
+    xlabels=target_rois, ylabels=seed_rois, cmap=plt.cm.RdBu_r, color_anchor=0)
+fig_coh = plt.gcf()
 
 # save the figures
 if save_fig:
-    print 'Saving figs'
-    fig_coh.savefig(coh_fig_file)
-    fig_cor.savefig(cor_fig_file)
+	print 'Saving figs'
+	fig_cor.savefig(cor_fig_file)
+	fig_coh.savefig(coh_fig_file)
+
+# # make coh and cor images
+# coords_indices = list(target_coords)
+# 
+# coh_im = np.zeros(volume_shape)
+# cor_im = np.zeros(volume_shape)
+# 
+# coh_im[coords_indices] = coh
+# cor_im[coords_indices] = cor
+#    
+# # save the images as niftis
+# if save_nii:
+#     print 'Saving niftis'
+#     coh_nii = nib.Nifti1Image(coh_im, data.get_affine())
+#     cor_nii = nib.Nifti1Image(cor_im, data.get_affine())
+# 
+#     coh_nii.to_filename(coh_nii_file)
+#     cor_nii.to_filename(cor_nii_file)
+# 
+# # display the coh and coh maps
+# fig_coh = visualize.display_slices(coh_im, 0, 1)
+# fig_coh.suptitle('coherence, {0} seed'.format(seed_name))
+# plt.show()
+# 
+# fig_cor = visualize.display_slices(cor_im, 0, 1)
+# fig_cor.suptitle('correlation {0} seed'.format(seed_name))
+# plt.show()
+
    
    
