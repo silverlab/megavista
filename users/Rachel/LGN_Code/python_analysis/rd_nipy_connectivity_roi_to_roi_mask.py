@@ -33,8 +33,8 @@ target_rois = ['LV1_ecc0-2', 'LV1_ecc10-18', 'LV1_polar602-026', 'LV1_polar474-5
      'RV1_ecc1-3', 'RV1_ecc7-11', 'RV1_polar174-226', 'RV1_polar374-426']
 
 # figure files
-cor_fig_file = os.path.join(out_dir, 'LGN-Vis_eccPolarROIs_cor.png')
-coh_fig_file = os.path.join(out_dir, 'LGN-Vis_eccPolarROIs_coh.png')
+cor_fig_file = os.path.join(out_dir, 'figures', 'LGN-Vis_eccPolarROIs_cor.png')
+coh_fig_file = os.path.join(out_dir, 'figures', 'LGN-Vis_eccPolarROIs_coh.png')
 
 # define TR and frequency band of interest
 #roi_name = 'V3'
