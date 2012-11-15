@@ -12,10 +12,10 @@ import scipy.io as sio
 
 def main():
     scanner = '7T'
-    subject = 3
+    subject = 9
 
     # file i/o
-    sdirs = sio.loadmat('/Volumes/Plata1/LGN/Group_Analyses/subjectDirs.mat')
+    sdirs = sio.loadmat('/Volumes/Plata1/LGN/Group_Analyses/subjectDirs_20121103.mat')
 
     if scanner=='3T':
         subject_dirs = sdirs['subjectDirs3T']
@@ -27,7 +27,7 @@ def main():
     nifti_dir = '{0}/{1}_nifti/'.format(session_dir, subject_dirs[subject,1][0])
     out_file = '{0}/Masks/automask.nii.gz'.format(session_dir)
 
-    example_epi = nifti_dir + 'epi01_hemi_mcf.nii.gz'
+    example_epi = nifti_dir + 'epi01_fix_fsldc.nii.gz'
     
     command = '3dAutomask -prefix {0} {1}'.format(out_file, example_epi)
     print command
