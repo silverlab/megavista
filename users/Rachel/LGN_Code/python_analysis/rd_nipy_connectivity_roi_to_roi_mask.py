@@ -22,6 +22,9 @@ roi_dir = os.path.join(session_dir, 'Masks/')
 data_dir = os.path.join(session_dir, 'ConnectivityAnalysis/nifti/')
 out_dir = os.path.join(session_dir, 'ConnectivityAnalysis/')
 
+cor_fig_file = os.path.join(out_dir, 'figures', 'LGN-Vis_eccPolarROIs_cor.png')
+coh_fig_file = os.path.join(out_dir, 'figures', 'LGN-Vis_eccPolarROIs_coh.png')
+
 data_file = os.path.join(data_dir, 'fix_fsldc_minute2.nii.gz')
 
 # ROIs to use as seeds
@@ -31,10 +34,6 @@ seed_rois = ['LLGN_ecc0','LLGN_ecc14','LLGN_polar0','LLGN_polar5',
 # ROIs to use as targets
 target_rois = ['LV1_ecc0-2', 'LV1_ecc10-18', 'LV1_polar602-026', 'LV1_polar474-526',
      'RV1_ecc1-3', 'RV1_ecc7-11', 'RV1_polar174-226', 'RV1_polar374-426']
-
-# figure files
-cor_fig_file = os.path.join(out_dir, 'figures', 'LGN-Vis_eccPolarROIs_cor.png')
-coh_fig_file = os.path.join(out_dir, 'figures', 'LGN-Vis_eccPolarROIs_coh.png')
 
 # define TR and frequency band of interest
 #roi_name = 'V3'

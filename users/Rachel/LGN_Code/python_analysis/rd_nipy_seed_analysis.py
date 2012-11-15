@@ -16,7 +16,7 @@ import rd_nipy_visualize as visualize
 
 # subject and scanner
 scanner = '7T'
-subject = 0
+subject = 9
 hemi = 1
 
 # ROIs to use as seeds
@@ -33,7 +33,7 @@ save_nii = 1
 save_fig = 1
 
 # file i/o
-sdirs = sio.loadmat('/Volumes/Plata1/LGN/Group_Analyses/subjectDirs.mat')
+sdirs = sio.loadmat('/Volumes/Plata1/LGN/Group_Analyses/subjectDirs_20121103.mat')
 
 if scanner=='3T':
     subject_dirs = sdirs['subjectDirs3T']
@@ -46,6 +46,8 @@ nifti_dir = os.path.join(session_dir, '{}_nifti'.format(subject_dirs[subject,1][
 
 fmri_file = os.path.join(nifti_dir, 'epi01_hemi_mcf.nii.gz')
 mask_file = os.path.join(session_dir, 'Masks/automask.nii.gz')
+
+print session_dir
 
 for roi_name in roi_names:
     print '\n', roi_name
