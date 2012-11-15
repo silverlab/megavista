@@ -44,10 +44,12 @@ session_dir = str(os.path.join('/Volumes/Plata1/LGN/Scans',
     scanner, subject_dirs[subject,0][0], subject_dirs[subject,1][0]))
 nifti_dir = os.path.join(session_dir, '{}_nifti'.format(subject_dirs[subject,1][0]))
 
-fmri_file = os.path.join(nifti_dir, 'epi01_hemi_mcf.nii.gz')
+# fmri_file = os.path.join(nifti_dir, 'epi01_fix_fsldc.nii.gz')
+fmri_file = os.path.join(session_dir, 'ConnectivityAnalysis/nifti/fix_fsldc_minute2.nii.gz')
 mask_file = os.path.join(session_dir, 'Masks/automask.nii.gz')
 
 print session_dir
+print fmri_file
 
 for roi_name in roi_names:
     print '\n', roi_name
