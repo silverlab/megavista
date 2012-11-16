@@ -137,10 +137,10 @@ for roi_name in roi_names:
     
     # display the coh and coh maps
     fig_coh = visualize.display_slices(coh_im, min_val=0, max_val=1, cmap=plt.cm.RdBu_r)
-    fig_coh.suptitle('coherence, hemi{0} {1} seed'.format(hemi, roi_name))
+    fig_coh.suptitle('coherence, hemi {0} {1} seed'.format(hemi, roi_name))
     
     fig_cor = visualize.display_slices(cor_im, min_val=-1, max_val=1, cmap=plt.cm.RdBu_r)
-    fig_cor.suptitle('correlation hemi{0} {1} seed'.format(hemi, roi_name))
+    fig_cor.suptitle('correlation hemi {0} {1} seed'.format(hemi, roi_name))
     
     # save the figures
     if save_fig:
