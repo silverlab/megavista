@@ -43,7 +43,7 @@ def display_tseries(tseries,vox_idx='all',fig=None,show_mean=True):
                                color='r')
     return fig
     
-def display_slices(im, min_val=None, max_val=None, fig=None):
+def display_slices(im, min_val=None, max_val=None, cmap=None, fig=None):
     """
     Display slices from a 3d image
     Assume last dimensino is the slice dimension
@@ -57,9 +57,13 @@ def display_slices(im, min_val=None, max_val=None, fig=None):
     
     for i_slice in xrange(n_slices):
         ax = fig.add_subplot(n_rows, n_cols, i_slice)
-    ax.set_axis_off()
-    plt.imshow(im[:,:,i_slice], vmin=min_val, vmax=max_val)
+        ax.set_axis_off()
+        cax = ax.imshow(im[:,:,i_slice], vmin=min_val, vmax=max_val, cmap=cmap)
         
+    # plt.subplots_adjust(bottom=0.1, right = 0.8, top=0.9)
+    # cax = plt.axes([0.85, 0.1, 0.05, 0.8])
+    # plt.colorbar(cax=cax)
+    fig.colorbar(cax, ticks=[min_val, max_val], orientation='horizontal')
     return fig
 
 

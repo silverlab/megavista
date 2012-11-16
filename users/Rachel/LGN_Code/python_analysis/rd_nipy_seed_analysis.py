@@ -17,7 +17,7 @@ import rd_nipy_visualize as visualize
 # subject and scanner
 scanner = '7T'
 subject = 9
-hemi = 1
+hemi = 2
 
 # ROIs to use as seeds
 roi_names = ['M','P']
@@ -136,18 +136,18 @@ for roi_name in roi_names:
         cor_nii.to_filename(cor_nii_file)
     
     # display the coh and coh maps
-    fig_coh = visualize.display_slices(coh_im, 0, 1)
-    fig_coh.suptitle('coherence, {0} seed'.format(roi_name))
-    plt.show()
+    fig_coh = visualize.display_slices(coh_im, min_val=0, max_val=1, cmap=plt.cm.RdBu_r)
+    fig_coh.suptitle('coherence, hemi{0} {1} seed'.format(hemi, roi_name))
     
-    fig_cor = visualize.display_slices(cor_im, 0, 1)
-    fig_cor.suptitle('correlation {0} seed'.format(roi_name))
-    plt.show()
+    fig_cor = visualize.display_slices(cor_im, min_val=-1, max_val=1, cmap=plt.cm.RdBu_r)
+    fig_cor.suptitle('correlation hemi{0} {1} seed'.format(hemi, roi_name))
     
     # save the figures
     if save_fig:
         print 'Saving figs'
         fig_coh.savefig(coh_fig_file)
         fig_cor.savefig(cor_fig_file)
+
+    plt.show()
     
     
