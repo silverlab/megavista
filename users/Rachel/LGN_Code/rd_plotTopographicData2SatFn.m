@@ -240,7 +240,7 @@ xyCoordsToPlot = {1:size(brainMap,1)-minInplaneCoords(1)+1, ...
 brainMapToPlot = brainMap(xyCoordsToPlot{1},xyCoordsToPlot{2},:,:);
 
 dimLabels = {'Sag','Cor','--','Ax'};
-dimToSlice = 2;
+dimToSlice = 1;
 
 % number of subplots to contain all slices
 switch plotFormat
