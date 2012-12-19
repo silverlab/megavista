@@ -23,8 +23,8 @@ roi_dir = os.path.join(session_dir, 'Inplane/ROIs/')
 data_dir = os.path.join(session_dir, 'ConnectivityAnalysis/nifti/')
 out_dir = os.path.join(session_dir, 'ConnectivityAnalysis/')
 
-cor_fig_file = os.path.join(out_dir, 'figures', 'LGN-Vis_eccPolarROIs_cor.png')
-coh_fig_file = os.path.join(out_dir, 'figures', 'LGN-Vis_eccPolarROIs_coh.png')
+cor_fig_file = os.path.join(out_dir, 'figures', 'LGN-V1_eccPolarROIs_cor.png')
+coh_fig_file = os.path.join(out_dir, 'figures', 'LGN-V1_eccPolarROIs_coh.png')
 
 data_file = os.path.join(data_dir, 'fix_fsldc_minute2.nii.gz')
 
@@ -46,7 +46,7 @@ f_ub = 0.15
 flip_x = True
 
 # save results?
-save_fig = 0
+save_fig = 1
 
 # load data
 data = nib.load(data_file)
@@ -131,7 +131,7 @@ seed_target_Cor = nta.SeedCorrelationAnalyzer(seed_T, target_T)
 
 # coherence analyzer
 seed_target_Coh = nta.SeedCoherenceAnalyzer(seed_T, target_T,
-            method=dict(NFFT=30))
+            method=dict(NFFT=20))
 
 # select frequency band
 freq_idx = np.where((seed_target_Coh.frequencies > f_lb) * (seed_target_Coh.frequencies < f_ub))[0]
