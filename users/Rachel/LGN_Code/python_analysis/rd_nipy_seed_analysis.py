@@ -25,7 +25,7 @@ roi_names = ['M','P']
 # define TR and frequency band of interest
 #roi_name = 'V3'
 TR = 2
-f_lb = 0.01
+f_lb = 0.017 # 0.0167 = 60 s/cycle
 f_ub = 0.15
 
 # save results?

@@ -63,7 +63,7 @@ def display_slices(im, min_val=None, max_val=None, cmap=None, fig=None):
     # plt.subplots_adjust(bottom=0.1, right = 0.8, top=0.9)
     # cax = plt.axes([0.85, 0.1, 0.05, 0.8])
     # plt.colorbar(cax=cax)
-    fig.colorbar(cax, ticks=[min_val, max_val], orientation='horizontal')
+    fig.colorbar(cax, ticks=[min_val, max_val], format='%.3f', orientation='horizontal')
     return fig
 
 

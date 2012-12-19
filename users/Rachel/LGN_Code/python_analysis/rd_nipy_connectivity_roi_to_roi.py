@@ -39,7 +39,7 @@ target_rois = ['LV1_ecc0-2', 'LV1_ecc10-18', 'LV1_polar602-026', 'LV1_polar474-5
 # define upsample factor, TR, and frequency band of interest
 upsample_factor = [1.0000,1.0000,1.0000] #upsample factor from EPI to GEM
 TR = 2
-f_lb = 0.01
+f_lb = 0.017
 f_ub = 0.15
 
 # flip the image in the x dimension? this is needed if working with mrvista rois
