@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-untitled.py
+testy.py
 
 Created by Local Administrator on 2012-11-13.
-Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 """
 
 roi_im = np.zeros(volume_shape)
@@ -26,17 +25,3 @@ visualize.display_slices(nan_im)
 nan_im.sum()
 
 ####### 
-# Plot red-blue figures of cor and coh contrasts
-session_dir = '/Volumes/Plata1/LGN/Scans/7T/JN_20120808_Session/JN_20120808_fslDC'
-fig_dir = 'ConnectivityAnalysis/figures/seed_to_whole_brain'
-names = ['lgnROI1_cohSeed_M-P','lgnROI1_corSeed_M-P','lgnROI2_cohSeed_M-P','lgnROI2_corSeed_M-P',
-    'lgnROI1-2_cohSeed_M','lgnROI1-2_cohSeed_P','lgnROI1-2_corSeed_M','lgnROI1-2_corSeed_P']
-
-for name in names:
-    im = nib.load(os.path.join(session_dir, 'ConnectivityAnalysis/{0}.nii.gz'.format(name)))
-    data = im.get_data()
-    min_val = data[~np.isnan(data)].min()
-    max_val = data[~np.isnan(data)].max()
-    fig = visualize.display_slices(data, min_val=min_val, max_val=max_val, cmap=plt.cm.RdBu_r)
-    fig.suptitle(name)
-    fig.savefig(os.path.join(session_dir, fig_dir,'{}.png'.format(name)))
