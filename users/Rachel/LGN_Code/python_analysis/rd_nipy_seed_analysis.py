@@ -27,6 +27,7 @@ roi_names = ['M','P']
 TR = 2
 f_lb = 0.017 # 0.0167 = 60 s/cycle
 f_ub = 0.15
+nfft = 20
 
 # save results?
 save_nii = 1
@@ -103,7 +104,7 @@ for roi_name in roi_names:
     
     # coherence analyzer
     cohA = nta.SeedCoherenceAnalyzer(time_series_seed, time_series_target,
-                method=dict(NFFT=20))
+                method=dict(NFFT=nfft))
     
     # correlation analyzer
     corA = nta.SeedCorrelationAnalyzer(time_series_seed, time_series_target)

@@ -23,10 +23,15 @@ roi_dir = os.path.join(session_dir, 'Inplane/ROIs/')
 data_dir = os.path.join(session_dir, 'ConnectivityAnalysis/nifti/')
 out_dir = os.path.join(session_dir, 'ConnectivityAnalysis/')
 
-cor_fig_file = os.path.join(out_dir, 'figures', 'LGN-V1_eccPolarROIs_cor.png')
-coh_fig_file = os.path.join(out_dir, 'figures', 'LGN-V1_eccPolarROIs_coh.png')
+minute = 6
+seed_tseries_fig_file = os.path.join(out_dir, 'figures', 'LGN_eccPolarROIs_tseries_min{}.png'.format(minute))
+target_tseries_fig_file = os.path.join(out_dir, 'figures', 'V1_eccPolarROIs_tseries_min{}.png'.format(minute))
+seed_cor_fig_file = os.path.join(out_dir, 'figures', 'LGN-LGN_eccPolarROIs_cor_min{}.png'.format(minute))
+target_cor_fig_file = os.path.join(out_dir, 'figures', 'V1-V1_eccPolarROIs_cor_min{}.png'.format(minute))
+cor_fig_file = os.path.join(out_dir, 'figures', 'LGN-V1_eccPolarROIs_cor_min{}.png'.format(minute))
+coh_fig_file = os.path.join(out_dir, 'figures', 'LGN-V1_eccPolarROIs_coh_min{}.png'.format(minute))
 
-data_file = os.path.join(data_dir, 'fix_fsldc_minute2.nii.gz')
+data_file = os.path.join(data_dir, 'fix_fsldc_minute{}.nii.gz'.format(minute))
 
 # ROIs to use as seeds
 seed_rois = ['LLGN_ecc0','LLGN_ecc14','LLGN_polar0','LLGN_polar5',
@@ -41,12 +46,13 @@ upsample_factor = [1.0000,1.0000,1.0000] #upsample factor from EPI to GEM
 TR = 2
 f_lb = 0.017
 f_ub = 0.15
+nfft = 20
 
 # flip the image in the x dimension? this is needed if working with mrvista rois
 flip_x = True
 
 # save results?
-save_fig = 1
+save_fig = 0
 
 # load data
 data = nib.load(data_file)
@@ -86,10 +92,10 @@ for i_seed, seed_name in enumerate(seed_rois):
     #                     verbose=True).data
 
 seed_T = ntts.TimeSeries(seed_ts, sampling_interval=TR)
-fig = viz.plot_tseries(seed_T)
+fig_seed_tseries = viz.plot_tseries(seed_T)
 
 seed_Cor = nta.CorrelationAnalyzer(seed_T)
-fig = viz.drawmatrix_channels(seed_Cor.corrcoef, seed_rois, color_anchor=0)
+fig_seed_cor = viz.drawmatrix_channels(seed_Cor.corrcoef, seed_rois, color_anchor=0)
 
 # Get target data
 # initialize target time series
@@ -121,17 +127,17 @@ for i_target, target_name in enumerate(target_rois):
     target_ts[i_target] = np.mean(target_data[~nan_targets,:],0) # take average across voxels
 
 target_T = ntts.TimeSeries(target_ts, sampling_interval=TR)
-fig = viz.plot_tseries(target_T)
+fig_target_tseries = viz.plot_tseries(target_T)
 
 target_Cor = nta.CorrelationAnalyzer(target_T)
-fig = viz.drawmatrix_channels(target_Cor.corrcoef, target_rois, color_anchor=0)
+fig_target_cor = viz.drawmatrix_channels(target_Cor.corrcoef, target_rois, color_anchor=0)
 
 # correlation analyzer
 seed_target_Cor = nta.SeedCorrelationAnalyzer(seed_T, target_T)
 
 # coherence analyzer
 seed_target_Coh = nta.SeedCoherenceAnalyzer(seed_T, target_T,
-            method=dict(NFFT=20))
+            method=dict(NFFT=nfft))
 
 # select frequency band
 freq_idx = np.where((seed_target_Coh.frequencies > f_lb) * (seed_target_Coh.frequencies < f_ub))[0]
@@ -154,6 +160,10 @@ fig_coh = plt.gcf()
 # save the figures
 if save_fig:
 	print 'Saving figs'
+	fig_seed_tseries.savefig(seed_tseries_fig_file)
+	fig_target_tseries.savefig(target_tseries_fig_file)
+	fig_seed_cor.savefig(seed_cor_fig_file)
+	fig_target_cor.savefig(target_cor_fig_file)
 	fig_cor.savefig(cor_fig_file)
 	fig_coh.savefig(coh_fig_file)
 

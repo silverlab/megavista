@@ -3,8 +3,7 @@
 """
 rd_nifti_to_png.py
 
-Created by Local Administrator on 2012-12-19.
-Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+Created by Rachel Denison on 2012-12-19.
 """
 
 import os
