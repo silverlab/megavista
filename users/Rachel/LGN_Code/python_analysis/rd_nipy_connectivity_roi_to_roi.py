@@ -22,16 +22,18 @@ session_dir = '/Volumes/Plata1/LGN/Scans/7T/JN_20120808_Session/JN_20120808_fslD
 roi_dir = os.path.join(session_dir, 'Inplane/ROIs/')
 data_dir = os.path.join(session_dir, 'ConnectivityAnalysis/nifti/')
 out_dir = os.path.join(session_dir, 'ConnectivityAnalysis/')
+analysis_name = 'eccPolarROIsRes'
 
-minute = 6
-seed_tseries_fig_file = os.path.join(out_dir, 'figures', 'LGN_eccPolarROIs_tseries_min{}.png'.format(minute))
-target_tseries_fig_file = os.path.join(out_dir, 'figures', 'V1_eccPolarROIs_tseries_min{}.png'.format(minute))
-seed_cor_fig_file = os.path.join(out_dir, 'figures', 'LGN-LGN_eccPolarROIs_cor_min{}.png'.format(minute))
-target_cor_fig_file = os.path.join(out_dir, 'figures', 'V1-V1_eccPolarROIs_cor_min{}.png'.format(minute))
-cor_fig_file = os.path.join(out_dir, 'figures', 'LGN-V1_eccPolarROIs_cor_min{}.png'.format(minute))
-coh_fig_file = os.path.join(out_dir, 'figures', 'LGN-V1_eccPolarROIs_coh_min{}.png'.format(minute))
+minute = 5
+seed_tseries_fig_file = os.path.join(out_dir, 'figures', 'LGN_{}_tseries_min{}.png'.format(analysis_name, minute))
+target_tseries_fig_file = os.path.join(out_dir, 'figures', 'V1_{}_tseries_min{}.png'.format(analysis_name, minute))
+seed_cor_fig_file = os.path.join(out_dir, 'figures', 'LGN-LGN_{}_cor_min{}.png'.format(analysis_name, minute))
+target_cor_fig_file = os.path.join(out_dir, 'figures', 'V1-V1_{}_cor_min{}.png'.format(analysis_name, minute))
+cor_fig_file = os.path.join(out_dir, 'figures', 'LGN-V1_{}_cor_min{}.png'.format(analysis_name, minute))
+coh_fig_file = os.path.join(out_dir, 'figures', 'LGN-V1_{}_coh_min{}.png'.format(analysis_name, minute))
 
-data_file = os.path.join(data_dir, 'fix_fsldc_minute{}.nii.gz'.format(minute))
+fmri_file = 'res4d_minute{}.nii.gz'.format(minute)
+data_file = os.path.join(data_dir, fmri_file)
 
 # ROIs to use as seeds
 seed_rois = ['LLGN_ecc0','LLGN_ecc14','LLGN_polar0','LLGN_polar5',
@@ -52,7 +54,7 @@ nfft = 20
 flip_x = True
 
 # save results?
-save_fig = 0
+save_fig = 1
 
 # load data
 data = nib.load(data_file)
@@ -78,12 +80,13 @@ for i_seed, seed_name in enumerate(seed_rois):
     seed_ts[i_seed] = ntio.time_series_from_file(data_file,
                         coords=seed_coords,
                         TR=TR,
-                        normalize='percent',
+                        normalize=None,
                         average=True,
                         filter=dict(lb=f_lb,
                             ub=f_ub,
                             method='boxcar'),
                         verbose=True).data
+    # normalize='percent'
 
     # seed_ts[i_seed] = ntio.time_series_from_file(data_file,
     #                     coords=seed_coords,
@@ -93,9 +96,11 @@ for i_seed, seed_name in enumerate(seed_rois):
 
 seed_T = ntts.TimeSeries(seed_ts, sampling_interval=TR)
 fig_seed_tseries = viz.plot_tseries(seed_T)
+plt.title('seed tseries, {}'.format(fmri_file))
 
 seed_Cor = nta.CorrelationAnalyzer(seed_T)
 fig_seed_cor = viz.drawmatrix_channels(seed_Cor.corrcoef, seed_rois, color_anchor=0)
+plt.title('correlation, {}'.format(fmri_file))
 
 # Get target data
 # initialize target time series
@@ -115,12 +120,13 @@ for i_target, target_name in enumerate(target_rois):
     target_data = ntio.time_series_from_file(data_file,
                         coords=target_coords,
                         TR=TR,
-                        normalize='percent',
+                        normalize=None,
                         average = False,
                         filter=dict(lb=f_lb,
                             ub=f_ub,
                             method='boxcar'),
                         verbose=True).data
+    # normalize='percent'
 
     nan_targets = np.isnan(np.mean(target_data,1))
     print '\n', nan_targets.sum(), 'voxels with nan values ... removing'
@@ -128,9 +134,11 @@ for i_target, target_name in enumerate(target_rois):
 
 target_T = ntts.TimeSeries(target_ts, sampling_interval=TR)
 fig_target_tseries = viz.plot_tseries(target_T)
+plt.title('target tseries, {}'.format(fmri_file))
 
 target_Cor = nta.CorrelationAnalyzer(target_T)
 fig_target_cor = viz.drawmatrix_channels(target_Cor.corrcoef, target_rois, color_anchor=0)
+plt.title('correlation, {}'.format(fmri_file))
 
 # correlation analyzer
 seed_target_Cor = nta.SeedCorrelationAnalyzer(seed_T, target_T)
@@ -151,11 +159,13 @@ coh = np.mean(seed_target_Coh.coherence[:, :, freq_idx], -1)
 visualize.display_matrix(cor, 
     xlabels=target_rois, ylabels=seed_rois, cmap=plt.cm.RdBu_r,color_anchor=0)
 fig_cor = plt.gcf()
+plt.title('correlation, {}'.format(fmri_file), y=1.25)
 
 # show coherence matrix
 visualize.display_matrix(coh, 
     xlabels=target_rois, ylabels=seed_rois, cmap=plt.cm.RdBu_r, color_anchor=0)
 fig_coh = plt.gcf()
+plt.title('coherence, {}'.format(fmri_file), y=1.25)
 
 # save the figures
 if save_fig:
