@@ -42,7 +42,7 @@ if __name__ == '__main__':
     t1norm_name = subjectID + '_t1_div_pd'
 
     # List of OS commands
-    commands = {
+    commands = [
         # Divide the T1 scan by the PD scan
         'fslmaths {0}.{3} -mul 100 -div {1}.{3} {2}.{3}'.format(t1_name, pd_name, t1norm_name, nifti_ext),
         
@@ -55,11 +55,15 @@ if __name__ == '__main__':
         'fslmaths {0}.{2} -mul {1}.{2} {0}_masked.{2}'.format(t1norm_name, mask_name, nifti_ext),
     
         # Mask the T1 scan (just for fun)
-        'fslmaths {0}.{2} -mul {1}.{2} {0}_masked.{2}'.format(t1_name, mask_name, nifti_ext)}
+        'fslmaths {0}.{2} -mul {1}.{2} {0}_masked.{2}'.format(t1_name, mask_name, nifti_ext)]
 
     # Print and do commands
     for command in commands:
         print command
-        os.system(command)
+        out = os.system(command)
+        if out!=0:
+            print ('command failed')
+            break
+
     
     

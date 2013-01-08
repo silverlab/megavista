@@ -12,7 +12,7 @@
 % 3 October 2012
 
 plotFigs = 1;
-saveFile = 0;
+saveFile = 1;
 saveName = 'slicetimeshift.txt';
 saveDir = '../..';
 saveFilePath = sprintf('%s/%s', saveDir, saveName);
