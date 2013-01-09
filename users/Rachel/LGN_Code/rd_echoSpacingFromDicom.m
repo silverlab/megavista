@@ -1,4 +1,4 @@
-function es = rd_echoSpacingFromDicom(dicomPath, ipat)
+function [esEff, es] = rd_echoSpacingFromDicom(dicomPath, ipat)
 
 % function es = rd_echoSpacingFromDicom(dicomPath, ipat)
 % 
@@ -18,4 +18,5 @@ nPESamples = dcminf.Private_0051_100b;
 pIdx = strfind(nPESamples,'p');
 nPESamples1 = str2double(nPESamples(1:pIdx-1));
 
-es = ipat/(bandwidth*nPESamples1);
+esEff = 1/(bandwidth*nPESamples1); % as if all the lines were read
+es = esEff*ipat; % the actual echo spacing, if only some lines were read (eg. every other line for ipat=2)
