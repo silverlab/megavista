@@ -15,7 +15,7 @@ import util
 def main():
     scanner = '7T'
     subject = 9
-    hemi = 1
+    hemi = 2
     prop = 0.2
     varthresh = 0
     group_names = ['M','P']
