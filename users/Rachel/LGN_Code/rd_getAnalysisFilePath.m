@@ -5,6 +5,8 @@ function [filePath, fileDirectory, fileName] = rd_getAnalysisFilePath(subjectDir
 % gets the filepath to a specific analysis file for any subject and
 % hemisphere.
 
+allowWildcardExtension = 1;
+
 if nargin >= 5
     analysisFileSpecified = 1;
 else
@@ -21,12 +23,26 @@ fileDirectory = sprintf('/Volumes/Plata1/LGN/Scans/%s/%s/%s/ROIAnalysis/%s',...
 if analysisFileSpecified
     fileBase = sprintf('lgnROI%d', hemi);
     
-    dataDir = dir(sprintf('%s/%s_%s.mat', ...
-        fileDirectory, fileBase, analysisExtension));
+    if allowWildcardExtension
+        dataDir = dir(sprintf('%s/%s_%s*.mat', ...
+            fileDirectory, fileBase, analysisExtension));
+    else
+        dataDir = dir(sprintf('%s/%s_%s.mat', ...
+            fileDirectory, fileBase, analysisExtension));
+    end
+    
+    % give an error if there are too many or too few matching files
+    if numel(dataDir)==0
+        error('Zero matches for the requested file.')
+    elseif numel(dataDir)>1
+        error('Too many matches for the requested file.')
+    end
+
     fileName = dataDir.name;
     
     filePath = sprintf('%s/%s', fileDirectory, fileName);
 else
     fileName = [];
     filePath = [];
+    fprintf('\nSorry, the analysis file was not sufficiently specified. Check arguments.\n\n')
 end
