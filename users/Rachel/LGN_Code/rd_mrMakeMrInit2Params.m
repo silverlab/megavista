@@ -5,6 +5,9 @@ function params = rd_mrMakeMrInit2Params
 % Makes a params structure that can be passed to mrInit2, to run it from
 % the command line with specified params.
 %
+% Run this from the session directory. It will look for certain files in
+% certain locations within that directory.
+%
 % Rachel Denison
 % 2011 Nov 21
 
@@ -36,7 +39,8 @@ scanGroups = {[7 9], 1:6, 8}; % SB {hemi, mp, fix}
 % scanGroupKeepFrames = {[5 -1], [3 90], [10, -1]}; % RD 7T Aug (TR=3s)
 % scanGroupKeepFrames = {[8 128], [4 135], [16 -1], [16 -1], [16 -1]}; % JN 
 % scanGroupKeepFrames = {[8 128], [4 135], [16 -1]}; % JN distortion-corrected
-scanGroupKeepFrames = {[8 128], [4 135], [16 -1]}; % SB, MN 
+% scanGroupKeepFrames = {[8 128], [4 135], [16 -1]}; % SB, MN 
+scanGroupKeepFrames = {[8 128], [4 135], [0 180]}; % SB distortion-corrected (only thowing away the final frame (the response))
 % scanGroupKeepFrames = {[4 135]}; % KS 1.25
 % scanGroupKeepFrames = {[16 -1], [4 135]}; % 7T
 % scanGroupKeepFrames = {[6 132], [4 -1]}; % 3T [frames-to-discard frames-to-keep]
