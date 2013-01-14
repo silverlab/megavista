@@ -204,7 +204,7 @@ if saveFigs
         correlationType);
     figExt{2} = 'Hist_indivScanBetaMPClassReliability';
     figExt{3} = 'Plot_indivScanBetaSNR';
-    for iF = 2:3
+    for iF = 1:3
         print(f(iF), '-djpeg', sprintf('figures/lgnROI%d%s_%s',...
             hemi, figExt{iF}, datestr(now,'yyyymmdd')));
     end

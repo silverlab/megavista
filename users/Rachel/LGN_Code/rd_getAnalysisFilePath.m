@@ -33,9 +33,9 @@ if analysisFileSpecified
     
     % give an error if there are too many or too few matching files
     if numel(dataDir)==0
-        error('Zero matches for the requested file.')
+        error('Zero matches for the requested file, %s.', analysisExtension)
     elseif numel(dataDir)>1
-        error('Too many matches for the requested file.')
+        error('Too many matches for the requested file, %s.', analysisExtension)
     end
 
     fileName = dataDir.name;

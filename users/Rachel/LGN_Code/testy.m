@@ -29,3 +29,23 @@ plot(f,Pxx)
 plot(f,Pyy)
 plot(f, cohxy, 'r')
 plot(f, abs(Pxy).^2, 'g')
+
+
+% excluding runs from indiv scan data
+oldRunsString = '1-7'; % RD '1-12'
+newRuns = [1 3:7]; % RD 2:12
+newRunsString = '1.3-7'; % RD '2-12'
+for hemi = 1:2
+    for analysisName = {'multiVoxel','timeCourse'}
+        origFile = sprintf('lgnROI%d_indivScanData_%s_20120417.mat', hemi, analysisName{1});
+        safeFile = sprintf('OLD_lgnROI%d_indivScanData_%s_20120417_runs%s.mat',...
+            hemi, analysisName{1}, oldRunsString);
+        newFile = sprintf('lgnROI%d_indivScanData_%s_20130113_runs%s.mat',...
+            hemi, analysisName{1}, newRunsString);
+        
+        load(origFile)
+        system(sprintf('mv %s %s', origFile, safeFile))
+        uiData = uiData(newRuns);
+        save(newFile, 'uiData')
+    end
+end
