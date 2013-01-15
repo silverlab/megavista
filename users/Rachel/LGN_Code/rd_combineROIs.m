@@ -6,14 +6,14 @@
 % Default is to save the new ROI in the session 1 ROI directory.
 
 %% setup
-combineMethod = 'intersect'; % 'intersect','union','xor','a not b'
-color = 'w';
+combineMethod = 'union'; % 'intersect','union','xor','a not b'
+color = 'k'; % 'w' for intersect, 'k' for union
 
 saveNewROI = 1;
 
 %% file i/o
 roiName = 'ROI201';
-roiSaveName = 'ROI201-i3T27T';
+roiSaveName = 'ROI201-u7T17T2';
 
 studyDir = '/Volumes/Plata1/LGN/Scans';
 
@@ -26,11 +26,11 @@ studyDir = '/Volumes/Plata1/LGN/Scans';
 % session1Dir = '3T/AV_20111117_session/AV_20111117_n';
 % session2Dir = '7T/AV_20111213_session/AV_20111213';
 
-session1Dir = '3T/AV_20111128_session/AV_20111128_n';
-session2Dir = '7T/AV_20111213_session/AV_20111213';
+% session1Dir = '3T/AV_20111128_session/AV_20111128_n';
+% session2Dir = '7T/AV_20111213_session/AV_20111213';
 
-% session1Dir = '7T/KS_20111212_session/KS_20111212_15mm';
-% session2Dir = '7T/KS_20111214_session/KS_20111214';
+session1Dir = '7T/KS_20111212_session/KS_20111212_15mm';
+session2Dir = '7T/KS_20111214_session/KS_20111214';
 
 roiDir = 'Volume/ROIs';
 
@@ -52,6 +52,7 @@ coords = combineCoords(coords1, coords2, combineMethod);
 
 %% make new ROI file
 ROI = roi1.ROI;
+ROI.name = roiSaveName; % added this line on 2013-01-15
 ROI.color = color;
 ROI.coords = coords;
 ROI.created = datestr(now);
