@@ -2,13 +2,13 @@
 
 
 %% setup
-scanner = '7T';
+scanner = '3T';
 analysisExtension = 'indivScanBetaReliability';
 hemis = [1 2];
 
 plotFigs = 1;
-saveFigs = 0;
-saveAnalysis = 0;
+saveFigs = 1;
+saveAnalysis = 1;
 
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
 
@@ -20,7 +20,8 @@ switch scanner
 end
 
 % subjects = 1:size(subjectDirs,1);
-subjects = [1:4];
+% subjects = [1:4]; % 7T
+subjects = [1 2 4 5]; % 3T
 nSubjects = numel(subjects);
 
 %% show subjects
@@ -31,13 +32,14 @@ end
 fprintf('\n\n')
 
 %% File I/O
+analysisSaveName = 'groupIndivScanBetaCorrelations';
 fileBaseDir = '/Volumes/Plata1/LGN/Group_Analyses';
 fileBaseSubjects = sprintf('%s_N%d', scanner, nSubjects);
 fileBaseTail = sprintf('%s',datestr(now,'yyyymmdd'));
     
 %% get data from each subject
 for iSubject = 1:nSubjects
-    subject = subjects(iSubject);
+    subject = subjects(iSubject)
     
     for iHemi = 1:length(hemis)
         hemi = hemis(iHemi);
@@ -67,6 +69,7 @@ for iSubject = 1:nSubjects
 end
 
 %% plot summary figure for individual subjects
+correlationType = data.correlationType;
 condNames = data.condNames;
 nConds = numel(condNames);
 
@@ -79,7 +82,7 @@ hemiColors = {[0 0 205]./255, [0 128 0]./255};
 
 %% fig: mean and std
 for iCond = 1:nConds
-    f(1) = figure;
+    f(1,iCond) = figure;
     hold on
     for iHemi = 1:length(hemis)
         errorbar((1:nSubjects)+hemiNudges(iHemi), ...
@@ -100,7 +103,7 @@ end
 
 %% fig: median and 95% bounds
 for iCond = 1:nConds
-    f(2) = figure;
+    f(2,iCond) = figure;
     hold on
     for iHemi = 1:length(hemis)
         errorL = squeeze(groupData.runPairCorr95PctBounds(1,iCond,:,iHemi)) - ...
@@ -124,19 +127,23 @@ for iCond = 1:nConds
 end
 
 %% save figs
-figNames = {'fig1','fig2'};
+figNames = {'mean','median'};
 if saveFigs
-    for iF = 1:numel(f) %% need to add something for hemi
-        plotSavePath = sprintf('%s/figures/%s_%s_hemi%d_%s',...
-            fileBaseDir, figNames{iF}, fileBaseSubjects, iHemi, fileBaseTail);
-        print(f(iF,iHemi),'-djpeg',sprintf(plotSavePath));
+    for iF = 1:size(f,1) %% need to add something for hemi
+        for iCond = 1:nConds
+            figStr = sprintf('%s_%s_beta%s', correlationType, figNames{iF}, condNames{iCond});
+            plotSavePath = sprintf('%s/figures/%s_%s_%s_%s',...
+                fileBaseDir, analysisSaveName, fileBaseSubjects, figStr, fileBaseTail);
+            print(f(iF,iCond),'-djpeg','-r80',sprintf(plotSavePath));
+        end
     end
 end
 
 %% save analysis
 if saveAnalysis
-    save(sprintf('%s/groupIndivScanBetaReliability_%s_%s.mat',...
-        fileBaseDir, fileBaseSubjects, fileBaseTail), ...
-        'groupData','groupMean','groupStd','groupSte',...
+    save(sprintf('%s/%s_%s_%s.mat',...
+        fileBaseDir, analysisSaveName, fileBaseSubjects, fileBaseTail), ...
+        'groupData', ... %'groupMean','groupStd','groupSte',...
+        'correlationType','condNames', ...
         'scanner','subjectDirs','subjects','hemis');
 end
