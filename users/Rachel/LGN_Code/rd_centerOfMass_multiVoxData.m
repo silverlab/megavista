@@ -1,13 +1,18 @@
-% rd_centerOfMass_multiVoxData.m
+function rd_centerOfMass_multiVoxData(hemi, mapName)
+% rd_centerOfMass_multiVoxData(hemi, mapName)
+%
+% hemi is 1 or 2 (left or right)
+% mapName is 'betaM-P','betaM', or 'betaP'
 
 %% Setup
-hemi = 2;
+% hemi = 1;
 
-varThreshs = 0:.001:.05;
+varThreshs = 0:.001:.05; % typical 7T
+% varThreshs = 0:.001:.02; % typical 3T
 voxelSelectionOption = 'varExp'; % all, varExp
 % prop = .8;
 % betaCoefs = [0 1];
-mapName = 'betaP';
+% mapName = 'betaM-P';
 
 switch mapName
     case 'betaM-P'
@@ -130,8 +135,6 @@ if plotFigs
 end
 
 %% Save figs
-% plotSavePath = sprintf('%s%s', plotFileBase, datestr(now,'yyyymmdd'));
-
 if saveFigs
     print(f,'-djpeg',sprintf('figures/%s', plotSavePath));
 end

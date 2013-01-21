@@ -1,9 +1,13 @@
-% rd_normalizeCenterOfMass.m
+function rd_normalizeCenterOfMass(hemi, mapName)
+% rd_normalizeCenterOfMass(hemi, mapName)
+%
+% hemi is 1 or 2 (left or right)
+% mapName is 'betaM-P','betaM', or 'betaP'
 
 %% setup
-hemi = 2;
+% hemi = 2;
 
-mapName = 'betaP';
+% mapName = 'betaP';
 
 switch mapName
     case 'betaM-P'
