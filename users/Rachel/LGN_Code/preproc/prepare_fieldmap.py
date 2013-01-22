@@ -17,18 +17,16 @@ phase dicoms are in a directory starting with PH
 these are subdirectories of the fieldmapping directory, which is a command line input
 fieldmap_deltaTE is defined within the script (=1.02 ms as of 2013-01-08)
 
-Note:
-As of 2013-01-08, this code has NOT been tested by a full run-through.
-
 Created by Rachel Denison on 2013-01-08.
 """
 
+import sys
 import os
 import glob
 
 
 def do_commands(commands):
-"""Print and do commands"""
+    """Print and do commands"""
     for command in commands:
         print command
         out = os.system(command)
@@ -38,7 +36,7 @@ def do_commands(commands):
 
 
 def mag_nifti():
-"""Make magnitude niftis"""
+    """Make magnitude niftis"""
     commands = [
         'dcm2nii -f MR*/*.dcm',
         'fslsplit MR*/*.nii.gz mag',
@@ -51,7 +49,7 @@ def mag_nifti():
     
     
 def phase_nifti():
-"""Make phase nifti"""
+    """Make phase nifti"""
     commands = [
         'dcm2nii -f PH*/*.dcm',
         'mv PH*/*.nii.gz phase.nii.gz']
@@ -61,7 +59,7 @@ def phase_nifti():
     
     
 def mask_mag():
-"""Mask mag image and erode to make tight mask"""
+    """Mask mag image and erode to make tight mask"""
     commands = [
         # Brain mask mag1 image using FSL defaults
         'bet mag1.nii.gz mag1_masked.nii.gz',
@@ -75,7 +73,7 @@ def mask_mag():
     
     
 def finish_mag_mask():
-"""If you've created a final erosion mask by hand using afni, apply it to the mag image"""
+    """If you've created a final erosion mask by hand using afni, apply it to the mag image"""
     commands = [
         # afni to nifti
         '3dAFNItoNIFTI final_erode_mask+orig',
@@ -92,13 +90,13 @@ def finish_mag_mask():
 
 
 def fieldmap(deltaTE):
-"""Prepare fieldmap using FSL"""
+    """Prepare fieldmap using FSL"""
     os.system('fsl_prepare_fieldmap SIEMENS phase.nii.gz mag1_masked_e.nii.gz fieldmap.nii.gz {}'.format(deltaTE))  
     
 
 def niftis_to_nifti_dir():
-"""Move all the niftis in the current directory to a _nifti directory.
-   If the directory does not yet exist, create it."""
+    """Move all the niftis in the current directory to a _nifti directory.
+    If the directory does not yet exist, create it."""
     nifti_dirs = glob.glob('*_nifti')
     if len(nifti_dirs)>1:
         print 'Too many nifti dirs found. Niftis will not be moved.'
@@ -120,6 +118,8 @@ if __name__ == '__main__':
     # User-defined parameters:    
     # delta TE for fsl_prepare_fieldmap (in ms)
     fieldmap_deltaTE = 1.02
+    print '\nFieldmap deltaTE is set to {} ms'.format(fieldmap_deltaTE)
+    raw_input("Press Enter to accept...")
     # Perform an additional masking of the magnitude image by hand?
     mask_mag_by_hand = False
 
@@ -131,6 +131,9 @@ if __name__ == '__main__':
     # Convert phase and magnitude dicoms to niftis
     mag_nifti()
     phase_nifti()
+
+    # Mask the magnitude image
+    mask_mag()
 
     # Finish off masked mag image, with masking by hand if requested
     if mask_mag_by_hand:
