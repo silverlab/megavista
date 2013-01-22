@@ -113,7 +113,7 @@ if __name__ == '__main__':
     sess_dir = sys.argv[1]
     if sess_dir[-1]=='/': #If a trailing backslash has been input
         sess_dir=sess_dir[:-1]
-    sess_name = os.path.split(sess_dir)[1]
+    # sess_name = os.path.split(sess_dir)[1]
 
     # User-defined parameters:    
     # delta TE for fsl_prepare_fieldmap (in ms)
@@ -138,7 +138,7 @@ if __name__ == '__main__':
     # Finish off masked mag image, with masking by hand if requested
     if mask_mag_by_hand:
         print '\nNow is the time to create the final masked magnitude image!'
-        raw_input("Press Enter to continue...") # may need updating to input() with Python 3
+        raw_input("Press Enter when ready to continue...") # may need updating to input() with Python 3
         finish_mag_mask()
     
     # Prepare fieldmap
