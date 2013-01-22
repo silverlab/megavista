@@ -1,5 +1,9 @@
 #!/bin/bash
 # rd_regress_nuisance.sh
+#
+# This script was modeled after example at 
+# http://www.nitrc.org/forum/forum.php?thread_id=1495&forum_id=1383
+# posted by Lisa Eyler: "RE: Nuisance signal regression and resting ep"
 
 func_dir='/Volumes/Plata1/LGN/Scans/7T/JN_20120808_Session/JN_20120808_fslDC/JN_20120808_fslDC_nifti'
 func='epi01_fix_fsldc'
