@@ -28,7 +28,7 @@ masked = 1;
 if notDefined('params');     error('Need params'); end;
 if notDefined('id');         id = 1;                   end;
 
-mask_height = 21;
+mask_height = 23;
 outerRad   = 14;%params.stim(id).stimSize;
 innerRad   = 0;
 ringWidth  = 4.9;%outerRad .* params.stim(id).stimWidth ./ 360;
