@@ -8,8 +8,8 @@
 % auto-scaled separately, so it's a good idea to set the clip mode to
 % something fixed.
 
-viewName = 'Gray'; % 'Volume','Gray'
-mapPath = 'GLMs/MVP'; % 'GLMs/BetaM-P', 'GLMs/MVP'
+viewName = 'Volume'; % 'Volume','Gray'
+mapPath = 'GLMs/BetaM-P'; % 'GLMs/BetaM-P', 'GLMs/MVP'
 threshPath = 'GLMs/Proportion Variance Explained'; % 'Averages.corAnal', 'GLMs/Proportion Variance Explained'
 threshField = 'map'; % 'co', 'map'
 
