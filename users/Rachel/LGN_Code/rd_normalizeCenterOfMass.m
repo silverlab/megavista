@@ -9,6 +9,8 @@ function rd_normalizeCenterOfMass(hemi, mapName)
 
 % mapName = 'betaP';
 
+coordsType = 'Volume'; % 'Epi' or 'Volume'
+
 switch mapName
     case 'betaM-P'
         prop = 0.2;
@@ -21,8 +23,8 @@ switch mapName
 end
 
 plotFigs = 1;
-saveAnalysis = 1;
-saveFigs = 1;
+saveAnalysis = 0;
+saveFigs = 0;
 
 %% colors
 MCol = [220 20 60]./255; % red
@@ -48,13 +50,23 @@ end
 
 %% file i/o
 fileBase = sprintf('lgnROI%d', hemi);
-comFile = dir(sprintf('%s_centerOfMass_%s_prop%d*',fileBase, mapName, round(prop*100)));
 multiVoxFile = sprintf('%s_multiVoxFigData', fileBase);
-
-analysisFile = sprintf('%s_centerOfMassNorm_%s_prop%d_%s',...
-    fileBase, mapName, round(prop*100), datestr(now,'yyyymmdd'));
-figFile = sprintf('%sScatter_comNormXZ_%s_prop%d_%s',...
-    fileBase, mapName, round(prop*100), datestr(now,'yyyymmdd'));
+switch coordsType
+    case 'Epi'
+        comFile = dir(sprintf('%s_centerOfMass_%s_prop%d*',fileBase, mapName, round(prop*100)));
+        analysisFile = sprintf('%s_centerOfMassNorm_%s_prop%d_%s',...
+            fileBase, mapName, round(prop*100), datestr(now,'yyyymmdd'));
+        figFile = sprintf('%sScatter_comNormXZ_%s_prop%d_%s',...
+            fileBase, mapName, round(prop*100), datestr(now,'yyyymmdd'));
+    case 'Volume'
+        comFile = dir(sprintf('%s_centerOfMassVol_%s_prop%d*',fileBase, mapName, round(prop*100)));
+        analysisFile = sprintf('%s_centerOfMassVolNorm_%s_prop%d_%s',...
+            fileBase, mapName, round(prop*100), datestr(now,'yyyymmdd'));
+        figFile = sprintf('%sScatter_comVolNormXZ_%s_prop%d_%s',...
+            fileBase, mapName, round(prop*100), datestr(now,'yyyymmdd'));
+    otherwise
+        error('coordsType not recognized.')
+end
 
 if numel(comFile)~=1
     error('Too many or too few files matching comFile')
@@ -64,11 +76,44 @@ end
 load(comFile.name)
 load(multiVoxFile)
 
-%% get centers info
-coords = figData.coordsInplane; % coordsInplane are in epi space
+%% get roi coords
+switch coordsType
+    case 'Epi'
+        coords = figData.coordsInplane; % coordsInplane are in epi space
+    case 'Volume'
+        load('../../mrSESSION','mrSESSION')
+        ipVoxSize = mrSESSION.inplanes.voxelSize;
+        volVoxSize = [1 1 1];
+        xform = mrSESSION.alignment;
+        % find volume ROI coordinates - convert from inplane to volume
+        coordsTemp = xformROIcoords(figData.coordsAnatomy, xform, ipVoxSize, ...
+            volVoxSize); % coordsAnatomy are in inplane (gems) space
+        % For Vol coords, need to switch axi and sag dimensions and need to
+        % flip the A-P and D-V directions
+        coords(1,:) = coordsTemp(3,:); % Sag --> x
+        coords(2,:) = coordsTemp(2,:)*(-1); % Cor --> y, flip A-P
+        coords(3,:) = coordsTemp(1,:)*(-1); % Axi --> z, flip D-V
+    otherwise
+        error('coordsType not recognized.')
+end
 
-centers{1} = C.centers1;
-centers{2} = C.centers2;
+%% get centers info
+switch coordsType
+    case 'Epi'
+        centers{1} = C.centers1;
+        centers{2} = C.centers2;
+    case 'Volume'
+        centersTemp{1} = C.centers1Vol;
+        centersTemp{2} = C.centers2Vol;
+        % For Vol centers, need to switch axi and sag dimensions
+        for iC = 1:numel(centersTemp)
+            centers{iC}(:,1) = centersTemp{iC}(:,3); % Sag --> x
+            centers{iC}(:,2) = centersTemp{iC}(:,2)*(-1); % Cor --> y, flip A-P
+            centers{iC}(:,3) = centersTemp{iC}(:,1)*(-1); % Axi --> z, flip D-V
+        end
+    otherwise
+        error('coordsType not recognized.')
+end
 varThreshs = C.varThreshs;
 nSuperthreshVox = C.nSuperthreshVox;
 nThreshs = length(varThreshs);
@@ -87,7 +132,7 @@ end
 
 %% save analysis
 if saveAnalysis
-    save(analysisFile, 'C', 'centers', 'centersNorm')
+    save(analysisFile, 'C', 'coords', 'centers', 'centersNorm')
 end
 
 %% plot figs
@@ -104,7 +149,7 @@ if plotFigs
     ylim([0 1])
     xlabel('L-R center (normalized)')
     ylabel('V-D center (normalized)')
-    title(sprintf('Hemi %d, %s, prop %.1f\nsize = number of voxels', hemi, mapName, prop))
+    title(sprintf('Hemi %d, %s, prop %.1f, %s coords\nsize = number of voxels', hemi, mapName, prop, coordsType))
 end
 
 %% save figs
