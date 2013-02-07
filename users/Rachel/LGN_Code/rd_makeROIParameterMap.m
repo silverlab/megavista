@@ -37,7 +37,6 @@ imagesc(roimap(:,:,exampleSlice))
 
 %% make map variables
 map{scan} = roimap;
-mapName = 'ROIX01';
 
 %% save map
 if saveMap
