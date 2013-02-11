@@ -10,7 +10,7 @@ switch scanner
         subjectDirs = subjectDirs7T;
 end
 
-subjects = [10 11];
+subjects = [6];
 % subjects = 1:size(subjectDirs,1);
 nSubjects = numel(subjects);
 
@@ -67,9 +67,14 @@ for iSubject = 1:nSubjects
 
 %     % center of mass sequence
 %     rd_centerOfMass_multiVoxData
-%     rd_normalizeCenterOfMass
-%     rd_centerOfMassNormGroupAnalysis (makes the good XZ plots)
-%     rd_centerOfMassGroupAnalysis (used for center of mass interaction)
+    for hemi = 1:2
+        for mapName = {'betaM-P','betaM','betaP'}
+            rd_mrXformCentersCoordsToVolCoords(hemi,mapName{1}); % (if converting to Volume coords)
+            rd_normalizeCenterOfMass(hemi,mapName{1}); % (option for Volume coords)
+        end
+    end
+%     rd_centerOfMassNormGroupAnalysis % (makes the good XZ plots)
+%     rd_centerOfMassGroupAnalysis % (used for center of mass interaction)
 %     rd_centerOfMassGroupMPInteraction
     
 end

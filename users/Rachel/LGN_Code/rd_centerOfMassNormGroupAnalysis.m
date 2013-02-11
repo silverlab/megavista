@@ -4,13 +4,13 @@
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
             
 scanner = '7T';
-mapName = 'betaM';
+mapName = 'betaM-P';
 prop = 0.2;
 analysisExtension = sprintf('centerOfMassNorm_%s_prop%d_*', mapName, round(prop*100));
 hemis = [1 2];
 
 plotFigs = 1;
-saveFigs = 1;
+saveFigs = 0;
 saveAnalysis = 0;
 
 MCol = [220 20 60]./255; % red
@@ -48,7 +48,7 @@ end
 cVarThresh = 0;
 
 % subjects = 1:size(subjectDirs,1);
-subjects = [7 8];
+subjects = [1:4];
 nSubjects = numel(subjects);
 
 %% File I/O

@@ -1,4 +1,4 @@
-% rd_mrXformCentersCoordsToVolCoords.m
+function rd_mrXformCentersCoordsToVolCoords(hemi, mapName)
 %
 % Transforms center of mass cordinates from epi coords to volume coords, in
 % order to reorient them to a canonical upright orientation.
@@ -10,9 +10,9 @@
 % 2013 Feb 6
 
 %% Setup
-hemi = 1;
-
-mapName = 'betaM-P';
+% hemi = 1;
+% 
+% mapName = 'betaM-P';
 
 switch mapName
     case 'betaM-P'

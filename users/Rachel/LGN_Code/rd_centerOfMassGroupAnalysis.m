@@ -49,7 +49,7 @@ switch scanner
 end
 
 % subjects = 1:size(subjectDirs,1);
-subjects = 7:8;
+subjects = [1 2 3 4 5 8];
 nSubjects = numel(subjects);
 
 mmMat = repmat(voxelSize,nSubjects,1);

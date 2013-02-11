@@ -19,12 +19,12 @@ switch mapName
     case 'betaP'
         prop = 0.8;
     otherwise
-        error ('mapName not recognized when setting prop and betaCoefs')
+        error ('mapName not recognized when setting prop')
 end
 
 plotFigs = 1;
-saveAnalysis = 0;
-saveFigs = 0;
+saveAnalysis = 1;
+saveFigs = 1;
 
 %% colors
 MCol = [220 20 60]./255; % red
@@ -85,14 +85,15 @@ switch coordsType
         ipVoxSize = mrSESSION.inplanes.voxelSize;
         volVoxSize = [1 1 1];
         xform = mrSESSION.alignment;
-        % find volume ROI coordinates - convert from inplane to volume
+        % Find volume ROI coordinates - convert from Inplane to Volume
         coordsTemp = xformROIcoords(figData.coordsAnatomy, xform, ipVoxSize, ...
             volVoxSize); % coordsAnatomy are in inplane (gems) space
         % For Vol coords, need to switch axi and sag dimensions and need to
-        % flip the A-P and D-V directions
+        % flip the A-P and D-V directions to make it match the epi coords
+        % (and what the plots expect)
         coords(1,:) = coordsTemp(3,:); % Sag --> x
-        coords(2,:) = coordsTemp(2,:)*(-1); % Cor --> y, flip A-P
-        coords(3,:) = coordsTemp(1,:)*(-1); % Axi --> z, flip D-V
+        coords(2,:) = coordsTemp(2,:)*(-1); % Cor --> y, flip A-P --> P-A
+        coords(3,:) = coordsTemp(1,:)*(-1); % Axi --> z, flip D-V --> V-D
     otherwise
         error('coordsType not recognized.')
 end
@@ -105,11 +106,12 @@ switch coordsType
     case 'Volume'
         centersTemp{1} = C.centers1Vol;
         centersTemp{2} = C.centers2Vol;
-        % For Vol centers, need to switch axi and sag dimensions
+        % For Vol centers, need to switch axi and sag dimensions and flip
+        % A-P and D-V directions
         for iC = 1:numel(centersTemp)
             centers{iC}(:,1) = centersTemp{iC}(:,3); % Sag --> x
-            centers{iC}(:,2) = centersTemp{iC}(:,2)*(-1); % Cor --> y, flip A-P
-            centers{iC}(:,3) = centersTemp{iC}(:,1)*(-1); % Axi --> z, flip D-V
+            centers{iC}(:,2) = centersTemp{iC}(:,2)*(-1); % Cor --> y, flip A-P --> P-A
+            centers{iC}(:,3) = centersTemp{iC}(:,1)*(-1); % Axi --> z, flip D-V --> V-D
         end
     otherwise
         error('coordsType not recognized.')
@@ -132,7 +134,7 @@ end
 
 %% save analysis
 if saveAnalysis
-    save(analysisFile, 'C', 'coords', 'centers', 'centersNorm')
+    save(analysisFile, 'coordsType', 'C', 'coords', 'centers', 'centersNorm')
 end
 
 %% plot figs

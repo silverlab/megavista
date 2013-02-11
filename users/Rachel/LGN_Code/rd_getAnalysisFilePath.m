@@ -3,7 +3,8 @@ function [filePath, fileDirectory, fileName] = rd_getAnalysisFilePath(subjectDir
 % function filePath = rd_getAnalysisFilePath(subjectDirs, scanner, subject, hemi, analysisExtension)
 %
 % gets the filepath to a specific analysis file for any subject and
-% hemisphere.
+% hemisphere. if no analysis file is specified, will still return the file
+% directory.
 
 allowWildcardExtension = 1;
 
@@ -44,5 +45,4 @@ if analysisFileSpecified
 else
     fileName = [];
     filePath = [];
-    fprintf('\nSorry, the analysis file was not sufficiently specified. Check arguments.\n\n')
 end
