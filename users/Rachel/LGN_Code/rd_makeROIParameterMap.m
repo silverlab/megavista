@@ -16,13 +16,13 @@ saveMap = 1;
 saveFile = sprintf('Inplane/GLMs/%s.mat', mapName);
 
 %% initialize roi map using the dimensions of a sample, preloaded map
-roimap = zeros(size(INPLANE{scan}.map{scan}));
+roimap = zeros(size(INPLANE{1}.map{scan}));
 
-nROIs = numel(INPLANE{scan}.ROIs);
+nROIs = numel(INPLANE{1}.ROIs);
 
 %% fill the roi map with 1s according to the ROI coordinates
 for iROI = 1:nROIs
-    coords = INPLANE{scan}.ROIs(iROI).coords;
+    coords = INPLANE{1}.ROIs(iROI).coords;
     
     for iCoord = 1:size(coords,2)
         cnow = coords(:,iCoord);
@@ -31,7 +31,7 @@ for iROI = 1:nROIs
 end
 
 %% check map
-exampleSlice = 10;
+exampleSlice = 8;
 figure
 imagesc(roimap(:,:,exampleSlice))
 
