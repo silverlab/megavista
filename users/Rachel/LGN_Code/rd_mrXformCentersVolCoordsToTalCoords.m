@@ -1,10 +1,8 @@
 function C = rd_mrXformCentersVolCoordsToTalCoords(hemi, mapName)
 %
-% Transforms center of mass cordinates from epi coords to volume coords, in
-% order to reorient them to a canonical upright orientation.
-%
-% Note that you should start running this script in the ROIX0X directory,
-% but it will soon cd up into (hopefully) the mrSession directory.
+% Transforms center of mass cordinates from volume coords to Talairach 
+% coords, in order to finish reorienting them to a canonical upright 
+% orientation. Run after rd_mrXformCentersCoordsToVolCoords.m.
 %
 % Rachel Denison
 % 2013 Feb 6
@@ -26,7 +24,7 @@ switch mapName
 end
 
 plotFigs = 1;
-saveAnalysis = 0;
+saveAnalysis = 1;
 
 %% File I/O
 fileBase = sprintf('lgnROI%d', hemi);
@@ -51,7 +49,7 @@ skipSpatialNormFlag = 1;
 talairach = loadTalairachXform(mrSESSION.subject,[],skipTalFlag,skipSpatialNormFlag);
 
 %% Transform centers
-% Transform centers coordinates (assumes coords are [3 x nvox])
+% Transform centers coordinates (assumes coords are [nvox x 3])
 % Note: Volume coords are [Ax Cor Sag], and Talairach coords are 
 % [Sag Cor Ax] (right+ ant+ sup+)
 [C.centers1Tal C.centers1TalNoScale] = rd_volToTalairach(C.centers1Vol, ...
