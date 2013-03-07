@@ -43,10 +43,11 @@ load ../../mrSESSION
 
 %% Get xform info
 % We want just the Talairach transform
-skipTalFlag = 0;
-skipSpatialNormFlag = 1;
-
-talairach = loadTalairachXform(mrSESSION.subject,[],skipTalFlag,skipSpatialNormFlag);
+% skipTalFlag = 0;
+% skipSpatialNormFlag = 1;
+% 
+% talairach = loadTalairachXform(mrSESSION.subject,[],skipTalFlag,skipSpatialNormFlag);
+talairach = load('../../vAnatomy_talairach');
 
 %% Transform centers
 % Transform centers coordinates (assumes coords are [nvox x 3])

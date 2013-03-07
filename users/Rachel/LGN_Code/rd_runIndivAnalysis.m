@@ -69,9 +69,9 @@ for iSubject = 1:nSubjects
 %     rd_centerOfMass_multiVoxData
     for hemi = 1:2
         for mapName = {'betaM-P','betaM','betaP'}
-%             rd_mrXformCentersCoordsToVolCoords(hemi,mapName{1}); % (if converting to Volume coords)
-%             rd_normalizeCenterOfMass(hemi,mapName{1}); % (option for Volume coords)
-            rd_mrXformCentersVolCoordsToTalCoords(hemi,mapName{1}); % (if converting from Volume to Talairach coords)
+%             rd_mrXformCentersCoordsToVolCoords(hemi,mapName{1}); % if converting to Volume coords
+            rd_mrXformCentersVolCoordsToTalCoords(hemi,mapName{1}); % if converting from Volume to Talairach coords
+            rd_normalizeCenterOfMass(hemi,mapName{1},'Talairach'); % choose coords option
         end
     end
 %     rd_centerOfMassNormGroupAnalysis % (makes the good XZ plots)
