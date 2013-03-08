@@ -39,7 +39,7 @@ else
     load(loadFile.name)
 end
 
-load ../../mrSESSION
+load ../../../mrSESSION
 
 %% Get xform info
 % We want just the Talairach transform
@@ -47,7 +47,7 @@ load ../../mrSESSION
 % skipSpatialNormFlag = 1;
 % 
 % talairach = loadTalairachXform(mrSESSION.subject,[],skipTalFlag,skipSpatialNormFlag);
-talairach = load('../../vAnatomy_talairach');
+talairach = load('../../../vAnatomy_talairach');
 
 %% Transform centers
 % Transform centers coordinates (assumes coords are [nvox x 3])

@@ -1,6 +1,6 @@
 % rd_runIndivAnalysis.m
 
-scanner = '7T';
+scanner = '3T';
 
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
 switch scanner
@@ -10,7 +10,7 @@ switch scanner
         subjectDirs = subjectDirs7T;
 end
 
-subjects = [6];
+subjects = [2];
 % subjects = 1:size(subjectDirs,1);
 nSubjects = numel(subjects);
 
@@ -67,10 +67,10 @@ for iSubject = 1:nSubjects
 
 %     % center of mass sequence
 %     rd_centerOfMass_multiVoxData
-    for hemi = 1:2
+    for hemi = 1
         for mapName = {'betaM-P','betaM','betaP'}
-%             rd_mrXformCentersCoordsToVolCoords(hemi,mapName{1}); % if converting to Volume coords
-            rd_mrXformCentersVolCoordsToTalCoords(hemi,mapName{1}); % if converting from Volume to Talairach coords
+%             rd_mrXformCentersCoordsToVolCoords(hemi,mapName{1}); % convert to Volume coords
+%             rd_mrXformCentersVolCoordsToTalCoords(hemi,mapName{1}); % convert to Volume to Talairach coords
             rd_normalizeCenterOfMass(hemi,mapName{1},'Talairach'); % choose coords option
         end
     end
