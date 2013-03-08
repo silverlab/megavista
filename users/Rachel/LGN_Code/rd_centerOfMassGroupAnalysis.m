@@ -3,38 +3,60 @@
 %% setup
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
             
-scanner = '7T';
-mapName = 'betaP';
-prop = 0.8;
-analysisExtension = sprintf('centerOfMass_%s_prop%d_*', mapName, round(prop*100));
+scanner = '3T';
+mapName = 'betaM-P';
 hemis = [1 2];
+coordsType = 'Talairach'; %'Epi','Volume','Talairach'
+%%% note!! Volume coords are switched and flipped compared to Epi/Tal. Need
+%%% to fix if you want to plot these meaningfully.
 
 plotFigs = 1;
-saveFigs = 1;
-saveAnalysis = 1;
+saveFigs = 0;
+saveAnalysis = 0;
 
 MCol = [220 20 60]./255; % red
 PCol = [0 0 205]./255; % medium blue
 nullCol = [0 0 0]; % black
 switch mapName
     case 'betaM-P'
+        prop = 0.2;
         colors = {MCol, PCol};
         labels = {'more M','more P'};
     case 'betaM'
+        prop = 0.2;
         colors = {MCol, nullCol};
         labels = {'more M','less M'};
     case 'betaP'
+        prop = 0.8;
         colors = {PCol, nullCol};
         labels = {'more P','less P'};
     otherwise
         error('mapName not recognized')
 end
+
 for iCol = 1:numel(colors)
     hsvCol = rgb2hsv(colors{iCol});
     lightColors{iCol} = hsv2rgb([hsvCol(1) .3 1]);
 end
 if all(colors{2}==[0 0 0])
     lightColors{2}=[.6 .6 .6];
+end
+
+switch coordsType
+    case 'Epi'
+        coordsExtension = '';
+        centers1Name = 'centers1';
+        centers2Name = 'centers2';
+    case 'Volume'
+        coordsExtension = 'Vol';
+        centers1Name = 'centers1Vol';
+        centers2Name = 'centers2Vol';
+    case 'Talairach'
+        coordsExtension = 'Tal';
+        centers1Name = 'centers1Tal';
+        centers2Name = 'centers2Tal';
+    otherwise
+        error('coordsType not recognized')
 end
 
 switch scanner
@@ -48,8 +70,9 @@ switch scanner
         voxelSize = [1.3 1.3 1.3];
 end
 
+analysisExtension = sprintf('centerOfMass%s_%s_prop%d_*', coordsExtension, mapName, round(prop*100));
 % subjects = 1:size(subjectDirs,1);
-subjects = [1 2 3 4 5 8];
+subjects = [1 2 4 5];
 nSubjects = numel(subjects);
 
 mmMat = repmat(voxelSize,nSubjects,1);
@@ -73,8 +96,8 @@ for iSubject = 1:nSubjects
         data = load(filePath);
         
         groupData.varThreshs(:,iSubject,iHemi) = data.C.varThreshs;
-        groupData.centers1(:,:,iSubject,iHemi) = data.C.centers1;
-        groupData.centers2(:,:,iSubject,iHemi) = data.C.centers2;
+        groupData.centers1(:,:,iSubject,iHemi) = data.C.(centers1Name);
+        groupData.centers2(:,:,iSubject,iHemi) = data.C.(centers2Name);
         groupData.nSuperthreshVox(:,iSubject,iHemi) = data.C.nSuperthreshVox;
     end
 end
@@ -195,7 +218,8 @@ if plotFigs
             ylabel(dimLabels{iDim})
             
             if iDim==1
-                title(sprintf('Hemi %d, %s, prop %.1f', hemi, mapName, prop))
+                title(sprintf('Hemi %d, %s, prop %.1f, %s coords', ...
+                    hemi, mapName, prop, coordsType))
 %                 legend('more M','more P','location','Best')
                 legend([p1.mainLine p2.mainLine],labels,...
                     'location','Best')
@@ -239,7 +263,8 @@ if plotFigs
         ylim([-1.5 1.5])
         xlabel('L-R center (mm)')
         ylabel('V-D center (mm)')
-        title(sprintf('Hemi %d, %s, prop %.1f', hemi, mapName, prop))
+        title(sprintf('Hemi %d, %s, prop %.1f, %s coords', ...
+            hemi, mapName, prop, coordsType))
     end
 end
 
@@ -253,16 +278,16 @@ if saveFigs
 %         print(f0(iHemi),'-djpeg',sprintf(plotSavePath));
 %     end
     for iHemi = 1:numel(f1)
-        scatterSavePath = sprintf('%s/figures/groupCenterOfMassXZ_%s_hemi%d_%s',...
-            fileBaseDir, fileBaseSubjects, iHemi, fileBaseTail);
+        scatterSavePath = sprintf('%s/figures/groupCenterOfMassXZ%s_%s_hemi%d_%s',...
+            fileBaseDir, coordsExtension, fileBaseSubjects, iHemi, fileBaseTail);
         print(f1(iHemi),'-djpeg',sprintf(scatterSavePath));
     end
 end
 
 %% save analysis
 if saveAnalysis
-    save(sprintf('%s/groupCenterOfMass_%s_%s.mat',...
-        fileBaseDir, fileBaseSubjects, fileBaseTail), ...
+    save(sprintf('%s/groupCenterOfMass%s_%s_%s.mat',...
+        fileBaseDir, coordsExtension, fileBaseSubjects, fileBaseTail), ...
         'groupData','groupMean','groupStd','groupSte',...
         'normData','normMean','normStd','normSte',...
         'centersThresh0','XZ','centersThresh0Raw','meanCenters',...
