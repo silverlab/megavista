@@ -3,12 +3,11 @@
 %% setup
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
             
-scanner = '3T';
+scanner = '7T';
 mapName = 'betaM-P';
 hemis = [1 2];
-coordsType = 'Epi'; %'Epi','Volume','Talairach'
-%%% note!! Volume coords are switched and flipped compared to Epi/Tal. Need
-%%% to fix if you want to plot these meaningfully.
+coordsType = 'Talairach'; %'Epi','Volume','Talairach'
+coordsNorm = 'raw'; % 'raw','normalized'
 
 plotFigs = 1;
 saveFigs = 0;
@@ -52,6 +51,15 @@ switch coordsType
         error('coordsType not recognized')
 end
 
+switch coordsNorm
+    case 'raw'
+        centersName = 'centers';
+    case 'normalized'
+        centersName = 'centersNorm';
+    otherwise
+        error('coordsNorm not recognized')
+end
+
 switch scanner
     case '3T'
         subjectDirs = subjectDirs3T;
@@ -65,7 +73,7 @@ cVarThresh = 0;
 analysisExtension = sprintf('centerOfMass%sNorm_%s_prop%d_*', coordsExtension, mapName, round(prop*100));
 
 % subjects = 1:size(subjectDirs,1);
-subjects = [1 2 4 5];
+subjects = [1 2 3 4 5 7 8];
 nSubjects = numel(subjects);
 
 %% File I/O
@@ -90,9 +98,18 @@ for iSubject = 1:nSubjects
         groupData.varThreshs(:,iSubject,iHemi) = data.C.varThreshs;
         groupData.nSuperthreshVox(:,iSubject,iHemi) = data.C.nSuperthreshVox;
         
-        % use normalized data
-        groupData.centers1(:,:,iSubject,iHemi) = data.centersNorm{1};
-        groupData.centers2(:,:,iSubject,iHemi) = data.centersNorm{2};
+        % use raw or normalized data
+        centers1 = data.(centersName){1};
+        centers2 = data.(centersName){2};
+        
+        % flip and switch coords if volume
+        if strcmp('coordsType','Volume')
+            centers1 = [centers1(:,3) centers1(:,2)*(-1) centers1(:,1)*(-1)];
+            centers2 = [centers2(:,3) centers2(:,2)*(-1) centers2(:,1)*(-1)];
+        end
+        
+        groupData.centers1(:,:,iSubject,iHemi) = centers1;
+        groupData.centers2(:,:,iSubject,iHemi) = centers2;
     end
 end
 
@@ -208,11 +225,17 @@ if plotFigs
                 'Marker','.','MarkSize',25,'EdgeColor',colors{iC},...
                 'WidthEB',1.2);
         end
-        xlim([0.2 0.8])
-        ylim([0.1 0.7])
+        if strcmp(coordsNorm,'normalized')
+            xlim([0.2 0.8])
+            ylim([0.1 0.7])
+            xlabel('L-R center (normalized)')
+            ylabel('V-D center (normalized)')
+        else
+            xlabel('L-R center (coord)')
+            ylabel('V-D center (coord)')
+        end
         axis square
-        xlabel('L-R center (normalized)')
-        ylabel('V-D center (normalized)')
+
         title(sprintf('Hemi %d, %s, prop %.1f at varThresh = %.3f, %s coords', ...
             hemi, mapName, prop, cVarThresh, coordsType))
     end
