@@ -4,10 +4,10 @@
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
             
 scanner = '7T';
-mapName = 'betaM-P';
+mapName = 'betaP';
 hemis = [1 2];
 coordsType = 'Talairach'; %'Epi','Volume','Talairach'
-coordsNorm = 'raw'; % 'raw','normalized'
+coordsNorm = 'normalized'; % 'raw','normalized'
 
 plotFigs = 1;
 saveFigs = 0;
@@ -75,6 +75,10 @@ analysisExtension = sprintf('centerOfMass%sNorm_%s_prop%d_*', coordsExtension, m
 % subjects = 1:size(subjectDirs,1);
 subjects = [1 2 3 4 5 7 8];
 nSubjects = numel(subjects);
+
+for iS = 1:nSubjects
+    subjStrs{iS} = num2str(subjects(iS));
+end
 
 %% File I/O
 fileBaseDir = '/Volumes/Plata1/LGN/Group_Analyses';
@@ -214,6 +218,7 @@ if plotFigs
             set(p3(iHemi,iC), 'MarkerEdgeColor', lightColors{iC}, ...
                 'MarkerFaceColor', lightColors{iC}, ...
                 'LineWidth', 1)
+            text(centersThresh0{iC,iHemi}(:,1),centersThresh0{iC,iHemi}(:,3),subjStrs)
         end
         
         % plot mean/ste across subjects, with connecting line
