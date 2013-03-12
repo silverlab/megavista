@@ -10,7 +10,7 @@ switch scanner
         subjectDirs = subjectDirs7T;
 end
 
-subjects = [3];
+subjects = [10];
 % subjects = 1:size(subjectDirs,1);
 nSubjects = numel(subjects);
 
@@ -66,11 +66,12 @@ for iSubject = 1:nSubjects
 %     end
 
 %     % center of mass sequence
-%     rd_centerOfMass_multiVoxData
     for hemi = 1:2
         for mapName = {'betaM-P','betaM','betaP'}
-%             rd_mrXformCentersCoordsToVolCoords(hemi,mapName{1}); % convert to Volume coords
+            rd_centerOfMass_multiVoxData(hemi,mapName{1});
+            rd_mrXformCentersCoordsToVolCoords(hemi,mapName{1}); % convert to Volume coords
             rd_mrXformCentersVolCoordsToTalCoords(hemi,mapName{1}); % convert to Volume to Talairach coords
+            rd_normalizeCenterOfMass(hemi,mapName{1},'Epi'); % choose coords option
             rd_normalizeCenterOfMass(hemi,mapName{1},'Talairach'); % choose coords option
         end
     end
