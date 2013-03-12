@@ -1,5 +1,5 @@
 #!/Library/Frameworks/Python.framework/Versions/Current/bin/python
-#motioncorrect.py
+#motioncorrect_refvolexists.py
 
 """This script uses mcflirt to run motion correction on 4d niftis.
 These niftis should already be in the file structure expected by mrVista,
