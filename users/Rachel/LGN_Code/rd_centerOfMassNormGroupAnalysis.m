@@ -4,7 +4,7 @@
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
             
 scanner = '7T';
-mapName = 'betaP';
+mapName = 'betaM-P';
 hemis = [1 2];
 coordsType = 'Talairach'; %'Epi','Volume','Talairach'
 coordsNorm = 'normalized'; % 'raw','normalized'
@@ -74,6 +74,7 @@ analysisExtension = sprintf('centerOfMass%sNorm_%s_prop%d_*', coordsExtension, m
 
 % subjects = 1:size(subjectDirs,1);
 subjects = [1 2 3 4 5 7 8];
+% subjects = [1 2 4 5];
 nSubjects = numel(subjects);
 
 for iS = 1:nSubjects

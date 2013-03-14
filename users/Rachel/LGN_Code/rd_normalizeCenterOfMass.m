@@ -109,7 +109,7 @@ switch coordsType
     case 'Epi'
         coords = figData.coordsInplane; % coordsInplane are in epi space
     case {'Volume', 'Talairach'}
-        load('../../../mrSESSION','mrSESSION')
+        load('../../mrSESSION','mrSESSION')
         ipVoxSize = mrSESSION.inplanes.voxelSize;
         volVoxSize = [1 1 1];
         xform = mrSESSION.alignment;
@@ -128,7 +128,7 @@ switch coordsType
             case 'Talairach'
                 % Get the Talairach xform
 %                 talairach = loadTalairachXform(mrSESSION.subject,[],0,1);
-                talairach = load('../../../vAnatomy_talairach');
+                talairach = load('../../vAnatomy_talairach');
                 % Convert the Volume coords to Talairach
                 [coordsTal coordsNoScale] = rd_volToTalairach(coordsTemp', ...
                     talairach.vol2Tal);
