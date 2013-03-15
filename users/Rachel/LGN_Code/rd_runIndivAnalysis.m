@@ -10,7 +10,7 @@ switch scanner
         subjectDirs = subjectDirs7T;
 end
 
-subjects = [10];
+subjects = [5 7 8];
 % subjects = 1:size(subjectDirs,1);
 nSubjects = numel(subjects);
 
@@ -23,11 +23,7 @@ for iSubject = 1:nSubjects
     % go to subject directory
     cd(fdir)
     
-    % run script
-%     % timeCourse or multiVoxel UI
-%     cd ../.. % need to be in subject directory for rd_mrRunUI
-%     rd_mrRunUI
-    
+    % run script    
 %     % F-tests on indiv scans
 %     load lgnROI1_indivScanData_multiVoxel_20120417
 %     for iScan = 1:numel(uiData)
@@ -66,18 +62,25 @@ for iSubject = 1:nSubjects
 %     end
 
 %     % center of mass sequence
-    for hemi = 1:2
-        for mapName = {'betaM-P','betaM','betaP'}
+%     for hemi = 1:2
+%         for mapName = {'betaM-P','betaM','betaP'}
 %             rd_centerOfMass_multiVoxData(hemi,mapName{1});
 %             rd_mrXformCentersCoordsToVolCoords(hemi,mapName{1}); % convert to Volume coords
 %             rd_mrXformCentersVolCoordsToTalCoords(hemi,mapName{1}); % convert to Volume to Talairach coords
 %             rd_normalizeCenterOfMass(hemi,mapName{1},'Epi'); % choose coords option
-            rd_normalizeCenterOfMass(hemi,mapName{1},'Talairach'); % choose coords option
-        end
-    end
+%             rd_normalizeCenterOfMass(hemi,mapName{1},'Talairach'); % choose coords option
+%         end
+%     end
 %     rd_centerOfMassNormGroupAnalysis % (makes the good XZ plots)
 %     rd_centerOfMassGroupAnalysis % (used for center of mass interaction)
 %     rd_centerOfMassGroupMPInteraction
+
+%     % reliability sequence
+%     % timeCourse or multiVoxel UI
+%     cd ../.. % need to be in subject directory for rd_mrRunUI
+%     rd_mrRunUI
+%
+    rd_mpBetaReliability
     
 end
 

@@ -14,7 +14,7 @@ view = INPLANE{1};
 dt = 1;
 roi = roiName;
 uiType = 'multiVoxel'; % 'timeCourse' or 'multiVoxel'
-scanInGroup = 2; % Original scan 2 should be in the mp scan group
+scanInGroup = 3; % Original scan 2 should be in the mp scan group
 
 %% Load ROI, set view to selected datatype
 view = viewSet(view, 'curDataType', dt);

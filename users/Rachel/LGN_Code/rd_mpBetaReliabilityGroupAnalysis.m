@@ -2,13 +2,13 @@
 
 
 %% setup
-scanner = '3T';
+scanner = '7T';
 analysisExtension = 'indivScanBetaReliability';
 hemis = [1 2];
 
 plotFigs = 1;
-saveFigs = 1;
-saveAnalysis = 1;
+saveFigs = 0;
+saveAnalysis = 0;
 
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
 
@@ -20,8 +20,8 @@ switch scanner
 end
 
 % subjects = 1:size(subjectDirs,1);
-% subjects = [1:4]; % 7T
-subjects = [1 2 4 5]; % 3T
+subjects = [1:4 5 7:8 10]; % 7T
+% subjects = [1 2 4 5]; % 3T
 nSubjects = numel(subjects);
 
 %% show subjects
