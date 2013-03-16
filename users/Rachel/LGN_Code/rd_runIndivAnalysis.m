@@ -10,7 +10,7 @@ switch scanner
         subjectDirs = subjectDirs7T;
 end
 
-subjects = [5 7 8];
+subjects = [6];
 % subjects = 1:size(subjectDirs,1);
 nSubjects = numel(subjects);
 
@@ -23,14 +23,21 @@ for iSubject = 1:nSubjects
     % go to subject directory
     cd(fdir)
     
-    % run script    
+    % run script   
+%     % reliability sequence
+%     % timeCourse or multiVoxel UI
+%     cd ../.. % need to be in subject directory for rd_mrRunUI
+%     rd_mrRunUI
+%
+%     rd_mpBetaReliability
+
 %     % F-tests on indiv scans
-%     load lgnROI1_indivScanData_multiVoxel_20120417
-%     for iScan = 1:numel(uiData)
-%         iScan
-%         rd_fTestGLM
-%         close('all')
-%     end
+    load lgnROI1_indivScanData_multiVoxel_20130315
+    for iScan = 1:numel(uiData)
+        iScan
+        rd_fTestGLM
+        close('all')
+    end
 
 %     % plot behavioral results
 %     cd ../../Behavior
@@ -75,13 +82,6 @@ for iSubject = 1:nSubjects
 %     rd_centerOfMassGroupAnalysis % (used for center of mass interaction)
 %     rd_centerOfMassGroupMPInteraction
 
-%     % reliability sequence
-%     % timeCourse or multiVoxel UI
-%     cd ../.. % need to be in subject directory for rd_mrRunUI
-%     rd_mrRunUI
-%
-    rd_mpBetaReliability
-    
 end
 
 

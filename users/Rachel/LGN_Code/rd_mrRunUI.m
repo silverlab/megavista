@@ -4,6 +4,7 @@
 hemi = 2;
 saveData = 1;
 fileBase = sprintf('ROIAnalysis/ROIX01/lgnROI%d_indivScanData', hemi);
+% fileBase = sprintf('ROIAnalysis/Runs1-5/ROIX02/lgnROI%d_indivScanData', hemi);
 roiName = sprintf('ROI%d01', hemi);
 
 %% Start mrVista
@@ -14,7 +15,7 @@ view = INPLANE{1};
 dt = 1;
 roi = roiName;
 uiType = 'multiVoxel'; % 'timeCourse' or 'multiVoxel'
-scanInGroup = 3; % Original scan 2 should be in the mp scan group
+scanInGroup = 3; % Original scan 3 should be in the mp scan group
 
 %% Load ROI, set view to selected datatype
 view = viewSet(view, 'curDataType', dt);

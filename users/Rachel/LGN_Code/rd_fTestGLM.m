@@ -9,8 +9,8 @@ nDelays = length(hemoDelays);
 
 threshProp = .1; 
 
-saveAnalysis = 0;
-saveFigs = 0;
+saveAnalysis = 1;
+saveFigs = 0; % don't save figs when using uiData, will overwrite previous
 
 package = 'mrVista'; % 'SPM', 'mrVista'
 dataStorage = 'uiData'; % 'figData', 'uiData' (relevant to mrVista only)
