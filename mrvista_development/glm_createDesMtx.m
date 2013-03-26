@@ -43,10 +43,17 @@ function [X, nh, hrf] = glm_createDesMtx(stim, params, tSeries, reshapeFlag)
 %   place holder.  We think we should make options for 'spm', 'unitPeak'
 %   and 'unitAmp'.
 %
+% RD, 2013 March 25
+% Added an option to "includeMotionRegressors", which assumes there is a
+% file in the session directory called motionRegressors.mat. This should
+% probably be incorporated into params, but I have treated it like dmNorm
+% for now.
+%
 if notDefined('params'),      params = er_defaultParams;  end
 if notDefined('reshapeFlag'), reshapeFlag = 0;            end
 if notDefined('tSeries'),     tSeries = [];               end
 if notDefined('dmNorm'),      dmNorm = 'unitPeak';        end
+if notDefined('includeMotionRegressors'), includeMotionRegressors = 0; end
 
 tr = params.framePeriod;
 
@@ -148,10 +155,10 @@ end
 % assumes that motionRegressors.mat contains a single variable called
 % motionRegressors.**
 % Note, regressors added here are post-convolution.
-if isfield(params, 'includeMotionRegressors') && ...
-        params.includeMotionRegressors==1
+if includeMotionRegressors
     load motionRegressors.mat
     X = [X motionRegressors];
+    fprintf('Added motion regressors to design matrix\n')
 end
 
 % The design matrix normalization can be specified by dmNorm.  This is not
