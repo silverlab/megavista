@@ -69,15 +69,15 @@ for iSubject = 1:nSubjects
 %     end
 
 %     % center of mass sequence
-%     for hemi = 1:2
-%         for mapName = {'betaM-P','betaM','betaP'}
-%             rd_centerOfMass_multiVoxData(hemi,mapName{1});
-%             rd_mrXformCentersCoordsToVolCoords(hemi,mapName{1}); % convert to Volume coords
-%             rd_mrXformCentersVolCoordsToTalCoords(hemi,mapName{1}); % convert to Volume to Talairach coords
-%             rd_normalizeCenterOfMass(hemi,mapName{1},'Epi'); % choose coords option
-%             rd_normalizeCenterOfMass(hemi,mapName{1},'Talairach'); % choose coords option
-%         end
-%     end
+    for hemi = 1:2
+        for mapName = {'betaM-P','betaM','betaP'}
+            rd_centerOfMass_multiVoxData(hemi,mapName{1});
+            rd_mrXformCentersCoordsToVolCoords(hemi,mapName{1}); % convert to Volume coords
+            rd_mrXformCentersVolCoordsToTalCoords(hemi,mapName{1}); % convert to Volume to Talairach coords
+            rd_normalizeCenterOfMass(hemi,mapName{1},'Epi'); % choose coords option
+            rd_normalizeCenterOfMass(hemi,mapName{1},'Talairach'); % choose coords option
+        end
+    end
 %     rd_centerOfMassNormGroupAnalysis % (makes the good XZ plots)
 %     rd_centerOfMassGroupAnalysis % (used for center of mass interaction)
 %     rd_centerOfMassGroupMPInteraction
