@@ -4,7 +4,7 @@
 [subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
             
 scanner = '7T';
-analysisExtension = 'fTests_*';
+analysisExtension = 'fTests_2*';
 hemis = [1 2];
 
 plotFigs = 1;
@@ -21,7 +21,8 @@ switch scanner
         subjectDirs = subjectDirs7T;
 end
 
-subjects = 1:size(subjectDirs,1);
+subjects = 1:4;
+% subjects = 1:size(subjectDirs,1);
 nSubjects = numel(subjects);
             
 %% get data from each subject
