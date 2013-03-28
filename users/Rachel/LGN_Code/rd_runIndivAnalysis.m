@@ -32,12 +32,12 @@ for iSubject = 1:nSubjects
 %     rd_mpBetaReliability
 
 %     % F-tests on indiv scans
-    load lgnROI1_indivScanData_multiVoxel_20130315
-    for iScan = 1:numel(uiData)
-        iScan
-        rd_fTestGLM
-        close('all')
-    end
+%     load lgnROI1_indivScanData_multiVoxel_20130315
+%     for iScan = 1:numel(uiData)
+%         iScan
+%         rd_fTestGLM
+%         close('all')
+%     end
 
 %     % plot behavioral results
 %     cd ../../Behavior
@@ -67,6 +67,16 @@ for iSubject = 1:nSubjects
 %     else
 %         error('exiting ...')
 %     end
+
+    % run time course and multi voxel analysis for all scans together
+    cd ../.. % need to be in main session directory
+    uiTypes = {'timeCourse','multiVoxel'};
+    for hemi = 1:2
+        for iUI = 1:numel(uiTypes)
+            uiType = uiTypes{iUI}
+            rd_mrRunUIAll
+        end
+    end
 
 %     % center of mass sequence
     for hemi = 1:2
