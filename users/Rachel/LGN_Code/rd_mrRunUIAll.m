@@ -7,7 +7,7 @@
 
 %% File I/O
 % hemi = 2;
-roiNumber = 7;
+roiNumber = 9;
 % uiType = 'multiVoxel'; % 'timeCourse' or 'multiVoxel'
 
 switch uiType
@@ -40,7 +40,7 @@ view = refreshScreen(view);
 %% Set scans
 % get the scans in the scan group
 scans = er_getScanGroup(view, scanInGroup);
-fprintf('***Running UI for scans %s\n', num2str(scans))
+fprintf('***Running %s UI for %s\n***Scans %s\n', uiType, roi, num2str(scans))
 
 % use all scans together
 scanSets = {scans};

@@ -2,7 +2,7 @@
 
 scanner = '7T';
 
-[subjectDirs3T subjectDirs7T] = rd_lgnSubjects;
+[subjectDirs3T subjectDirs7T] = rd_lgnSubjectsX09;
 switch scanner
     case '3T'
         subjectDirs = subjectDirs3T;
@@ -10,7 +10,7 @@ switch scanner
         subjectDirs = subjectDirs7T;
 end
 
-subjects = [6];
+subjects = [1 2 3 4 5 7 8];
 % subjects = 1:size(subjectDirs,1);
 nSubjects = numel(subjects);
 
@@ -68,17 +68,31 @@ for iSubject = 1:nSubjects
 %         error('exiting ...')
 %     end
 
-    % run time course and multi voxel analysis for all scans together
-    cd ../.. % need to be in main session directory
-    uiTypes = {'timeCourse','multiVoxel'};
-    for hemi = 1:2
-        for iUI = 1:numel(uiTypes)
-            uiType = uiTypes{iUI}
-            rd_mrRunUIAll
-        end
-    end
+%     % *** set cothresh and ROIS in rd_mrRestrictROIs ***
+%     cd ../.. % need to be in main session directory
+%     rd_mrRestrictROIs
+%     cd ROIAnalysis/
+%     mkdir ROIX09 figures
 
-%     % center of mass sequence
+%     % calculate ROI volume
+%     cd ../.. % need to be in main session directory
+%     rois = {'ROI109','ROI209'};
+%     roiVolume(iSubject,:) = rd_mrROISize(rois);
+%     % save /Volumes/Plata1/LGN/Group_Analyses/roiSizes_7T_N7_ROIX01_20130329.mat roiVolume rois subjects subjectDirs
+
+%     % run time course and multi voxel analysis for all scans together
+%     % *** choose the ROI number in rd_mrRunUIAll ***
+%     cd ../.. % need to be in main session directory
+%     uiTypes = {'timeCourse','multiVoxel'};
+%     for hemi = 1:2
+%         for iUI = 1:numel(uiTypes)
+%             uiType = uiTypes{iUI};
+%             rd_mrRunUIAll
+%         end
+%     end
+
+    % center of mass sequence
+    % *** set var exp range in rd_centerOfMass_multiVoxData ***
     for hemi = 1:2
         for mapName = {'betaM-P','betaM','betaP'}
             rd_centerOfMass_multiVoxData(hemi,mapName{1});
@@ -88,6 +102,8 @@ for iSubject = 1:nSubjects
             rd_normalizeCenterOfMass(hemi,mapName{1},'Talairach'); % choose coords option
         end
     end
+    close all
+    
 %     rd_centerOfMassNormGroupAnalysis % (makes the good XZ plots)
 %     rd_centerOfMassGroupAnalysis % (used for center of mass interaction)
 %     rd_centerOfMassGroupMPInteraction
