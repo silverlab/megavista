@@ -7,10 +7,9 @@ function rd_centerOfMass_multiVoxData(hemi, mapName)
 %% Setup
 % hemi = 1;
 
-% varThreshs = 0:.001:.05; % typical 7T
-% varThreshs = 0:.001:.02; % typical 3T
-varThreshs = 0:.001:.04 % 7T X08, X09
-% varThreshs = 0:.001:.01 % 3T X07, X08, X09
+varThreshs = 0:.001:.05; % typical 7T
+% varThreshs = 0:.001:.01; % typical 3T
+% varThreshs = 0:.001:.04 % 7T X08, X09
 
 voxelSelectionOption = 'varExp'; % all, varExp
 % prop = .8;

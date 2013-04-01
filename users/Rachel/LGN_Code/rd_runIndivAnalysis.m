@@ -91,8 +91,8 @@ for iSubject = 1:nSubjects
 %         end
 %     end
 
-    % center of mass sequence
-    % *** set var exp range in rd_centerOfMass_multiVoxData ***
+%     % center of mass sequence
+%     % *** set var exp range in rd_centerOfMass_multiVoxData ***
     for hemi = 1:2
         for mapName = {'betaM-P','betaM','betaP'}
             rd_centerOfMass_multiVoxData(hemi,mapName{1});
@@ -102,7 +102,7 @@ for iSubject = 1:nSubjects
             rd_normalizeCenterOfMass(hemi,mapName{1},'Talairach'); % choose coords option
         end
     end
-    close all
+%     close all
     
 %     rd_centerOfMassNormGroupAnalysis % (makes the good XZ plots)
 %     rd_centerOfMassGroupAnalysis % (used for center of mass interaction)

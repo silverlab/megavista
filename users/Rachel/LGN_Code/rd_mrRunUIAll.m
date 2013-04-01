@@ -7,7 +7,7 @@
 
 %% File I/O
 % hemi = 2;
-roiNumber = 9;
+roiNumber = 2;
 % uiType = 'multiVoxel'; % 'timeCourse' or 'multiVoxel'
 
 switch uiType
