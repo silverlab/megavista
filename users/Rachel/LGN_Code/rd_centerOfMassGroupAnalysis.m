@@ -63,6 +63,7 @@ switch scanner
     case '3T'
         subjectDirs = subjectDirs3T;
         voxelSize = [1.75 1.75 1.5];
+%         voxelSize = repmat([1.75 1.75 1.5],4,1);
         
     case '7T'
         subjectDirs = subjectDirs7T;
@@ -75,7 +76,12 @@ analysisExtension = sprintf('centerOfMass%s_%s_prop%d_*', coordsExtension, mapNa
 subjects = [1 2 4 5];
 nSubjects = numel(subjects);
 
-mmMat = repmat(voxelSize,nSubjects,1);
+% if voxelSize is a 2D array, assume it is subject x dim
+if size(voxelSize,1)==1
+    mmMat = repmat(voxelSize,nSubjects,1);
+else
+    mmMat = voxelSize;
+end
 
 %% File I/O
 fileBaseDir = '/Volumes/Plata1/LGN/Group_Analyses';
@@ -204,22 +210,26 @@ if plotFigs
 %             plot(varThreshs, groupMean.centers1(:,iDim,hemi),'r')
 %             plot(varThreshs, groupMean.centers2(:,iDim,hemi),'b')
 
-%             % units in voxels
-%             p1 = shadedErrorBar(varThreshs, groupMean.centers1(:,iDim,hemi), ...
-%                 normSte.centers1(:,iDim,hemi),{'Color',colors{1}});
-%             p2 = shadedErrorBar(varThreshs, groupMean.centers2(:,iDim,hemi), ...
-%                 normSte.centers2(:,iDim,hemi),{'Color',colors{2}});
-            
-            % units in mm
-            p1 = shadedErrorBar(varThreshs, normMean.centers1(:,iDim,hemi)*voxelSize(iDim), ...
-                normSte.centers1(:,iDim,hemi)*voxelSize(iDim),{'Color',colors{1}});
-            p2 = shadedErrorBar(varThreshs, normMean.centers2(:,iDim,hemi)*voxelSize(iDim), ...
-                normSte.centers2(:,iDim,hemi)*voxelSize(iDim),{'Color',colors{2}});
-            ylabel(dimLabels{iDim})
+            if size(voxelSize,1)>1
+                % units in voxels
+                metricStr = 'voxel units';
+                p1 = shadedErrorBar(varThreshs, groupMean.centers1(:,iDim,hemi), ...
+                    normSte.centers1(:,iDim,hemi),{'Color',colors{1}});
+                p2 = shadedErrorBar(varThreshs, groupMean.centers2(:,iDim,hemi), ...
+                    normSte.centers2(:,iDim,hemi),{'Color',colors{2}});
+            else
+                % units in mm
+                metricStr = 'mm units';
+                p1 = shadedErrorBar(varThreshs, normMean.centers1(:,iDim,hemi)*voxelSize(iDim), ...
+                    normSte.centers1(:,iDim,hemi)*voxelSize(iDim),{'Color',colors{1}});
+                p2 = shadedErrorBar(varThreshs, normMean.centers2(:,iDim,hemi)*voxelSize(iDim), ...
+                    normSte.centers2(:,iDim,hemi)*voxelSize(iDim),{'Color',colors{2}});
+                ylabel(dimLabels{iDim})
+            end
             
             if iDim==1
-                title(sprintf('Hemi %d, %s, prop %.1f, %s coords', ...
-                    hemi, mapName, prop, coordsType))
+                title(sprintf('Hemi %d, %s, prop %.1f, %s coords, %s', ...
+                    hemi, mapName, prop, coordsType, metricStr))
 %                 legend('more M','more P','location','Best')
                 legend([p1.mainLine p2.mainLine],labels,...
                     'location','Best')
