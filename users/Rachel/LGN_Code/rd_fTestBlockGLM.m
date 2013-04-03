@@ -57,6 +57,6 @@ if plotFigs
     hist(fStat)
     xlabel('f statistic')
     ylabel('number of voxels')
-    title(figTitle)
+    title(sprintf('%s, delay = %d', figTitle, hemoDelay))
 end
 
