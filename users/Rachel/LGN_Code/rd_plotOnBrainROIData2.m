@@ -4,8 +4,8 @@
 
 %% Setup
 hemi = 1;
-scanDate = '20110819';
-analysisDate = '20110819';
+% scanDate = '20111214';
+% analysisDate = '20111214';
 
 cmapOption = 'default';
 plotFigs = 1;
@@ -33,7 +33,7 @@ load(loadPath)
 
 betas = squeeze(figData.glm.betas(1,1:2,:))';
 roiData = betas*[.5 -.5]';
-mapName = 'betaM'; % sprintf('Hemi %d', hemi); % contrasts.zo(3).name;
+mapName = 'betaM-P'; % sprintf('Hemi %d', hemi); % contrasts.zo(3).name;
 
 %% get coordinates and slice numbers of ROI voxels 
 % for iROI = 1
@@ -50,16 +50,29 @@ end
 % load('mat_files/inplane.mat')
 
 %% generate a mean inplane from one or more scans (sort of like an anatomical)
-scans = 1;
-inplaneDir = '../../Inplane/Original/TSeries/Analyze';
+% scans = 1;
+% inplaneDir = '../../Inplane/Original/TSeries/Analyze';
+% 
+% for iScan = 1:length(scans)
+%     scan = scans(iScan);
+%     inplaneScan = readFileNifti(sprintf('%s/Scan%d.img',inplaneDir,scan));
+%     inplaneScanMeans(:,:,:,iScan) = mean(inplaneScan.data,4);
+% end
+% 
+% inplane = mean(inplaneScanMeans,4);
 
-for iScan = 1:length(scans)
-    scan = scans(iScan);
-    inplaneScan = readFileNifti(sprintf('%s/Scan%d.img',inplaneDir,scan));
-    inplaneScanMeans(:,:,:,iScan) = mean(inplaneScan.data,4);
+% new version of mr vista way, but need to make general
+% we really need to load epi-dimensional inplanes
+niftiDir = dir('../../../*_nifti');
+niftiFile = sprintf('../../../%s/epi01_hemi_mcf_3D_nii/fepi01_hemi_mcf_001.nii', niftiDir.name);
+fprintf('\nReading nifti file: %s\n\n', niftiFile)
+
+inplaneScan = readFileNifti(niftiFile);
+inplane = double(inplaneScan.data);
+
+for i=1:size(inplane,3)
+    inplane(:,:,i) = flipud(inplane(:,:,i)); 
 end
-
-inplane = mean(inplaneScanMeans,4);
 
 %% show inplane mean
 nImCols = ceil(sqrt(size(inplane,3)));

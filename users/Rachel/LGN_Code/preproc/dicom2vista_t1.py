@@ -30,21 +30,20 @@ if __name__ == "__main__":
     os.chdir(sess_dir)
     dir_list = np.array(os.listdir('.')) 
     #In order to not include '.DS_store'
-    pd_list = []
+    t1_list = []
     for file in dir_list:
         if file.startswith('t1'):
-            pd_list.append(file)
-    dir_list = pd_list
+            t1_list.append(file)
+    dir_list = t1_list
     #Make the expected directory structure
     try:
         os.mkdir(sess_name+'_dicom')
-        os.mkdir(sess_name+'_nifti3d')
         os.mkdir(sess_name+'_nifti')
     except:
         print 'Directories already exist'
     #Directory names
     dicom_dir = sess_dir + '/' + sess_name + '_dicom/'
-    nifti_dir = sess_dir + '/' + sess_name + '_nifti3d/'
+    nifti_dir = sess_dir + '/' + sess_name + '_nifti/'
     
     # Convert dicom to nifti
     for this_dir in dir_list: 

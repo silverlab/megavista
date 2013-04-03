@@ -19,6 +19,19 @@ function rd_plotTopographicData2SatFn(hemi, voxelSelectionOption, ...
 
 %% Setup
 cmapOption = 'default'; % ['default','thresh']
+plotFormat = 'default'; % ['default','singleRow'] % singleRow plots slices in a row, and in reverse order. only tested for coronal slices.
+switch name
+    case 'betaM'
+        colormapName = 'whitered';
+    case 'betaP'
+        colormapName = 'whiteblue';
+    case 'betaM-P'
+        colormapName = 'lbmap';
+    otherwise
+        fprintf('colormapName assignment not found. Setting colormap = jet')
+        colormapName = 'jet';
+end
+% colormapName = 'whitered'; % ['whitered','whiteblue','lbmap', otherwise > 'jet']
 cScaleOption = 'scaleToData'; % ['scaleToData','chooseCRange']
 cValRange = [-.95 .95]; % if using chooseCRange
 saveAnalysis = 0;
@@ -46,7 +59,7 @@ switch saturationOption
     case 'full'
         satDescrip = '';
     case 'varExp'
-        satDescrip = 'satVarExp';
+        satDescrip = 'satVarExp_';
     otherwise
         error('saturationOption not found when setting satDescrip.')
 end
@@ -114,6 +127,23 @@ end
 cmap0 = colormap('jet');
 nCMappings = size(cmap0,1);
 
+switch colormapName
+    case 'whitered'
+        whitered = zeros(size(cmap0));
+        whitered(:,1) = 1;
+        whitered(:,2) = 1:-1/(nCMappings-1):0;
+        whitered(:,3) = 1:-1/(nCMappings-1):0;
+        cmap0 = whitered;
+    case 'whiteblue'
+        whiteblue = zeros(size(cmap0));
+        whiteblue(:,3) = 1;
+        whiteblue(:,1) = 1:-1/(nCMappings-1):0;
+        whiteblue(:,2) = 1:-1/(nCMappings-1):0;
+        cmap0 = whiteblue;
+    case 'lbmap'
+        cmap0 = colormap(flipud(lbmap(nCMappings,'redblue')));
+end
+
 switch cScaleOption
     case 'scaleToData'
         cmapBinSize = (max(allVals)-min(allVals))/nCMappings;
@@ -130,7 +160,7 @@ switch cmapOption
     case 'default'
         cmap = cmap0;
     case 'thresh'
-        thresh = 0.7;
+        thresh = 0.66;
         lowZThreshBin = find(diff(cmapBinEdges<thresh)); % use <-thresh to threshold on either side of zero
         highZThreshBin = find(diff(cmapBinEdges>thresh));
         cmap = zeros(size(cmap0));
@@ -157,11 +187,15 @@ for iSlice = 1:length(slices)
     
     % find val cmap bins
     clear cBins
-    for iVal = 1:length(vals)
-        try
-            cBins(iVal,1) = find(diff(vals(iVal)>cmapBinEdges));
-        catch
-            cBins(iVal,1) = find(diff(vals(iVal)>=cmapBinEdges));
+    if isempty(vals)
+        cBins = [];
+    else
+        for iVal = 1:length(vals)
+            try
+                cBins(iVal,1) = find(diff(vals(iVal)>cmapBinEdges));
+            catch
+                cBins(iVal,1) = find(diff(vals(iVal)>=cmapBinEdges));
+            end
         end
     end
     
@@ -209,8 +243,16 @@ dimLabels = {'Sag','Cor','--','Ax'};
 dimToSlice = 2;
 
 % number of subplots to contain all slices
-nPlotCols = ceil(sqrt(size(brainMapToPlot,dimToSlice)));
-nPlotRows = ceil(size(brainMapToPlot,dimToSlice)/nPlotCols);
+switch plotFormat
+    case 'default'
+        nPlotCols = ceil(sqrt(size(brainMapToPlot,dimToSlice)));
+        nPlotRows = ceil(size(brainMapToPlot,dimToSlice)/nPlotCols);
+    case 'singleRow'
+        nPlotCols = size(brainMapToPlot,dimToSlice);
+        nPlotRows = 1;
+    otherwise
+        error('plotFormat not recognized')
+end
 
 f1 = figure('name',mapName);
 for iSlice = 1:size(brainMapToPlot,dimToSlice)
@@ -235,8 +277,19 @@ for iSlice = 1:size(brainMapToPlot,dimToSlice)
             brainSliceMap = brainSliceMap1;
     end
     
+    % store brain slice maps
+    brainSliceMaps{iSlice} = brainSliceMap;
+    
     % show slice with colored map
-    subplot(nPlotRows, nPlotCols, iSlice)
+    switch plotFormat
+        case 'default'
+            subplot(nPlotRows, nPlotCols, iSlice)
+        case 'singleRow' % plots slices in reverse order
+            subplot(nPlotRows, nPlotCols, nPlotCols+1-iSlice)
+        otherwise
+            error('plotFormat not recognized')
+    end
+    
     image(brainSliceMap)
     if dimToSlice==4
         title(['Slice ' num2str(slices(iSlice))])
@@ -245,17 +298,22 @@ for iSlice = 1:size(brainMapToPlot,dimToSlice)
     end
     axis off
     
+    if strcmp(plotFormat, 'singleRow')
+        axis equal
+        axis tight
+    end
+    
 end
 
 %% save map
-mapSavePath = sprintf('%s%s_%s_%s_%s', mapFileBase, name, voxDescrip, satDescrip, datestr(now,'yyyymmdd'));
-histSavePath = sprintf('%s%s_%s_%s_%s', histFileBase, name, voxDescrip, satDescrip, datestr(now,'yyyymmdd'));
+mapSavePath = sprintf('%s%s_%s_%s%s', mapFileBase, name, voxDescrip, satDescrip, datestr(now,'yyyymmdd'));
+histSavePath = sprintf('%s%s_%s_%s', histFileBase, name, voxDescrip, datestr(now,'yyyymmdd'));
 
 if saveAnalysis
-    save(sprintf('mat_files/%s.mat', mapSavePath), 'brainMap')
+    save(sprintf('%s.mat', mapSavePath),'brainMap','brainSliceMaps','dimToSlice','dimLabels','mapName','hemi','name','voxDescrip','satDescrip')
 end
 if saveFigs
     print(f1,'-djpeg',sprintf('figures/%s', mapSavePath));
-    print(f0,'-djpeg',sprintf('figures/%s', histSavePath));
+%     print(f0,'-djpeg',sprintf('figures/%s', histSavePath));
 end
 

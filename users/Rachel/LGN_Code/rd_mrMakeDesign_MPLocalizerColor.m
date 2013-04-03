@@ -7,11 +7,16 @@
 % cd /Volumes/Plata1/LGN/Expt_Files/KS_20111214/MagnoParvoLocalizer_Color_20111211_7T/
 % cd /Volumes/Plata1/LGN/Expt_Files/RD_20111214/MagnoParvoLocalizer_Color_20111211_7T/
 % cd /Volumes/Plata1/LGN/Expt_Files/CG_20120130/MagnoParvoLocalizer_Color_20111116/
-cd /Volumes/Plata1/LGN/Expt_Files/RD_20120205/MagnoParvoLocalizer_Color_20111116/
+% cd /Volumes/Plata1/LGN/Expt_Files/RD_20120205/MagnoParvoLocalizer_Color_20111116/
+% cd /Users/anvu/Documents/DATA/Rachel/MP_Behav/SB_20120807/
+% cd /Users/anvu/Documents/DATA/Rachel/MP/Behav/JN_20120808
+% cd /Users/anvu/Documents/DATA/Rachel/MP/Behav/RD_20120809
+% cd /Volumes/Plata1/LGN/Expt_Files/MN_20120806_MP/MagnoParvo_Localizer/data
+cd /Volumes/Plata1/LGN/Expt_Files/CM_20121031/MagnoParvo_Localizer/data
 
-subjectID = 'RD';
-runs = 1:12;
-scanDate = '20120205';
+subjectID = 'CM';
+runs = 1:8;
+scanDate = '20121031';
 
 includeResponseCond = 0;
 includeColors = 1;
@@ -27,8 +32,10 @@ colors = {blankCol, MCol, PCol, responseCol};
 
 for iRun = 1:length(runs)
     run = runs(iRun);
-    load(sprintf('data/mpLocalizerGLM_%s_run%02d_%s', ...
-        subjectID, run, scanDate), 'p');
+%     load(sprintf('data/mpLocalizerGLM_%s_run%02d_%s', ...
+%         subjectID, run, scanDate), 'p');
+    load(sprintf('mpLocalizerColor_%s_run%02d_GLM_%s', ...
+        subjectID, run, scanDate), 'p'); % 7T Aug 2012
     
     condNames = p.Gen.condNames;
     blankCond = find(strcmp(condNames,'blank'));
