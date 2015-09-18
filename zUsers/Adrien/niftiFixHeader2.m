@@ -69,7 +69,7 @@ if numel(niiFileList)>0
             ni.phase_dim = 1;
             ni.slice_dim = 3;
             ni.slice_end = 159; %(number of slices-1)
-            ni.slice_duration = 0.059257; %(TR/#slices) CHECK THAT
+            ni.slice_duration = 0.14375; %(TR/#slices) CHECK THAT
             if ni.sform==1
                 ni.qto_xyz = ni.sto_xyz; 
             else
