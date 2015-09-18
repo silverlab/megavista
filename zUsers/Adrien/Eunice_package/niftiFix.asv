@@ -1,0 +1,64 @@
+% 07.01.15
+% Kelly Byrne
+% modified version - Adrien Chopin, 2015
+
+clear all
+%the function opens the below directory and find all directory in it
+%then it goes through each one and find all nifty files
+dataDir = 'C:\Users\Adrien Chopin\Desktop\fMRI\data\RN31\nifti_manual\nifti\';
+files = dir;
+directoryNames = {files([files.isdir]).name};
+directoryNames = directoryNames(~ismember(directoryNames,{'.','..'}));
+nCases = length(directoryNames);
+for k = 1:nCases
+   % casePath = [dataDir filesep directoryNames{k} filesep 'nifti'];
+   % cd(casePath)
+   fileList = dir;
+   fileListName = {fileList.name}
+   niiFileList={};
+   for i = 1:numel(fileListName)
+       fileListName{i}(end-2:end)
+           strcmp(fileListName{i}(end-2:end),'nii')
+       if strcmp(fileListName{i}(end-2:end),'nii')==1
+           
+           niiFileList{end+1} = fileListName{i}
+       end
+   end
+   niiFileList
+    % localizer
+    ni = readFileNifti('epi01_localizer_mcf.nii.gz');
+    ni.qform = 1;
+    ni.sform = 1;
+    ni.freq_dim = 1;
+    ni.phase_dim = 2;
+    ni.slice_dim = 3;
+    ni.slice_end = 37; %(number of slices-1)
+    ni.slice_duration = 0.059257; %(TR/#slices)
+    writeFileNifti(ni);
+
+    % plaids
+    ni = readFileNifti('epi02_plaid1_mcf.nii.gz');
+    ni.qform = 1;
+    ni.sform = 1;
+    ni.freq_dim = 1;
+    ni.phase_dim = 2;
+    ni.slice_dim = 3;
+    ni.slice_end = 37; %(number of slices-1)
+    ni.slice_duration = 0.059257; %(TR/#slices)
+    writeFileNifti(ni);
+
+    ni = readFileNifti('epi03_plaid2_mcf.nii.gz');
+    ni.qform = 1;
+    ni.sform = 1;
+    ni.freq_dim = 1;
+    ni.phase_dim = 2;
+    ni.slice_dim = 3;
+    ni.slice_end = 15; %(number of slices-1)
+    ni.slice_duration = 0.0625; %(TR/#slices)
+    writeFileNifti(ni);
+
+    % leave a log file
+    fid = fopen('epiHeaders_FIXED.txt', 'at');
+    fprintf(fid, datestr(now));
+    fclose(fid);
+end

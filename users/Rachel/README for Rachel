@@ -1,0 +1,11 @@
+Hello Rachel
+
+Please move any new matlab file that you would change/add into the folder zUsers/Rachel instead of Users/Racherl to avoid your changes to affect everybody’s pipeline.
+
+When we add megavista to matlab path, the users folder arrive before the vista folder and the functions in the users folder have therefore priority. We don’t want that anymore and we would prefer to have a zUsers folder that does not have automatic priority and each user can choose to move his own user folder up manually in his own path list.
+
+We keep the users folder though so that it does not affect your current configuration. 
+
+Thank you :)
+
+Adrien

@@ -1,0 +1,52 @@
+function niftiFixHeader(dataDir)
+% 07.01.15
+% Kelly Byrne
+% modified version - Adrien Chopin, 2015
+
+%the function opens the below directory and find all nifty files to fix them
+
+%the function opens the below directory and find all directory in it
+%then it goes through each one and find all nifty files to fix them
+if ~exist(dataDir,'var')==1
+    dataDir = 'C:\Users\Adrien Chopin\Desktop\fMRI\data\RN31\nifti_manual\nifti\';
+end
+cd(dataDir)
+files = dir;
+directoryNames = {files([files.isdir]).name}; %makes a list of dir in the dir
+directoryNames = directoryNames(~ismember(directoryNames,{'.','..'})); %remove the . and .. dirs
+nCases = length(directoryNames);
+for k = 1:nCases %go through each dir and find the nii files
+   % casePath = [dataDir filesep directoryNames{k} filesep 'nifti'];
+   % cd(casePath)
+   disp(['Looking for nii files in ', ])
+   fileList = dir;
+   fileListName = {fileList.name};
+   niiFileList={}; %this is a list of nii files for that dir
+   for i = 1:numel(fileListName)
+       if numel(fileListName{i})>3 && strcmp(fileListName{i}(end-2:end),'nii')==1 
+           niiFileList{end+1} = fileListName{i}; 
+       end
+   end
+   disp('Will nozniiFileList
+    for j=1:numel(niiFileList)
+        if ismember(ni.descrip,{'GEMS_stam','epi_stam'})
+            ni = readFileNifti(niiFileList{j});
+            ni.qform = 1;
+            ni.sform = 1;
+            ni.freq_dim = 1;
+            ni.phase_dim = 2;
+            ni.slice_dim = 3;
+            ni.slice_end = 37; %(number of slices-1)
+            ni.slice_duration = 0.059257; %(TR/#slices)
+            writeFileNifti(ni);
+        else
+            
+        end
+    end
+    
+    % leave a log file
+    fid = fopen('epiHeaders_FIXED.txt', 'at');
+    fprintf(fid, datestr(now));
+    fclose(fid);
+    
+end
