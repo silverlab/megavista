@@ -94,10 +94,10 @@ function checkThisFile(thisPath, mode)
 %               method 1 if qform_code = 0 and sform_code = 0
 %               method 2 if qform_code = 1 and sform_code = 0
 %               method 3 if sform_code = 1
-        if ni.qform_code == 0 && ni.sform_code == 0
+        if (ni.qform_code == 0) && (ni.sform_code == 0)
             disp('ijk to xyz relation is using method 1')
         end
-        if ni.qform_code > 0 && ni.sform_code == 0
+        if (ni.qform_code > 0) && (ni.sform_code == 0)
             disp('ijk to xyz relation is using method 2')
         end
         if ni.sform_code > 0

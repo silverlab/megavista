@@ -8,7 +8,7 @@ function niftiFixHeader(dataDir)
     % %the function opens the below directory and find all directory in it
     % %then it goes through each one and find all nifty files to fix them
 if ~exist('dataDir','var')==1
-    dataDir = '/Users/adrienchopin/Desktop/Big_data_STAM/RN31/pre1/test2/nifti/';
+    dataDir = cd;
 end
 cd(dataDir)
 % files = dir;
@@ -65,7 +65,7 @@ if numel(niiFileList)>0
             ni.phase_dim = 1;
             ni.slice_dim = 3;
             ni.slice_end = 159; %(number of slices-1)
-            ni.slice_duration = 0.059257; %(TR/#slices) CHECK THAT
+            ni.slice_duration = 0; %(TR/#slices) CHECK THAT 0.014375
             if ni.sform==1
                 ni.qto_xyz = ni.sto_xyz; 
             else

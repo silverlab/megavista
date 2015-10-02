@@ -46,11 +46,13 @@ if numel(niiFileList)>0
             ni.phase_dim = 2;
             ni.slice_dim = 3;
             ni.slice_end = 37; %(number of slices-1)
-            if size(ni.pixdim)>3 % pixdim(4) = TR
-                TR = ni.pixdim.(4);
-                disp(['Check that your TR is: ',TR, ' sec'])
+            if length(ni.pixdim)>3 % pixdim(4) = TR    %EPI
+                TR = ni.pixdim(4);
+            else %GEMS
+                TR = 0; %to be safe, given the error with mprage (but we are not sure this is actually correcting an error for gems)
             end
-            ni.slice_duration = ni.pixdim.(4)/(ni.slice_end+1); %(TR/#slices)
+            disp(['Check that your TR is: ',num2str(TR), ' sec'])
+            ni.slice_duration = TR/(ni.slice_end+1); %(TR/#slices)
             if ni.sform==1
                 ni.qto_xyz = ni.sto_xyz; 
             else
@@ -59,7 +61,7 @@ if numel(niiFileList)>0
             writeFileNifti(ni);
             disp(['EPI or GEMS file ', niiFileList{j},' is fixed'])
             checkNifti(niiFileList{j})
-       elseif strcmp(ni.fname(1:2),'nu')
+       elseif strcmp(ni.fname(1:2),'nu') %MPRAGE
             ni.qform = 1; %we used method 3, which is why we assign both qform and sform to 1
             ni.sform = 1; %you could decide differently
             %However, if method 2 was used on your nifti conversion, you will get
@@ -69,7 +71,7 @@ if numel(niiFileList)>0
             ni.phase_dim = 1;
             ni.slice_dim = 3;
             ni.slice_end = 159; %(number of slices-1)
-            ni.slice_duration = 0.14375; %(TR/#slices) CHECK THAT
+            ni.slice_duration = 0; % it has to be 0 to avoid slice timing correction and some further error
             if ni.sform==1
                 ni.qto_xyz = ni.sto_xyz; 
             else
