@@ -33,6 +33,7 @@ PARfolder = '01_PAR';
 rawBackup = '02_Raw_DICOM_Backup';
 niftiFolder = '03_nifti';
 mocoFolder = '04_MoCo';
+mocoCheckFolder = '04B_MoCo_Check';
 niftiFixedFolder = '05_nifti_fixed';
 mrVistaFolder = '06_mrVista_session';
 
@@ -41,6 +42,7 @@ subject_folderDICOM = [subject_folder,'/',rawDICOMfolder];
 subject_folderPAR = [subject_folder,'/',PARfolder];
 subject_folderNIFTI = [subject_folder,'/',niftiFolder];
 subject_folderMoco = [subject_folder,'/',mocoFolder];
+subject_folderMocoCheck = [subject_folder,'/',mocoCheckFolder];
 subject_folderNiftiFx = [subject_folder,'/',niftiFixedFolder];
 subject_folderVista = [subject_folder,'/',mrVistaFolder];
 
