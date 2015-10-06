@@ -41,6 +41,7 @@ disp(['Loading following stam data file: ', stamFile])
         end
     else
         disp('Only one epi found')
+        dataSplit = data;
     end
     
     fixationDuration = 15.7;
@@ -98,8 +99,8 @@ disp(['Loading following stam data file: ', stamFile])
 
         parfileCorrelated
         parfileUncorrelated
-        writeMatToFile(parfileCorrelated,[rootEpi,sprintf('%02.f',run),'_Correlated.txt'])
-        writeMatToFile(parfileUncorrelated,[rootEpi,sprintf('%02.f',run),'_Uncorrelated.txt'])
+        writeMatToFile(parfileCorrelated,[rootEpi,sprintf('%02.f',run),'_Correlated.par'])
+        writeMatToFile(parfileUncorrelated,[rootEpi,sprintf('%02.f',run),'_Uncorrelated.par'])
     end
 end
 

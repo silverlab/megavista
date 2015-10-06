@@ -1,4 +1,4 @@
-function automatedPipeline2015_1
+function automatedPipeline2015_1(subjectID)
 % ------------------------------------------------------------------------------------------------------------
 % fMRI processing pipeline whose goal is to automatize steps as much as
 % possible
@@ -10,9 +10,20 @@ function automatedPipeline2015_1
 clc
 % ------------------------------------------------------------------------------------------------------------
 % REPLACE THE FOLLOWING VARIABLE WITH YOUR VALUES
-subject_folder = '/Users/adrienchopin/Desktop/Big_data_STAM/RN31/pre1/NewPipeline'; %no end slash
-megavista_folder = '/Users/adrienchopin/Desktop/Megavista'; %no end slash
-subjectID='RN31test';
+disp('At that stage, DICOM files should be in the subject folder in a folder called 01_Raw_DICOM and the par files in the folder 01_PAR')
+disp('Epi should be called epi01-whatever, epi02-whatever, ..., gems should be called gems-whatever and mprage, gems_mprage-whatever.')
+answer = input('You should be in the subject folder for the subject that you want to analyse. 1 = ESC; any other key = OK ');
+if answer == 1; error('ESCAPE'); end
+%subject_folder = '/Users/adrienchopin/Desktop/Big_data_STAM/RN31/pre1/NewPipeline'; %no end slash
+subject_folder = cd;
+
+if ~exist('subjectID','var'); subjectID = 'default'; disp('Defaults subject ID...'); end
+
+%Write the following line (not commented, with your correct path) in the
+%command line to save the variable in a file called pathFile - move that
+%file to your zUsers folder
+%megavista_folder = '/Users/adrienchopin/Desktop/Megavista'; %no end slash
+load('pathFile','megavista_folder')
 % ------------------------------------------------------------------------------------------------------------
 
 
@@ -193,7 +204,7 @@ disp('---------      04   MOTION CORRECTION       ------------------------------
                     answer = input('Figure: Is everything OK? (y)es / (n)o: ', 's');
                     if strcmp(answer, 'n')==1; error('Something went wrong, according to you...');end
                 else %NOT GOOD
-                    error('python motioncorrect.py: Something went wrong with last step')
+                    error('python motionparams.py: Something went wrong with last step')
                 end
         else %NOT GOOD
             error('python motioncorrect.py: Something went wrong with last step')

@@ -16,9 +16,12 @@ function automatedPipeline2015_1
 clc
 % ------------------------------------------------------------------------------------------------------------
 % REPLACE THE FOLLOWING VARIABLE WITH YOUR VALUES
-subject_folder = '/Users/localadmin/Desktop/EM21/Pre1'; %no end slash
-megavista_folder = '/Users/localadmin/megavista'; %no end slash
-subjectID='EM21';
+% subject_folder = '/Users/localadmin/Desktop/EM21/Pre1'; %no end slash
+% megavista_folder = '/Users/localadmin/megavista'; %no end slash
+% subjectID='EM21';
+subject_folder = '/Users/adrienchopin/Desktop/Big_data_STAM/RN31/pre1/NewPipeline'; %no end slash
+megavista_folder = '/Users/adrienchopin/Desktop/Megavista'; %no end slash
+subjectID='RN31test';
 % ------------------------------------------------------------------------------------------------------------
 
 
@@ -232,7 +235,8 @@ disp('---------      04B  MOTION CORRECTION CHECK      -------------------------
                     %added because deleting this folder manually everytime
                     %i wanted to redo this step during debugging was very
                     %annoying -- Sara Popham
-                    [success, status]=rmdir([subject_folderMocoCheck,'/',mocoCheckFolder,'_nifti'],'s'); if success; disp('Deleted');else error(status); end
+                    %ERROR HERE - [success, status]=rmdir([subject_folderMocoCheck,'/',mocoCheckFolder,'_nifti'],'s'); if success; disp('Deleted');else error(status); end
+                    [success, status]=rmdir(subject_folderMocoCheck,'s'); if success; disp('Deleted');else error(status); end
                 case {2} %dont go, move to next step
                     doMotionCorrectionCheck = 0;
                     disp('Skipped');
@@ -253,9 +257,9 @@ disp('---------      04B  MOTION CORRECTION CHECK      -------------------------
             [success, status]=copyfile([subject_folderMoco,'/*_mcf.nii.gz'],[subject_folderMocoCheck,'/',mocoCheckFolder,'_nifti']); if success; disp('Done');else error(status); end
             [success, status]=copyfile([subject_folderDICOM,'/epi01*'],[subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom']); if success; disp('Done');else error(status); end
         %rename epi_01_whatever to epi_01_whatever_mcf
-            epiFolder = dir([subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom/epi01*']);
-            movefile([subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom/',epiFolder.name],[subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom/',epiFolder.name,'_mcf']);
-        disp('Starting motioncorrect.py in:'); 
+           epiFolder = dir([subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom/epi01*']);
+           movefile([subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom/',epiFolder.name],[subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom/',epiFolder.name,'_mcf']);
+         disp('Starting motioncorrect.py in:'); 
             cd(preprocessPath);
             success = system(['python motioncorrect.py ', subject_folderMocoCheck]); 
         if success==0 %GOOD
