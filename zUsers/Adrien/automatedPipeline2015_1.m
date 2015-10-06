@@ -223,6 +223,78 @@ disp('---------      04   MOTION CORRECTION       ------------------------------
        disp('Finished MOTION CORRECTION')
     end
     
+    disp('---------      04B  MOTION CORRECTION CHECK      ---------------------------------------------------------------------------')
+    doMotionCorrectionCheck = 1; %default
+    %check that nifti folder exists
+    if ~(exist(subject_folderMoco,'dir')==7);  error('Missing Moco folder in Subject folder'); end
+    
+    %check whether code was already run successfully or not
+    if exist(subject_folderMocoCheck,'dir')==7;  disp('You may have run the MoCo Test code before (moco test folder detected). What to do?'); 
+        disp('1. Start this step over (delete existing 04B folder)');
+        disp('2. Skip (recommended)');
+            answer = input('3. Escape ');
+            switch answer
+                case {1} %delete subject_folderMocoCheck
+                    %added because deleting this folder manually everytime
+                    %i wanted to redo this step during debugging was very
+                    %annoying -- Sara Popham
+                    %ERROR HERE - [success, status]=rmdir([subject_folderMocoCheck,'/',mocoCheckFolder,'_nifti'],'s'); if success; disp('Deleted');else error(status); end
+                    [success, status]=rmdir(subject_folderMocoCheck,'s'); if success; disp('Deleted');else error(status); end
+                case {2} %dont go, move to next step
+                    doMotionCorrectionCheck = 0;
+                    disp('Skipped');
+                case {3} %escape
+                    error('Voluntary interruption')
+                otherwise
+                error('Answer not understood')
+            end            
+    end
+    
+    if doMotionCorrectionCheck==1
+        disp(['Creating MoCo Check folder and subfolders: ', mocoCheckFolder])
+            [success, status]=mkdir(subject_folderMocoCheck); if success; disp('Done');else error(status); end
+            %the py program needs that subfolder in the root folder
+            [success, status]=mkdir([subject_folderMocoCheck,'/',mocoCheckFolder,'_nifti']); if success; disp('Done');else error(status); end 
+            [success, status]=mkdir([subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom']); if success; disp('Done');else error(status); end 
+        disp('Copying nifti files to MoCo subfolders...')
+            [success, status]=copyfile([subject_folderMoco,'/*_mcf.nii.gz'],[subject_folderMocoCheck,'/',mocoCheckFolder,'_nifti']); if success; disp('Done');else error(status); end
+            [success, status]=copyfile([subject_folderDICOM,'/epi01*'],[subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom']); if success; disp('Done');else error(status); end
+        %rename epi_01_whatever to epi_01_whatever_mcf
+           epiFolder = dir([subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom/epi01*']);
+           movefile([subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom/',epiFolder.name],[subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom/',epiFolder.name,'_mcf']);
+         disp('Starting motioncorrect.py in:'); 
+            cd(preprocessPath);
+            success = system(['python motioncorrect.py ', subject_folderMocoCheck]); 
+        if success==0 %GOOD
+               disp('python motioncorrect.py: DONE'); 
+                   % CHECK PARAMS HERE
+                disp('Please check the motion correction results...')
+                cd(preprocessPath);
+                system(['python motionparams.py ', subject_folderMocoCheck])
+                if success==0 %GOOD
+                    disp('python motionparams.py: DONE')
+                    answer = input('Figure: Is everything OK? (y)es / (n)o: ', 's');
+                    if strcmp(answer, 'n')==1; error('Something went wrong, according to you...');end
+                else %NOT GOOD
+                    error('python motioncorrect.py: Something went wrong with last step')
+                end
+        else %NOT GOOD
+            error('python motioncorrect.py: Something went wrong with last step')
+        end
+        disp('Moving files back to moco root folder...')
+                [success, status]=copyfile([subject_folderMocoCheck,'/',mocoCheckFolder,'_nifti/*'],subject_folderMocoCheck); if success; disp('Done');else error(status); end
+        disp('Deleting old folders...')
+                [success, status]=rmdir([subject_folderMocoCheck,'/',mocoCheckFolder,'_nifti'],'s'); if success; disp('Done');else error(status); end
+                [success, status]=rmdir([subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom'],'s'); if success; disp('Done');else error(status); end
+
+        %CHECK SUCCESS here (presence of MCF FILES)
+        %for that, find any file that matches ('*_mcf.nii.gz')
+            cd(subject_folderMocoCheck);
+            [match,dummy] =  regexp(ls,'epi+\w+_mcf\.nii\.gz','match','split');%find all nii.gz files containing word mcf
+            if isempty(match)==0; disp('Motion correction seems successful: mcf files detected.'); else error('Unsuccessful motion correction'); end
+       disp('Finished MOTION CORRECTION')
+    end
+    
     disp('---------     05    RENAMING 1 / FIX NIFTI HEADERS       ------------------------------------------------------------')
         renaming1 = 1; %default
         %check that nifti folder exists
