@@ -18,6 +18,7 @@ subjectID='RN31test';
 
 % Naming conventions for the different folders in subject folder
 rawDICOMfolder = '01_Raw_DICOM';
+PARfolder = '01_PAR';
 rawBackup = '02_Raw_DICOM_Backup';
 niftiFolder = '03_nifti';
 mocoFolder = '04_MoCo';
@@ -26,6 +27,7 @@ mrVistaFolder = '06_mrVista_session';
 
 % Absolute path to those folders
 subject_folderDICOM = [subject_folder,'/',rawDICOMfolder];
+subject_folderPAR = [subject_folder,'/',PARfolder];
 subject_folderNIFTI = [subject_folder,'/',niftiFolder];
 subject_folderMoco = [subject_folder,'/',mocoFolder];
 subject_folderNiftiFx = [subject_folder,'/',niftiFixedFolder];
@@ -55,7 +57,9 @@ disp('Testing whether dcm2nii is found (you should see Chris Rordens dcm2nii hel
 alwaysGo = 0;
 
 disp('---------       01-02  FILE ORGANISATION AND NIFTI CONVERSION          ---------------------------------------------------------')
+    %first check the existence of the two initial folders
     if exist(subject_folderDICOM,'dir')==7; disp('Raw DICOM folder in Subject folder exists'); else error('Missing Raw DICOM folder in Subject folder...'); end
+    if exist(subject_folderPAR,'dir')==7; disp('PAR folder in Subject folder exists'); else error('Missing PAR folder in Subject folder...'); end
 
     %check whether nifti conversion was already run successfully or not
     doNiftiConversion = 1; %default
@@ -267,7 +271,7 @@ disp('---------      04   MOTION CORRECTION       ------------------------------
                  end
              % FIX HEADERS
              answer = input('Have you edited niftiFixHeader2 for your needs? (y)es/(n)o: ','s');
-             if strcmp(answer,'n'); error('Please proceed before fixing headers...');end
+             if strcmp(answer,'n'); error('Please proceed and edit the code before fixing headers...');end
         end
         doFixHeaders = 1; %default
         %check whether code was already run successfully or not
@@ -298,7 +302,7 @@ disp('---------      04   MOTION CORRECTION       ------------------------------
       disp('---------     06   Start of mrVista session       -------------------------------------------------------------------')
        doMrVista = 1; %default
        %check that nifti folder exists
-            if ~(exist(subject_folderMoco,'dir')==7);  error('Missing moco folder in Subject folder (for par files)'); end
+            if ~(exist(subject_folderPAR,'dir')==7);  error('Missing PAR folder in Subject folder (for par files)'); end
             if ~(exist(subject_folderNiftiFx,'dir')==7);  error('Missing fixed nifti folder in Subject folder'); end
             
             %check whether code was already run successfully or not
@@ -326,10 +330,9 @@ disp('---------      04   MOTION CORRECTION       ------------------------------
                 for i=1:numel(match)
                    [success, status]=copyfile(match{i},[subject_folderVista,'/nifti']); if success; disp('Done');else error(status); end
                 end
-                cd(subject_folderMoco);
-                [match,dummy] =  regexp(ls,'\w+\.par','match','split');%find all par files
+                cd(subject_folderPAR);
                 for i=1:numel(match)
-                   [success, status]=copyfile(match{i},[subject_folderVista,'/Parfiles']); if success; disp('Done');else error(status); end
+                   [success, status]=copyfile('*',[subject_folderVista,'/Parfiles']); if success; disp('Done');else error(status); end
                 end
            disp('Running Kelly s code to inialize a mrVista session...')
                 kb_initializeVista2(subject_folderVista, subjectID)
