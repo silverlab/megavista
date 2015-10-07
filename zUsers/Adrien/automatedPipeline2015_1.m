@@ -32,7 +32,7 @@ rawDICOMfolder = '01_Raw_DICOM';
 PARfolder = '01_PAR';
 rawBackup = '02_Raw_DICOM_Backup';
 niftiFolder = '03_nifti';
-mocoFolder = '04_MoCo';
+mocoFolder = '04A_MoCo';
 mocoCheckFolder = '04B_MoCo_Check';
 niftiFixedFolder = '05_nifti_fixed';
 mrVistaFolder = '06_mrVista_session';
@@ -161,7 +161,7 @@ disp('---------      03   REORGANISATION II       ------------------------------
         disp('Reorganisation II skipped')
     end
 
-disp('---------      04   MOTION CORRECTION       ---------------------------------------------------------------------------')
+disp('---------      04A   MOTION CORRECTION       ---------------------------------------------------------------------------')
     %python motioncorrect.py [01_Raw_DICOM folder path]
     doMotionCorrection = 1; %default
     %check that nifti folder exists
