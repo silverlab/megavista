@@ -50,6 +50,7 @@ disp(['Loading following stam data file: ', stamFile])
         % 1 -/+ configuration
         % 2 +/- configuration
         eventCodes = {'Fixation', '-/+ disp', '+/- disp'}
+        colorCodes = [[0.9 0 0]; [0 0.9 0]; [0 0 0.9]];
         
     %for each run
     for run = 1:nbRuns
@@ -62,30 +63,30 @@ disp(['Loading following stam data file: ', stamFile])
         currentLine = 1; %initialize line of the design matrix in par file
 
         %Start run with fixation
-        parfileCorrelated = {time 0 eventCodes{1}};
-        parfileUncorrelated = {time 0 eventCodes{1}};
+        parfileCorrelated = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
+        parfileUncorrelated = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};        
         time = time+fixationDuration;
         currentLine = currentLine + 1;
 
         for i=1:size(data,1) %go through each data line
             if i>1 && data(i,6)~=data(i-1,6) %DETECT CHANGE OF RUN (we assume a run covers always more than a single data line)
                 %finish with fixation
-                    parfileCorrelated(currentLine,:) = {time 0 eventCodes{1}};
-                    parfileUncorrelated(currentLine,:) = {time 0 eventCodes{1}};
+                    parfileCorrelated(currentLine,:) = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
+                    parfileUncorrelated(currentLine,:) = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
                     currentLine = currentLine + 1;
                     time = time+fixationDuration;
                 %start next run with fixation
-                    parfileCorrelated(currentLine,:) = {time 0 eventCodes{1}};
-                    parfileUncorrelated(currentLine,:) = {time 0 eventCodes{1}};
+                    parfileCorrelated(currentLine,:) = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
+                    parfileUncorrelated(currentLine,:) = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
                     currentLine = currentLine + 1;
                     time = time+fixationDuration;
             end
             if data(i,4)==1 % Correlated
-                parfileCorrelated(currentLine,:) = {time data(i,2) eventCodes{1+data(i,2)}};
-                parfileUncorrelated(currentLine,:) = {time 0 eventCodes{1}};
+                parfileCorrelated(currentLine,:) = {time data(i,2) eventCodes{1+data(i,2)} colorCodes(1+data(i,2),1) colorCodes(1+data(i,2),2) colorCodes(1+data(i,2),3)};
+                parfileUncorrelated(currentLine,:) = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
             else %uncorrelated
-                parfileUncorrelated(currentLine,:) = {time data(i,2) eventCodes{1+data(i,2)}};
-                parfileCorrelated(currentLine,:) = {time 0 eventCodes{1}};
+                parfileUncorrelated(currentLine,:) = {time data(i,2) eventCodes{1+data(i,2)} colorCodes(1+data(i,2),1) colorCodes(1+data(i,2),2) colorCodes(1+data(i,2),3)};
+                parfileCorrelated(currentLine,:) = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
             end
 
             %move to next event line
@@ -94,8 +95,8 @@ disp(['Loading following stam data file: ', stamFile])
         end
 
         %finish with fixation on last run
-        parfileCorrelated(currentLine,:)  = {time 0 eventCodes{1}};
-        parfileUncorrelated(currentLine,:)  = {time 0 eventCodes{1}};
+        parfileCorrelated(currentLine,:)  = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
+        parfileUncorrelated(currentLine,:)  = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
 
         parfileCorrelated
         parfileUncorrelated

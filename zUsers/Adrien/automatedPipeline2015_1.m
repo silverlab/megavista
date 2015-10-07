@@ -10,9 +10,14 @@ function automatedPipeline2015_1(subjectID)
 clc
 % ------------------------------------------------------------------------------------------------------------
 % REPLACE THE FOLLOWING VARIABLE WITH YOUR VALUES
-disp('At that stage, DICOM files should be in the subject folder in a folder called 01_Raw_DICOM and the par files in the folder 01_PAR')
-disp('Epi should be called epi01-whatever, epi02-whatever, ..., gems should be called gems-whatever and mprage, gems_mprage-whatever.')
-answer = input('You should be in the subject folder for the subject that you want to analyse. 1 = ESC; any other key = OK ');
+disp(' --------------   CHECKLIST BEFORE STARTING   -----------------')
+disp('- DICOM files should be in the subject folder in a folder called 01_Raw_DICOM')
+disp('- PAR files should be in the folder 01_PAR')
+disp('- Epi, in 01_Raw_DICOM, should be in folders called epi01-whatever, epi02-whatever, ....')
+disp('- Gems, in 01_Raw_DICOM, should be in folders called gems-whatever (no capital)')
+disp('- mprage, in 01_Raw_DICOM, should be in folders called gems_mprage-whatever (no capital).')
+disp('- You should be in the subject folder for the subject that you want to analyse')
+answer = input('Is it all correct? 1 = ESC; any other key = OK ');
 if answer == 1; error('ESCAPE'); end
 %subject_folder = '/Users/adrienchopin/Desktop/Big_data_STAM/RN31/pre1/NewPipeline'; %no end slash
 subject_folder = cd;
@@ -231,7 +236,7 @@ disp('---------      04A   MOTION CORRECTION       -----------------------------
     if ~(exist(subject_folderMoco,'dir')==7);  error('Missing Moco folder in Subject folder'); end
     
     %check whether code was already run successfully or not
-    if exist(subject_folderMocoCheck,'dir')==7;  disp('You may have run the MoCo Test code before (moco test folder detected). What to do?'); 
+    if exist(subject_folderMocoCheck,'dir')==7;  disp('You may have run the MoCo Checktest code before (moco check folder detected). What to do?'); 
         disp('1. Start this step over (delete existing 04B folder)');
         disp('2. Skip (recommended)');
             answer = input('3. Escape ');
@@ -278,23 +283,23 @@ disp('---------      04A   MOTION CORRECTION       -----------------------------
                     answer = input('Figure: Is everything OK? (y)es / (n)o: ', 's');
                     if strcmp(answer, 'n')==1; error('Something went wrong, according to you...');end
                 else %NOT GOOD
-                    error('python motioncorrect.py: Something went wrong with last step')
+                    error('python motionparams.py: Something went wrong with last step')
                 end
         else %NOT GOOD
             error('python motioncorrect.py: Something went wrong with last step')
         end
-        disp('Moving files back to moco root folder...')
+        disp('Moving files back to mococheck root folder...')
                 [success, status]=copyfile([subject_folderMocoCheck,'/',mocoCheckFolder,'_nifti/*'],subject_folderMocoCheck); if success; disp('Done');else error(status); end
         disp('Deleting old folders...')
                 [success, status]=rmdir([subject_folderMocoCheck,'/',mocoCheckFolder,'_nifti'],'s'); if success; disp('Done');else error(status); end
                 [success, status]=rmdir([subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom'],'s'); if success; disp('Done');else error(status); end
 
-        %CHECK SUCCESS here (presence of MCF FILES)
-        %for that, find any file that matches ('*_mcf.nii.gz')
+        %CHECK SUCCESS here (presence of MCF_MCF FILES)
+        %for that, find any file that matches ('*mcf_mcf.nii.gz')
             cd(subject_folderMocoCheck);
-            [match,dummy] =  regexp(ls,'epi+\w+_mcf\.nii\.gz','match','split');%find all nii.gz files containing word mcf
-            if isempty(match)==0; disp('Motion correction seems successful: mcf files detected.'); else error('Unsuccessful motion correction'); end
-       disp('Finished MOTION CORRECTION')
+            [match,dummy] =  regexp(ls,'epi+\w+mcf_mcf\.nii\.gz','match','split');%find all nii.gz files containing word mcf
+            if isempty(match)==0; disp('Motion correction check seems successful: mcf files detected.'); else error('Unsuccessful motion correction check'); end
+       disp('Finished MOTION CORRECTION CHECK')
     end
     
     disp('---------     05    RENAMING 1 / FIX NIFTI HEADERS       ------------------------------------------------------------')
@@ -304,7 +309,7 @@ disp('---------      04A   MOTION CORRECTION       -----------------------------
             if ~(exist(subject_folderMoco,'dir')==7);  error('Missing moco folder in Subject folder'); end
             
             %check whether code was already run successfully or not
-            if exist(subject_folderNiftiFx,'dir')==7;  disp('You may have run the renaming 1 code before (niftiFixedFolder detected). What to do?'); 
+            if exist(subject_folderNiftiFx,'dir')==7;  disp('You may have run the renaming 1/nifti fix code before (niftiFixedFolder detected). What to do?'); 
                 disp('2. Skip (recommended)');
                     answer = input('3. Escape ');
                     switch answer
@@ -354,34 +359,39 @@ disp('---------      04A   MOTION CORRECTION       -----------------------------
                         disp('Gems file is already called gems.nii.gz.')
                      end
                  end
-             % FIX HEADERS
-             answer = input('Have you edited niftiFixHeader2 for your needs? (y)es/(n)o: ','s');
-             if strcmp(answer,'n'); error('Please proceed and edit the code before fixing headers...');end
-        end
-        doFixHeaders = 1; %default
-        %check whether code was already run successfully or not
-            cd(subject_folderNiftiFx)
-            if exist('epiHeaders_FIXED.txt','file')==2;  disp('You may have run the -fixing header- code before (epiHeaders_FIXED.txt detected). What to do?'); 
-                disp('2. Skip (recommended)');
-                    answer = input('3. Escape ');
-                    switch answer
-                        case {2} %dont go, move to next step
-                            doFixHeaders = 0;
-                            disp('Skipped');
-                        case {3} %escape
-                            error('Voluntary interruption')
-                        otherwise
-                            error('Answer not understood')
-                    end            
-            end
-        if doFixHeaders == 1
-             disp('Fixing headers')
-                niftiFixHeader2(subject_folderNiftiFx);
-                if exist('epiHeaders_FIXED.txt','file')==2
-                    disp('Header fixing was successful.')
-                else
-                    error('Some files could not be fixed')
+        
+            % FIX HEADERS
+                 answer = input('Have you edited niftiFixHeader2 for your needs? (y)es/(n)o: ','s');
+                 if strcmp(answer,'n'); error('Please proceed and edit the code before fixing headers...');end
+            doFixHeaders = 1; %default
+            %check whether code was already run successfully or not
+                cd(subject_folderNiftiFx)
+                if exist('epiHeaders_FIXED.txt','file')==2;  disp('CAREFUL: You may have run the -fixing header- code before on these same files (epiHeaders_FIXED.txt detected). What to do?'); 
+                    disp('1. Do it again (first remove epiHeaders_FIXED.txt file)');
+                    disp('2. Skip (recommended)');
+                        answer = input('3. Escape ');
+                        switch answer
+                            case {1} %move on
+                                delete('epiHeaders_FIXED.txt');
+                            case {2} %dont go, move to next step
+                                doFixHeaders = 0;
+                                disp('Skipped');
+                            case {3} %escape
+                                error('Voluntary interruption')
+                            otherwise
+                                error('Answer not understood')
+                        end            
                 end
+            if doFixHeaders == 1
+                 disp('Fixing headers')
+                    niftiFixHeader2(subject_folderNiftiFx);
+                    if exist('epiHeaders_FIXED.txt','file')==2
+                        disp('Header fixing was successful.')
+                    else
+                        error('Some files could not be fixed')
+                    end
+                    input('Take some time here to check that the headers are all OK (slice_duration should not be OK for gems/mprage). Press any key.')
+            end
         end
   
       disp('---------     06   Start of mrVista session       -------------------------------------------------------------------')
@@ -391,7 +401,7 @@ disp('---------      04A   MOTION CORRECTION       -----------------------------
             if ~(exist(subject_folderNiftiFx,'dir')==7);  error('Missing fixed nifti folder in Subject folder'); end
             
             %check whether code was already run successfully or not
-            if exist(subject_folderVista,'dir')==7;  disp('You may have run the mrVista code before (subject_folderVista detected). What to do?'); 
+            if exist([subject_folderVista,'/Inplane'],'dir')==7;  disp('You may have run the mrVista code before (subject_folderVista/Inplane detected). What to do?'); 
                 disp('2. Skip (recommended)');
                     answer = input('3. Escape ');
                     switch answer
@@ -408,7 +418,7 @@ disp('---------      04A   MOTION CORRECTION       -----------------------------
            disp('Creating nifti folder, for epi, gems, and mprage')
                 [success, status]=mkdir([subject_folderVista,'/nifti']); if success; disp('Done');else error(status); end
            disp('Creating Parfiles folder, for par files')
-                [success, status]=mkdir([subject_folderVista,'/Parfiles']); if success; disp('Done');else error(status); end
+                [success, status]=mkdir([subject_folderVista,'/Stimuli/Parfiles']); if success; disp('Done');else error(status); end
            disp('Copying files to nifti and Parfiles subfolders')
                 cd(subject_folderNiftiFx);
                 [match,dummy] =  regexp(ls,'\w+\.nii\.gz','match','split');%find all nii.gz files
@@ -417,7 +427,7 @@ disp('---------      04A   MOTION CORRECTION       -----------------------------
                 end
                 cd(subject_folderPAR);
                 for i=1:numel(match)
-                   [success, status]=copyfile('*',[subject_folderVista,'/Parfiles']); if success; disp('Done');else error(status); end
+                   [success, status]=copyfile('*',[subject_folderVista,'/Stimuli/Parfiles']); if success; disp('Done');else error(status); end
                 end
            disp('Running Kelly s code to inialize a mrVista session...')
                 kb_initializeVista2(subject_folderVista, subjectID)

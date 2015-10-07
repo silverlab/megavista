@@ -40,11 +40,11 @@
 % if you are going to use knk's automated alignment, the alignment you
 % start with just doesn't have to be very good; it just has to be 
 % somewhere in the ballpark of being right.
-%rxAlign; 
+rxAlign; 
 
 %% (2) Once you are done with the alignment, pull out the necessary info
 rxVista = rxRefresh;
-%rxClose;
+rxClose;
 rx = rxVista; clear rxVista;
 %close all;
 %% (3) get into knk format 
