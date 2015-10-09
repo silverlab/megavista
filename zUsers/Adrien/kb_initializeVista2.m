@@ -71,6 +71,6 @@ end
 params.scanGroups = {1:nbRuns};
 
 success = mrInit2(params);
-
+disp('Check here that the number of slices above corresponds to your number of slices for the epi')
 if success==1; disp('Initialization seems successful'); else error('Initialization failed...'); end
 

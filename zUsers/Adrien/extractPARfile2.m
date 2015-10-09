@@ -1,5 +1,5 @@
-function extractPARfile(stamFile,rootEpi)
-%this version writes multiple PAR files (in case of multiple predictors)
+function extractPARfile2(stamFile,rootEpi)
+%this version write unique PAR files for multiple predictors
 %YOU NEED TO CD IN THE STAM DIRECTORY FIRST
 % stamfile is the file with the stimuli matrix
 % rootEpi is the root from which are epi names generated
@@ -48,10 +48,12 @@ disp(['Loading following stam data file: ', stamFile])
     fixationDuration = 15.7;
         % Event codes
         % 0 Fixation
-        % 1 -/+ configuration
-        % 2 +/- configuration
-        eventCodes = {'Fixation', '-/+ disp', '+/- disp'}
-        colorCodes = [[0.9 0 0]; [0 0.9 0]; [0 0 0.9]];
+        % 1 -/+ configuration correlated
+        % 2 +/- configuration correlated
+        % 3 -/+ configuration anti-correlated
+        % 4 +/- configuration anti-correlated
+        eventCodes = {'Fixation', '-/+ COR', '+/- COR', '-/+ ANT', '+/- ANT' }
+        colorCodes = [[0.9 0 0]; [0 0.9 0]; [0 0.45 0]; [0 0 0.9]; [0 0 0.45]];
         
     %for each run
     for run = 1:nbRuns
@@ -64,31 +66,45 @@ disp(['Loading following stam data file: ', stamFile])
         currentLine = 1; %initialize line of the design matrix in par file
 
         %Start run with fixation
-        parfileCorrelated = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
-        parfileUncorrelated = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};        
+        parfile = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};       
         time = time+fixationDuration;
         currentLine = currentLine + 1;
 
         for i=1:size(data,1) %go through each data line
-            if i>1 && data(i,6)~=data(i-1,6) %DETECT CHANGE OF RUN (we assume a run covers always more than a single data line)
-                %finish with fixation
-                    parfileCorrelated(currentLine,:) = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
-                    parfileUncorrelated(currentLine,:) = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
-                    currentLine = currentLine + 1;
-                    time = time+fixationDuration;
-                %start next run with fixation
-                    parfileCorrelated(currentLine,:) = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
-                    parfileUncorrelated(currentLine,:) = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
-                    currentLine = currentLine + 1;
-                    time = time+fixationDuration;
+            
+            %Given we split data between runs, the following case should not happen
+            %anymore (detection of change of run): so I comment it
+            %I keep a little code after, to detect if this is actually
+            %occuring because it would mean something went wrong...
+%             if i>1 && data(i,6)~=data(i-1,6) %DETECT CHANGE OF RUN (we assume a run covers always more than a single data line)
+%                 %finish with fixation
+%                     parfile(currentLine,:) = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
+%                     currentLine = currentLine + 1;
+%                     time = time+fixationDuration;
+%                 %start next run with fixation
+%                     parfile(currentLine,:) = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
+%                     currentLine = currentLine + 1;
+%                     time = time+fixationDuration;
+%             end
+            if i>1 && data(i,6)~=data(i-1,6) %DETECT CHANGE OF RUN
+                error('We detected a change of run in the epi data: that should not happen - check the code')
             end
-            if data(i,4)==1 % Correlated
-                parfileCorrelated(currentLine,:) = {time data(i,2) eventCodes{1+data(i,2)} colorCodes(1+data(i,2),1) colorCodes(1+data(i,2),2) colorCodes(1+data(i,2),3)};
-                parfileUncorrelated(currentLine,:) = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
-            else %uncorrelated
-                parfileUncorrelated(currentLine,:) = {time data(i,2) eventCodes{1+data(i,2)} colorCodes(1+data(i,2),1) colorCodes(1+data(i,2),2) colorCodes(1+data(i,2),3)};
-                parfileCorrelated(currentLine,:) = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
-            end
+            
+                
+                if inverted ==1 %deal with inverted eyes (this invert the configuration)
+                    code = 3-data(i,2);
+                else
+                    code = data(i,2);
+                end
+                
+                if data(i,4)==1 % correlated
+                    codeEvent = code ;
+                    codeEvent2 = code + 1;
+                else %uncorrelated
+                    codeEvent = code + 2;
+                    codeEvent2 = code + 3;
+                end
+                parfile(currentLine,:) = {time codeEvent eventCodes{codeEvent2} colorCodes(codeEvent2,1) colorCodes(codeEvent2,2) colorCodes(codeEvent2,3)};                           
 
             %move to next event line
             currentLine = currentLine + 1;
@@ -96,18 +112,15 @@ disp(['Loading following stam data file: ', stamFile])
         end
 
         %finish with fixation on last run
-        parfileCorrelated(currentLine,:)  = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
-        parfileUncorrelated(currentLine,:)  = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
+        parfile(currentLine,:)  = {time 0 eventCodes{1} colorCodes(1,1) colorCodes(1,2) colorCodes(1,3)};
 
-        parfileCorrelated
-        parfileUncorrelated
-        writeMatToFile(parfileCorrelated,[rootEpi,sprintf('%02.f',run),'_Correlated.par'])
-        writeMatToFile(parfileUncorrelated,[rootEpi,sprintf('%02.f',run),'_Uncorrelated.par'])
+        parfile
+        writeMatToFile(parfile,[rootEpi,sprintf('%02.f',runs(run)),'.par'])
     end
 end
 
 function writeMatToFile(matvar,fileName)
-    if exist(fileName,'file')==2; error('File exists, first delete to avoid concatenation'); end
+    if exist(fileName,'file')==2; error(['File ',fileName,' exists, first delete to avoid concatenation']); end
     try  
         file = fopen(fileName, 'a');
         str=char(universalStringConverter(matvar,[],2));

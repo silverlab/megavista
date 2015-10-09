@@ -74,7 +74,7 @@ disp('Testing whether dcm2nii is found (you should see Chris Rordens dcm2nii hel
 
 alwaysGo = 0;
 
-disp('---------       01-02  FILE ORGANISATION AND NIFTI CONVERSION          ---------------------------------------------------------')
+disp(['---------       01-02  FILE ORGANISATION AND NIFTI CONVERSION (',dateTime,')         ---------------------------------------------------------'])
     %first check the existence of the two initial folders
     if exist(subject_folderDICOM,'dir')==7; disp('Raw DICOM folder in Subject folder exists'); else error('Missing Raw DICOM folder in Subject folder...'); end
     if exist(subject_folderPAR,'dir')==7; disp('PAR folder in Subject folder exists'); else error('Missing PAR folder in Subject folder...'); end
@@ -130,7 +130,7 @@ disp('---------       01-02  FILE ORGANISATION AND NIFTI CONVERSION          ---
         disp('Finished FILE ORGANISATION AND NIFTI CONVERSION')
     end
 
-disp('---------      03   REORGANISATION II       ---------------------------------------------------------------------------')
+disp(['---------      03   REORGANISATION II   (',dateTime,')    ---------------------------------------------------------------------------'])
     %check whether reorganization was already run successfully or not
     if exist([subject_folder,'/',rawBackup],'dir')==7; 
         disp('You may have run the reorgaisation II code before (Raw DICOM backup folder detected). What to do?');  
@@ -166,7 +166,7 @@ disp('---------      03   REORGANISATION II       ------------------------------
         disp('Reorganisation II skipped')
     end
 
-disp('---------      04A   MOTION CORRECTION       ---------------------------------------------------------------------------')
+disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   ---------------------------------------------------------------------------'])
     %python motioncorrect.py [01_Raw_DICOM folder path]
     doMotionCorrection = 1; %default
     %check that nifti folder exists
@@ -230,7 +230,7 @@ disp('---------      04A   MOTION CORRECTION       -----------------------------
        disp('Finished MOTION CORRECTION')
     end
     
-    disp('---------      04B  MOTION CORRECTION CHECK      ---------------------------------------------------------------------------')
+    disp(['---------      04B  MOTION CORRECTION CHECK   (',dateTime,')   ---------------------------------------------------------------------------'])
     doMotionCorrectionCheck = 1; %default
     %check that nifti folder exists
     if ~(exist(subject_folderMoco,'dir')==7);  error('Missing Moco folder in Subject folder'); end
@@ -302,7 +302,7 @@ disp('---------      04A   MOTION CORRECTION       -----------------------------
        disp('Finished MOTION CORRECTION CHECK')
     end
     
-    disp('---------     05    RENAMING 1 / FIX NIFTI HEADERS       ------------------------------------------------------------')
+    disp(['---------     05    RENAMING 1 / FIX NIFTI HEADERS  (',dateTime,')     ------------------------------------------------------------'])
         renaming1 = 1; %default
         %check that nifti folder exists
             if ~(exist(subject_folderNIFTI,'dir')==7);  error('Missing nifti folder in Subject folder'); end
@@ -394,7 +394,7 @@ disp('---------      04A   MOTION CORRECTION       -----------------------------
             end
         end
   
-      disp('---------     06   Start of mrVista session       -------------------------------------------------------------------')
+      disp(['---------     06   Start of mrVista session   (',dateTime,')    -------------------------------------------------------------------'])
        doMrVista = 1; %default
        %check that nifti folder exists
             if ~(exist(subject_folderPAR,'dir')==7);  error('Missing PAR folder in Subject folder (for par files)'); end
