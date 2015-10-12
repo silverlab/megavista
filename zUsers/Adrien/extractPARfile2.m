@@ -52,7 +52,7 @@ disp(['Loading following stam data file: ', stamFile])
         % 2 +/- configuration correlated
         % 3 -/+ configuration anti-correlated
         % 4 +/- configuration anti-correlated
-        eventCodes = {'Fixation', '-/+ COR', '+/- COR', '-/+ ANT', '+/- ANT' }
+        eventCodes = {'Fixation', '- COR', '+ COR', '- ANT', '+ ANT' }
         colorCodes = [[0.9 0 0]; [0 0.9 0]; [0 0.45 0]; [0 0 0.9]; [0 0 0.45]];
         
     %for each run
