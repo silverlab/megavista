@@ -25,8 +25,8 @@ cd(dataDir)
    fileListName = {fileList.name};
    niiFileList={}; %this is a list of nii files for that dir
    for i = 1:numel(fileListName)
-       if numel(fileListName{i})>3 && strcmp(fileListName{i}(end-5:end),'nii.gz')==1 
-           niiFileList{end+1} = fileListName{i}; 
+       if numel(fileListName{i})>5 && strcmp(fileListName{i}(end-5:end),'nii.gz')==1 %min of 6 letters for the name
+           niiFileList{end+1} = fileListName{i};
        end
    end
 if numel(niiFileList)>0

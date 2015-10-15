@@ -70,6 +70,7 @@ end
 % class data.
 cleanData = data;
 cleanData(cleanData>=classData.type.other) = classData.type.unknown;
+
 [nodes,edges] = grow_gray(cleanData,numLayers,voi,layer0);
 
 grayMatter = nodes(1:3,nodes(6,:) ~= 0)+1;
