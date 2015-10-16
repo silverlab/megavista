@@ -18,6 +18,10 @@ export FSLDIR PATH
 PATH=/Users/adrienchopin/Desktop/mricron:${PATH}
 export PATH
 
+#Add freesurfer path (necessary to run itkGray from matlab later)
+PATH=/Applications/freesurfer/bin:${PATH}
+export PATH
+
 #Add path to segmentation files
 PATH=/Users/adrienchopin/Desktop/Segmentation:${PATH}
 export PATH
