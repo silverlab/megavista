@@ -17,7 +17,7 @@ function checkNifti(thisPath)
 %               method 1 if qform_code = 0 and sform_code = 0
 %                    - check that qto_xyz is equal to sto_xyz
 %                    -%check that pixdim is correct
-%               method 2 if qform_code = 1 and sform_code = 0
+%               method 2 if qform_code > 1 and sform_code = 0
 %                   -  % check that qto_xyz is not 0
 %                    -  %check that qfac is 1 or -1
 %                    - check that qto_xyz is equal to sto_xyz
@@ -26,7 +26,7 @@ function checkNifti(thisPath)
 %                   -% check that qoffset are not 0
 %                   %check that the qto_xyz matrix is well formed with qoffset values
 %                    %check that qto xyz matrix is formed correctly according to the pixdim values
-%               method 3 if sform_code = 1
+%               method 3 if sform_code > 1
 %                    - check that sto_xyz is not 0
 %                   - check that qto_xyz is equal to sto_xyz
 %       - check that slice_end is not 0 (it should be nb of slices -1)

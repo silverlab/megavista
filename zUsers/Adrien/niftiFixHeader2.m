@@ -42,8 +42,8 @@ if numel(niiFileList)>0
             %However, if method 2 was used on your nifti conversion, you will get
             %an error when you force method 3 here in nifti header because it will copy
             %below the null sto_xyz to the qto_xyz
-            ni.freq_dim = 1;
-            ni.phase_dim = 2;
+            ni.freq_dim = 1; % i is 1, j is 2, k is 3
+            ni.phase_dim = 2; 
             ni.slice_dim = 3;
             ni.slice_end = 37; %(number of slices-1)
             if length(ni.pixdim)>3 % pixdim(4) = TR    %EPI
@@ -67,8 +67,8 @@ if numel(niiFileList)>0
             %However, if method 2 was used on your nifti conversion, you will get
             %an error when you force method 3 here in nifti header because it will copy
             %below the null sto_xyz to the qto_xyz
-            ni.freq_dim = 2;
-            ni.phase_dim = 1;
+            ni.freq_dim = 0; %O for mprage because no phase/freq encoding (it's specific to EPI)
+            ni.phase_dim = 0; %O for mprage because no phase/freq encoding (it's specific to EPI)
             ni.slice_dim = 3;
             ni.slice_end = 159; %(number of slices-1)
             ni.slice_duration = 0; % it has to be 0 to avoid slice timing correction and some further error
