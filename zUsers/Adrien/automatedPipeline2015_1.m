@@ -59,6 +59,7 @@ disp(['Megavista folder is : ', megavista_folder])
     if exist(megavista_folder,'dir')==7; disp('Megavista folder exists'); else error('Megavista folder does not exist'); end
 disp('************************************************************************************************************************')
 preprocessPath = [megavista_folder, '/silverlab_vista_tools/python_preproc'];
+preprocessPath_alt = [megavista_folder, '/zUsers/Sara'];
 if exist(preprocessPath,'dir')==7; cd(preprocessPath);
 else disp('Strangely, the folder silverlab_vista_tools/python_preproc does not exist in megavista...'); end
 
@@ -198,11 +199,15 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
             [success, status]=copyfile([subject_folderNIFTI,'/*'],[subject_folderMoco,'/',mocoFolder,'_nifti']); if success; disp('Done');else error(status); end
             [success, status]=copyfile([subject_folderDICOM,'/*'],[subject_folderMoco,'/',mocoFolder,'_dicom']); if success; disp('Done');else error(status); end
         disp('Starting motioncorrect.py in:'); 
-            cd(preprocessPath);
+        if exist(preprocessPath_alt,'dir')==7 
+            cd(preprocessPath_alt); %if you have the file for updated motion correction, use it
+        else 
+            cd(preprocessPath); %otherwise use old version to align to epi01
+        end
             success = system(['python motioncorrect.py ', subject_folderMoco]); 
         if success==0 %GOOD
-               disp('python motioncorrect.py: DONE'); 
-                   % CHECK PARAMS HERE
+                disp('python motioncorrect.py: DONE'); 
+                % CHECK PARAMS HERE
                 disp('Please check the motion correction results...')
                 cd(preprocessPath);
                 system(['python motionparams.py ', subject_folderMoco])
@@ -265,12 +270,18 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
             [success, status]=mkdir([subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom']); if success; disp('Done');else error(status); end 
         disp('Copying nifti files to MoCo subfolders...')
             [success, status]=copyfile([subject_folderMoco,'/*_mcf.nii.gz'],[subject_folderMocoCheck,'/',mocoCheckFolder,'_nifti']); if success; disp('Done');else error(status); end
-            [success, status]=copyfile([subject_folderDICOM,'/epi01*'],[subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom']); if success; disp('Done');else error(status); end
-        %rename epi_01_whatever to epi_01_whatever_mcf
-           epiFolder = dir([subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom/epi01*']);
-           movefile([subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom/',epiFolder.name],[subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom/',epiFolder.name,'_mcf']);
-         disp('Starting motioncorrect.py in:'); 
-            cd(preprocessPath);
+            [success, status]=copyfile([subject_folderDICOM,'/epi*'],[subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom']); if success; disp('Done');else error(status); end
+        %rename epi_whatever to epi_whatever_mcf
+        epiFolders = dir([subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom/epi*']);
+        for i=1:length(epiFolders)
+            movefile([subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom/',epiFolders(i).name],[subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom/',epiFolders(i).name,'_mcf']);
+        end
+            disp('Starting motioncorrect.py in:');
+        if exist(preprocessPath_alt,'dir')==7 
+            cd(preprocessPath_alt); %if you have the file for updated motion correction, use it
+        else 
+            cd(preprocessPath); %otherwise use old version to align to epi01
+        end 
             success = system(['python motioncorrect.py ', subject_folderMocoCheck]); 
         if success==0 %GOOD
                disp('python motioncorrect.py: DONE'); 
