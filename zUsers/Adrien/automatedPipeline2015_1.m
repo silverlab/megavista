@@ -282,6 +282,8 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
         else 
             cd(preprocessPath); %otherwise use old version to align to epi01
         end 
+        %HERE - make it clear on the command window which code will be used
+        %(you may want to pause here, actually)
             success = system(['python motioncorrect.py ', subject_folderMocoCheck]); 
         if success==0 %GOOD
                disp('python motioncorrect.py: DONE'); 
