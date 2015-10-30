@@ -199,11 +199,19 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
             [success, status]=copyfile([subject_folderNIFTI,'/*'],[subject_folderMoco,'/',mocoFolder,'_nifti']); if success; disp('Done');else error(status); end
             [success, status]=copyfile([subject_folderDICOM,'/*'],[subject_folderMoco,'/',mocoFolder,'_dicom']); if success; disp('Done');else error(status); end
         disp('Starting motioncorrect.py in:'); 
-        if exist(preprocessPath_alt,'dir')==7 
+        if exist([preprocessPath_alt '/motioncorrect.py'],'file')==2
             cd(preprocessPath_alt); %if you have the file for updated motion correction, use it
+            disp('Updated motion correction file found in megavista/zUsers/Sara/ will be used.');
+            disp('This will align all epi files to the middle volume of the middle epi.');
+            disp('Press any key to continue. Cancel the process if you wish to use a different motion correction method.');
+            pause
         else 
             cd(preprocessPath); %otherwise use old version to align to epi01
-        end
+            disp('Old motion correction file found in megavista/silverlab_vista_tools/python_preproc will be used.');
+            disp('This will align all epi files to the first volume of the first epi.');
+            disp('Press any key to continue. Cancel the process if you wish to use a different motion correction method.');
+            pause
+        end 
             success = system(['python motioncorrect.py ', subject_folderMoco]); 
         if success==0 %GOOD
                 disp('python motioncorrect.py: DONE'); 
@@ -241,7 +249,7 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
     if ~(exist(subject_folderMoco,'dir')==7);  error('Missing Moco folder in Subject folder'); end
     
     %check whether code was already run successfully or not
-    if exist(subject_folderMocoCheck,'dir')==7;  disp('You may have run the MoCo Checktest code before (moco check folder detected). What to do?'); 
+    if exist(subject_folderMocoCheck,'dir')==7;  disp('You may have run the MoCo Check test code before (moco check folder detected). What to do?'); 
         disp('1. Start this step over (delete existing 04B folder)');
         disp('2. Skip (recommended)');
             answer = input('3. Escape ');
@@ -277,13 +285,19 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
             movefile([subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom/',epiFolders(i).name],[subject_folderMocoCheck,'/',mocoCheckFolder,'_dicom/',epiFolders(i).name,'_mcf']);
         end
             disp('Starting motioncorrect.py in:');
-        if exist(preprocessPath_alt,'dir')==7 
+        if exist([preprocessPath_alt '/motioncorrect.py'],'file')==2
             cd(preprocessPath_alt); %if you have the file for updated motion correction, use it
+            disp('Updated motion correction file found in megavista/zUsers/Sara/ will be used.');
+            disp('This will align all epi files to the middle volume of the middle epi.');
+            disp('Press any key to continue. Cancel the process if you wish to use a different motion correction method.');
+            pause
         else 
             cd(preprocessPath); %otherwise use old version to align to epi01
+            disp('Old motion correction file found in megavista/silverlab_vista_tools/python_preproc will be used.');
+            disp('This will align all epi files to the first volume of the first epi.');
+            disp('Press any key to continue. Cancel the process if you wish to use a different motion correction method.');
+            pause
         end 
-        %HERE - make it clear on the command window which code will be used
-        %(you may want to pause here, actually)
             success = system(['python motioncorrect.py ', subject_folderMocoCheck]); 
         if success==0 %GOOD
                disp('python motioncorrect.py: DONE'); 
