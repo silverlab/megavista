@@ -216,9 +216,17 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
         if success==0 %GOOD
                 disp('python motioncorrect.py: DONE'); 
                 % CHECK PARAMS HERE
+                %Need to write voxel size to a .txt file for
+                %motionparams.py to read in for the version in zUsers/Sara
+                first_epi_file = dir([subject_folderNIFTI '/epi01*']);
+                ni = readFileNifti([subject_folderNIFTI '/' first_epi_file.name]);
+                voxel_size = ni.pixdim(1:3);
+                fileID = fopen([subject_folderMoco '/' mocoFolder '_nifti/voxelinfo.txt'],'w');
+                fprintf(fileID,'%8.5f',voxel_size);
+                fclose(fileID);
                 disp('Please check the motion correction results...')
-                cd(preprocessPath);
-                system(['python motionparams.py ', subject_folderMoco])
+%                 cd(preprocessPath);
+                success = system(['python motionparams.py ', subject_folderMoco]);
                 if success==0 %GOOD
                     disp('python motionparams.py: DONE')
                     answer = input('Figure: Is everything OK? (y)es / (n)o: ', 's');
@@ -303,8 +311,9 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
                disp('python motioncorrect.py: DONE'); 
                    % CHECK PARAMS HERE
                 disp('Please check the motion correction results...')
-                cd(preprocessPath);
-                system(['python motionparams.py ', subject_folderMocoCheck])
+                [success, status] = copyfile([subject_folderMoco '/voxelinfo.txt'],[subject_folderMocoCheck '/' mocoCheckFolder '_nifti/voxelinfo.txt']);
+                if success; disp('voelinfo.txt file copied...');else error(status); end
+                success = system(['python motionparams.py ', subject_folderMocoCheck]);
                 if success==0 %GOOD
                     disp('python motionparams.py: DONE')
                     answer = input('Figure: Is everything OK? (y)es / (n)o: ', 's');
