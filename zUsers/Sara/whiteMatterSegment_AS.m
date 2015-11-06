@@ -1,4 +1,4 @@
-function automatedWhiteMatterSeg(subjectID)
+function whiteMatterSegment_AS(subjectID)
 % ------------------------------------------------------------------------------------------------------------
 % fMRI processing pipeline whose goal is to automatize steps as much as
 % possible
@@ -14,17 +14,13 @@ function automatedWhiteMatterSeg(subjectID)
 
 %% FOLDER SETUP AND INITIAL CHECKS
 disp('You should be in the 06_mrVista_session folder for the subject that you are analyzing.');
-answer = input('Is this correct? (y/n)  ','s');
-if strmatch('y',lower(answer))
-    disp(' ');
-elseif strmatch('n',lower(answer))
-    error('Please start in the correct path and try again.');
-else
-    error('Input not understood.');
-end
+beep; pause
+%check that directory is correct
+[a,theFolder]=fileparts(pwd);
+if strcmpi(theFolder,'06_mrVista_session')==0; error('You are not in the mrVista session folder...'); end
 
 mrVistaFolder = cd;
-mprageFile = [mrVistaFolder '/nifti/nu.nii.gz'];
+mprageFile = [mrVistaFolder '/nifti/mprage.nii.gz'];
 
 %make new segmentation folder inside the mrVista session folder
 if ~(exist([mrVistaFolder '/Segmentation'],'dir')==7)
@@ -32,24 +28,23 @@ if ~(exist([mrVistaFolder '/Segmentation'],'dir')==7)
 end
 destinationFolder = [mrVistaFolder '/Segmentation'];
 
-if exist('mrRxSettings.mat','file')==2
-    disp('mrRxSettings.mat file found.  We will continue with white matter segmentation...');
-    disp(' ');
-else
-    error('mrRxSettings.mat file not found.  Please align high-res and low-res anatomicals before continuing.');
-end
+%if exist('mrRxSettings.mat','file')==2
+disp('mrRxSettings.mat file found.  We will continue with white matter segmentation...');
+%     disp(' ');
+% else
+%     error('mrRxSettings.mat file not found.  Please align high-res and low-res anatomicals before continuing.');
+% end
 
 
 %% WHITE MATTER SEGMENTATION
 white_matter_seg = 1; %default is that this step will be run
-
 if exist([getenv('SUBJECTS_DIR') '/' subjectID],'dir')==7
     disp(['A subject folder for this participant already exists in ' getenv('SUBJECTS_DIR')]);
-    answer = input('Have you already run white matter segmentation for this participant? (y/n)  ','s');
+    beep; answer = input('Have you already run white matter segmentation for this participant? y(es) and skip it or n(o)','s');
     disp(' ');
-    if strmatch('y',lower(answer))
+    if strcmpi('y',answer)
         white_matter_seg = 0; %recon-all step will not be run
-    elseif strmatch('n',lower(answer))
+    elseif strcmpi('n',answer)
         error('Please change subjectID or delete subject folder and run white matter segmentation again.');
     else
         error('Input not understood.');
@@ -58,7 +53,7 @@ end
 
 if white_matter_seg  %only skipped if user input says that they have already run the white matter segmentation
                      %this will be double-checked on the next step by looking for the existance of the ribbon.mgz file
-    disp('Starting white matter segmentation.  May take 8-10 hours to complete...');
+    disp('Starting white matter segmentation.  May take 8-24 hours to complete...');
     disp(' ');
     success = system(['recon-all -i ' mprageFile ' -subjid ' subjectID ' -all']);
     if success~=0
@@ -69,54 +64,76 @@ end
 cd([getenv('SUBJECTS_DIR') '/' subjectID '/mri'])
 
 %% MGZ TO NII CONVERSION
-if ~(exist('ribbon.mgz','file')==2) %existance of this file indicates that recon-all step has been run
-    error('White matter segmenation for this subject was not completed.');
+if ~(exist('ribbon.mgz','file')==2) %absence of this file indicates that recon-all step has not been run
+    error('Ribbon.mgz not found: recon-all segmentation for this subject was not completed.');
 end
-if ~(exist([subjectID '_ribbon.nii.gz'],'file')==2)
+if ~(exist([subjectID '_ribbon.nii.gz'],'file')==2) %absence of this file means conversion was not done and we can do it
+    disp('Starting conversion of mgz files to nifti')
     %run the mgz to nii conversion since it has not yet been done
-    success = system(['mgz2nii.sh ' subjectID]);
+    success = system(['mgz2niiOrNoRS.sh ' subjectID ' RAS']);
     if success~=0
         error('Error in conversion from mgz to nii file type.');
-    end
+    else
+        disp('mgz files were succesfully converted to nifti')
+    end 
 else
-    disp('mgz2nii conversion step has previously been done.  Skipping it...');
+    disp('mgz2nii conversion step has previously been done. Be sure skipping it is the correct thing to do (escape now otherwise)...');
+    beep; pause;
+    disp('Skipping...')
     disp(' ');
 end
 
-
 %% SETTING UP FILES FOR ITKGRAY OR MRGRAY (User input choice)
-if ~(exist([subjectID '_ribbon.nii.gz'],'file')==2) %existance of this file indicates that mgz2nii step has been run
-    error('White matter segmenation for this subject does not exist.');
+if ~(exist([subjectID '_nu_RAS_NoRS.nii.gz'],'file')==2) %absence of this file indicates that mgz2nii step has been run
+    error([subjectID '_nu_RAS_NoRS.nii.gz not found: Conversion to nifti for this subject does not exist.']);
 end
 
-answer = input('Do you want to set up files for itkGray? (y/n)  ','s');
+beep;
+disp('Do you want to set up files for')
+disp('1. itkGray')
+disp('2. mrGray')
+answer = str2double(input('3. Escape '));
 disp(' ');
-if strmatch('y',lower(answer)) %yes, I want to set up for itkGray
-    fs_ribbon2itk(subjectID,[],[],[getenv('SUBJECTS_DIR') '/' subjectID '/mri/' subjectID '_nu.nii.gz'],[],'RAS');
+if answer==1 %I want to set up for itkGray
+    disp('Starting fs_ribbon2itk to convert nifti file to itkGray class file')
+    fs_ribbon2itk(subjectID);
     
-    %copy files to 06_mrVista_session/Segmentation/ folder
-    success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/' subjectID '_nu.nii.gz'],destinationFolder);
-    if success; disp(['Copying ' subjectID '_nu.nii.gz file... Done']);else error(status); end
-    success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/' subjectID '_ribbon.nii.gz'],destinationFolder);
-    if success; disp(['Copying ' subjectID '_ribbon.nii.gz file... Done']);else error(status); end
+    %check that fs_ribbon2itk was successful
+    if exist('t1_class.nii.gz','file')==2
+        disp('Default file t1_class.nii.gz was succesfully produced')
+    else
+        error('t1_class.nii.gz missing: fs_ribbon2itk went wrong')
+    end
+    
+    disp('Cleaning...')
+    %copy files to 06_mrVista_session/Segmentation/ folder (ribbon, nu and T1)
+    success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/' subjectID 'nu.mgz'],destinationFolder);
+    if success; disp(['Copying nu.mgz file... Done']);else error(status); end
+    success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/' subjectID 'ribbon.mgz'],destinationFolder);
+    if success; disp(['Copying ribbon.mgz file... Done']);else error(status); end
+    success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/' subjectID 'T1.mgz'],destinationFolder);
+    if success; disp(['Copying T1.mgz file... Done']);else error(status); end
+    success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/' subjectID '_nu_RAS_NoRS.nii.gz'],destinationFolder);
+    if success; disp(['Copying ' subjectID '_nu_RAS_NoRS.nii.gz file... Done']);else error(status); end
+    success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/' subjectID '_ribbon_RAS_NoRS.nii.gz'],destinationFolder);
+    if success; disp(['Copying ' subjectID '_ribbon_RAS_NoRS.nii.gz file... Done']);else error(status); end
+    success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/' subjectID '_T1_RAS_NoRS.nii.gz'],destinationFolder);
+    if success; disp(['Copying ' subjectID '_T1_RAS_NoRS.nii.gz file... Done']);else error(status); end
     success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/t1_class.nii.gz'],destinationFolder);
     if success; disp('Copying t1_class.nii.gz file... Done');else error(status); end
     disp(' ');
     
     %check that itkGray files were actually put in the correct place
     cd(destinationFolder);
-    if exist('t1_class.nii.gz','file')==2 && exist([subjectID '_nu.nii.gz'],'file')==2 && exist([subjectID '_ribbon.nii.gz'],'file')==2
+    if exist('t1_class.nii.gz','file')==2 && exist([subjectID '_nu_RAS_NoRS.nii.gz'],'file')==2 && exist([subjectID '_ribbon_RAS_NoRS.nii.gz'],'file')==2
         disp('Necessary files for itkGray successfully copied!');
         disp(['Process complete for ' subjectID '!!']);
     else
-        error('Some itkGray files missing!');
+        error('Some itkGray files missing in your mrVista segmentation folder! Please check');
     end
     
-elseif strmatch('n',lower(answer)) %no, I do not want to set up for itkGray
-    %give alternative choice to set up for mrGray
-    answer2 = input('Do you want to set up files for mrGray? (y/n)  ','s');
-    disp(' ');
-    if strmatch('y',lower(answer2)) %yes, I want to set up for mrGray
+elseif answer==2 %I do want to set up for mrGray
+     disp(' ');
         
         disp('On any pop-ups that appear, save in the default location presented to you.  Press any key to continue.');
         pause
@@ -151,14 +168,8 @@ elseif strmatch('n',lower(answer)) %no, I do not want to set up for itkGray
         end
         close all %closing any figures that 
         
-    elseif strmatch('n',lower(answer2)) %no, I do not want to set up for mrGray
-        disp('OK, setup for both itkGray and mrGray were skipped.');
-        cd(destinationFolder);
-    else
-        error('Input not understood.');
-    end
 else
-    error('Input not understood.');
+    error('Escaping...');
 end
 
 

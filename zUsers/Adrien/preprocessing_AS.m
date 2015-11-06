@@ -232,7 +232,7 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
                 if success==0 %GOOD
                     disp('python motionparams/SP.py: DONE')
                     beep; answer = input('Figure: Is everything OK? (y)es / (n)o: ', 's');
-                    if strcmp(answer, 'n')==1; error('Something went wrong, according to you...');end
+                    if strcmpi(answer, 'n')==1; error('Something went wrong, according to you...');end
                 else %NOT GOOD
                     error('python motionparams/SP.py: Something went wrong with last step')
                 end
@@ -322,7 +322,7 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
                 if success==0 %GOOD
                     disp('python motionparams/SP.py: DONE')
                     beep; answer = input('Figure: Is everything OK? (y)es / (n)o: ', 's');
-                    if strcmp(answer, 'n')==1; error('Something went wrong, according to you...');end
+                    if strcmpi(answer, 'n')==1; error('Something went wrong, according to you...');end
                 else %NOT GOOD
                     error('python motionparams/SP.py: Something went wrong with last step')
                 end
@@ -394,7 +394,7 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
                  if numel(matchGEMS)>1
                      error('More than one gems file found...')
                  else
-                     if strcmp(matchGEMS{1},'gems.nii.gz')==0
+                     if strcmpi(matchGEMS{1},'gems.nii.gz')==0
                         [success, status]=movefile(matchGEMS{1},'gems.nii.gz'); if success; disp('Done');else error(status); end
                      else
                         disp('Gems file is already called gems.nii.gz.')
@@ -403,7 +403,7 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
         
             % FIX HEADERS
                  beep; answer = input('Have you edited niftiFixHeader2 for your needs? (y)es/(n)o: ','s');
-                 if strcmp(answer,'n'); error('Please proceed and edit the code before fixing headers...');end
+                 if strcmpi(answer,'n'); error('Please proceed and edit the code before fixing headers...');end
             doFixHeaders = 1; %default
             %check whether code was already run successfully or not
                 cd(subject_folderNiftiFx)
