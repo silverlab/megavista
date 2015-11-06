@@ -2,8 +2,10 @@ function extractPARfile2(stamFile,rootEpi)
 %this version write unique PAR files for multiple predictors
 %YOU NEED TO CD IN THE STAM DIRECTORY FIRST
 % stamfile is the file with the stimuli matrix
-% rootEpi is the root from which are epi names generated
-if ~exist('stamFile','var');error('Stam file not defined for extractPARfile function'); end
+% rootEpi is the root from which are par file names generated
+% Ex of use: extractPARfile2('mv40pre10_MRI_1.mat','epi') will read
+% mv40pre10_MRI_1.mat and generate par files called epi01, epi02...
+if ~exist('stamFile','var');error('Stam file not defined for extractPARfile function - .mat is important'); end
 if ~exist('rootEpi','var');disp('Default root epi name used: epi'); rootEpi = 'epi'; end
 if ~exist(stamFile,'file');error('Stam file not found for extractPARfile function'); end
 
