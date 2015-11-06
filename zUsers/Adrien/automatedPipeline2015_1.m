@@ -199,7 +199,7 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
             [success, status]=copyfile([subject_folderNIFTI,'/*'],[subject_folderMoco,'/',mocoFolder,'_nifti']); if success; disp('Done');else error(status); end
             [success, status]=copyfile([subject_folderDICOM,'/*'],[subject_folderMoco,'/',mocoFolder,'_dicom']); if success; disp('Done');else error(status); end
         disp('Starting motioncorrect.py in:'); 
-        if exist([preprocessPath_alt '/motioncorrect.py'],'file')==2
+        if exist([preprocessPath_alt '/motioncorrect_SP.py'],'file')==2
             cd(preprocessPath_alt); %if you have the file for updated motion correction, use it
             disp('Updated motion correction file found in megavista/zUsers/Sara/ will be used.');
             disp('This will align all epi files to the middle volume of the middle epi.');
