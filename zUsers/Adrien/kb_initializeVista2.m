@@ -42,7 +42,7 @@ disp('Gems file detected:')
 disp(inplane_file);
 assert(exist(inplane_file, 'file')>0)
  
-anat_file = fullfile(sess_path, 'nifti', 'nu.nii.gz');
+anat_file = fullfile(sess_path, 'nifti', 'mprage.nii.gz');
 disp('Mprage file detected:')
 disp(anat_file)
 assert(exist(anat_file, 'file')>0)

@@ -17,12 +17,12 @@ disp('- Epi, in 01_Raw_DICOM, should be in folders called epi01-whatever, epi02-
 disp('- Gems, in 01_Raw_DICOM, should be in folders called gems-whatever (no capital)')
 disp('- mprage, in 01_Raw_DICOM, should be in folders called gems_mprage-whatever (no capital).')
 disp('- You should be in the subject folder for the subject that you want to analyse')
-answer = input('Is it all correct? 1 = ESC; any other key = OK ');
-if answer == 1; error('ESCAPE'); end
+beep; answer = input('Is it all correct? 1 = ESC; Enter = OK ','s');
+if str2double(answer) == 1; error('ESCAPE'); end
 %subject_folder = '/Users/adrienchopin/Desktop/Big_data_STAM/RN31/pre1/NewPipeline'; %no end slash
 subject_folder = cd;
 
-if ~exist('subjectID','var'); subjectID = 'default'; disp('Defaults subject ID...'); end
+if ~exist('subjectID','var'); beep; subjectID = input('Enter subject ID:','s'); end
 
 %Write the following line (not commented, with your correct path) in the
 %command line to save the variable in a file called pathFile - move that
@@ -134,7 +134,7 @@ disp(['---------      03   REORGANISATION II   (',dateTime,')    ---------------
     if exist([subject_folder,'/',rawBackup],'dir')==7; 
         disp('You may have run the reorgaisation II code before (Raw DICOM backup folder detected). What to do?');  
         disp('2. Skip (recommended)');
-        answer = input('3. Escape ');
+        beep; answer = input('3. Escape ');
         switch answer
             case {2} %dont go, move to next step
                 doReOrg = 0;
@@ -174,7 +174,7 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
     %check whether code was already run successfully or not
     if exist(subject_folderMoco,'dir')==7;  disp('You may have run the MoCo code before (moco folder detected). What to do?'); 
         disp('2. Skip (recommended)');
-            answer = input('3. Escape ');
+            beep; answer = input('3. Escape ');
             switch answer
                 case {2} %dont go, move to next step
                     doMotionCorrection = 0;
@@ -202,14 +202,16 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
             disp('Updated motion correction file found in megavista/zUsers/Sara/ will be used.');
             disp('This will align all epi files to the middle volume of the middle epi.');
             disp('Press any key to continue. Cancel the process if you wish to use a different motion correction method.');
-            pause
+            disp('Starting...')
+            beep; pause;
             success = system(['python motioncorrect_SP.py ', subject_folderMoco]);
         else 
             cd(preprocessPath); %otherwise use old version to align to epi01
             disp('Old motion correction file found in megavista/silverlab_vista_tools/python_preproc will be used.');
             disp('This will align all epi files to the first volume of the first epi.');
             disp('Press any key to continue. Cancel the process if you wish to use a different motion correction method.');
-            pause
+            beep; pause;
+            disp('Starting...')
             success = system(['python motioncorrect.py ', subject_folderMoco]);
         end 
              
@@ -229,7 +231,7 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
                 success = system(['python motionparams_SP.py ', subject_folderMoco]);
                 if success==0 %GOOD
                     disp('python motionparams/SP.py: DONE')
-                    answer = input('Figure: Is everything OK? (y)es / (n)o: ', 's');
+                    beep; answer = input('Figure: Is everything OK? (y)es / (n)o: ', 's');
                     if strcmp(answer, 'n')==1; error('Something went wrong, according to you...');end
                 else %NOT GOOD
                     error('python motionparams/SP.py: Something went wrong with last step')
@@ -260,7 +262,7 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
     if exist(subject_folderMocoCheck,'dir')==7;  disp('You may have run the MoCo Check test code before (moco check folder detected). What to do?'); 
         disp('1. Start this step over (delete existing 04B folder)');
         disp('2. Skip (recommended)');
-            answer = input('3. Escape ');
+            beep; answer = input('3. Escape ');
             switch answer
                 case {1} %delete subject_folderMocoCheck
                     %added because deleting this folder manually everytime
@@ -298,14 +300,16 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
             disp('Updated motion correction file found in megavista/zUsers/Sara/ will be used.');
             disp('This will align all epi files to the middle volume of the middle epi.');
             disp('Press any key to continue. Cancel the process if you wish to use a different motion correction method.');
-            pause
+            beep; pause;
+            disp('Starting...')
             success = system(['python motioncorrect_SP.py ', subject_folderMocoCheck]); 
         else 
             cd(preprocessPath); %otherwise use old version to align to epi01
             disp('Old motion correction file found in megavista/silverlab_vista_tools/python_preproc will be used.');
             disp('This will align all epi files to the first volume of the first epi.');
             disp('Press any key to continue. Cancel the process if you wish to use a different motion correction method.');
-            pause
+            beep; pause;
+            disp('Starting...')
             success = system(['python motioncorrect.py ', subject_folderMocoCheck]); 
         end  
         if success==0 %GOOD
@@ -317,7 +321,7 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
                 success = system(['python motionparams_SP.py ', subject_folderMocoCheck]);
                 if success==0 %GOOD
                     disp('python motionparams/SP.py: DONE')
-                    answer = input('Figure: Is everything OK? (y)es / (n)o: ', 's');
+                    beep; answer = input('Figure: Is everything OK? (y)es / (n)o: ', 's');
                     if strcmp(answer, 'n')==1; error('Something went wrong, according to you...');end
                 else %NOT GOOD
                     error('python motionparams/SP.py: Something went wrong with last step')
@@ -346,9 +350,9 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
             if ~(exist(subject_folderMoco,'dir')==7);  error('Missing moco folder in Subject folder'); end
             
             %check whether code was already run successfully or not
-            if exist(subject_folderNiftiFx,'dir')==7;  disp('You may have run the renaming 1/nifti fix code before (niftiFixedFolder detected). What to do?'); 
+            if exist(subject_folderNiftiFx,'dir')==7;  disp('You may have run the renaming 1 / nifti fix code before (niftiFixedFolder detected). What to do?'); 
                 disp('2. Skip (recommended)');
-                    answer = input('3. Escape ');
+                    beep; answer = input('3. Escape ');
                     switch answer
                         case {2} %dont go, move to next step
                             renaming1 = 0;
@@ -378,12 +382,12 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
                 for i=1:numel(matchGEMS)
                        [success, status]=copyfile(matchGEMS{i},subject_folderNiftiFx); if success; disp('Done');else error(status); end
                 end
-             disp('Renaming mprage file to nu.nii.gz')
+             disp('Renaming mprage file to mprage.nii.gz')
                   cd(subject_folderNiftiFx);
                  if numel(matchMPRAGE)>1
                      error('More than one mprage file found...')
                  else
-                     [success, status]=movefile(matchMPRAGE{1},'nu.nii.gz'); if success; disp('Done');else error(status); end
+                     [success, status]=movefile(matchMPRAGE{1},'mprage.nii.gz'); if success; disp('Done');else error(status); end
                  end
              disp('Renaming gems* file to gems.nii.gz')
                   cd(subject_folderNiftiFx);
@@ -398,7 +402,7 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
                  end
         
             % FIX HEADERS
-                 answer = input('Have you edited niftiFixHeader2 for your needs? (y)es/(n)o: ','s');
+                 beep; answer = input('Have you edited niftiFixHeader2 for your needs? (y)es/(n)o: ','s');
                  if strcmp(answer,'n'); error('Please proceed and edit the code before fixing headers...');end
             doFixHeaders = 1; %default
             %check whether code was already run successfully or not
@@ -406,7 +410,7 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
                 if exist('epiHeaders_FIXED.txt','file')==2;  disp('CAREFUL: You may have run the -fixing header- code before on these same files (epiHeaders_FIXED.txt detected). What to do?'); 
                     disp('1. Do it again (first remove epiHeaders_FIXED.txt file)');
                     disp('2. Skip (recommended)');
-                        answer = input('3. Escape ');
+                        beep; answer = input('3. Escape ');
                         switch answer
                             case {1} %move on
                                 delete('epiHeaders_FIXED.txt');
@@ -427,7 +431,7 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
                     else
                         error('Some files could not be fixed')
                     end
-                    disp('Take some time here to check that the headers are all OK (slice_duration should not be OK for gems/mprage). Press any key.'); pause;
+                    disp('Take some time here to check that the headers are all OK (freq_dim/phase_dim/slice_duration should not be OK for gems/mprage). Press any key.'); beep; pause;
             end
         end
   
@@ -440,7 +444,7 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
             %check whether code was already run successfully or not
             if exist([subject_folderVista,'/Inplane'],'dir')==7;  disp('You may have run the mrVista code before (subject_folderVista/Inplane detected). What to do?'); 
                 disp('2. Skip (recommended)');
-                    answer = input('3. Escape ');
+                    beep; answer = input('3. Escape ');
                     switch answer
                         case {2} %dont go, move to next step
                             doMrVista = 0;
@@ -466,7 +470,7 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
                 for i=1:numel(match)
                    [success, status]=copyfile('*',[subject_folderVista,'/Stimuli/Parfiles']); if success; disp('Done');else error(status); end
                 end
-           disp('Running Kelly s code to inialize a mrVista session...')
+           disp('Running adapted Kelly/Winaver code to inialize a mrVista session...')
                 kb_initializeVista2(subject_folderVista, subjectID)
            disp('Lets check that...') %the success of initialization
                 cd(subject_folderVista);
@@ -481,3 +485,4 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
 
     
 disp(['***********       PIPELINE FINISHED  AT  ', dateTime,' for subjectID ', subjectID,'       *******************'])
+beep;

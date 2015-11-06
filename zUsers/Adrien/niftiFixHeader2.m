@@ -4,7 +4,7 @@ function niftiFixHeader2(dataDir)
 % modified version - Adrien Chopin, 2015
 
 %the function opens the below directory and find all COMPRESSED nifty files
-%to fix them, if their names start with keywords epi, gems or nu (for mprage)
+%to fix them, if their names start with keywords epi, gems or mprage
 
     % %the function opens the below directory and find all directory in it
     % %then it goes through each one and find all nifty files to fix them
@@ -61,7 +61,7 @@ if numel(niiFileList)>0
             writeFileNifti(ni);
             disp(['EPI or GEMS file ', niiFileList{j},' is fixed'])
             checkNifti(niiFileList{j})
-       elseif strcmp(ni.fname(1:2),'nu') %MPRAGE
+       elseif strcmp(ni.fname(1:6),'mprage') %MPRAGE
             ni.qform = 1; %we used method 3, which is why we assign both qform and sform to 1
             ni.sform = 1; %you could decide differently
             %However, if method 2 was used on your nifti conversion, you will get
@@ -78,7 +78,7 @@ if numel(niiFileList)>0
                 ni.sto_xyz = ni.qto_xyz; 
             end
             writeFileNifti(ni);
-            disp(['MPRAGE nu file ', niiFileList{j},' is fixed'])
+            disp(['MPRAGE file ', niiFileList{j},' is fixed'])
             checkNifti(niiFileList{j})
         else
             disp(['Non-recognized file ', niiFileList{j},' is skipped'])
