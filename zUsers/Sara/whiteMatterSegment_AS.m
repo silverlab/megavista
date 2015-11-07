@@ -44,6 +44,7 @@ if exist([getenv('SUBJECTS_DIR') '/' subjectID],'dir')==7
     disp(' ');
     if strcmpi('y',answer)
         white_matter_seg = 0; %recon-all step will not be run
+        disp('Skipping...')
     elseif strcmpi('n',answer)
         error('Please change subjectID or delete subject folder and run white matter segmentation again.');
     else
@@ -67,17 +68,17 @@ cd([getenv('SUBJECTS_DIR') '/' subjectID '/mri'])
 if ~(exist('ribbon.mgz','file')==2) %absence of this file indicates that recon-all step has not been run
     error('Ribbon.mgz not found: recon-all segmentation for this subject was not completed.');
 end
-if ~(exist([subjectID '_ribbon.nii.gz'],'file')==2) %absence of this file means conversion was not done and we can do it
-    disp('Starting conversion of mgz files to nifti')
+if ~(exist([subjectID '_nu_RAS_NoRS.nii.gz'],'file')==2) %absence of this file means conversion was not done and we can do it
+    disp('-------------         Starting conversion of mgz files to nifti               -------------------')
     %run the mgz to nii conversion since it has not yet been done
     success = system(['mgz2niiOrNoRS.sh ' subjectID ' RAS']);
     if success~=0
-        error('Error in conversion from mgz to nii file type.');
+        error('mgz2niiOrNoRS.sh: Error in conversion from mgz to nii file type.');
     else
         disp('mgz files were succesfully converted to nifti')
     end 
 else
-    disp('mgz2nii conversion step has previously been done. Be sure skipping it is the correct thing to do (escape now otherwise)...');
+    disp([subjectID '_nu_RAS_NoRS.nii.gz file found: mgz2nii conversion step has previously been done. Be sure skipping it is the correct thing to do (escape now otherwise)...']);
     beep; pause;
     disp('Skipping...')
     disp(' ');
@@ -92,36 +93,51 @@ beep;
 disp('Do you want to set up files for')
 disp('1. itkGray')
 disp('2. mrGray')
-answer = str2double(input('3. Escape '));
+answer = str2double(input('3. Escape ', 's'));
 disp(' ');
 if answer==1 %I want to set up for itkGray
     disp('Starting fs_ribbon2itk to convert nifti file to itkGray class file')
-    fs_ribbon2itk(subjectID);
+    if exist('t1_class.nii.gz','file')==2 %presence of this file indicates it was already run in the past
+        error('t1_class.nii.gz found: the code was already run in the past - please check')
+    else %OK run the code
+        fs_ribbon2itk(subjectID);
+    end
     
     %check that fs_ribbon2itk was successful
     if exist('t1_class.nii.gz','file')==2
+        disp(' ')
         disp('Default file t1_class.nii.gz was succesfully produced')
     else
         error('t1_class.nii.gz missing: fs_ribbon2itk went wrong')
     end
-    
-    disp('Cleaning...')
+
+    disp('--------     Cleaning     - Copying files back to your segmentation folder in mrVista  --------------------------')
     %copy files to 06_mrVista_session/Segmentation/ folder (ribbon, nu and T1)
-    success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/' subjectID 'nu.mgz'],destinationFolder);
-    if success; disp(['Copying nu.mgz file... Done']);else error(status); end
-    success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/' subjectID 'ribbon.mgz'],destinationFolder);
-    if success; disp(['Copying ribbon.mgz file... Done']);else error(status); end
-    success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/' subjectID 'T1.mgz'],destinationFolder);
-    if success; disp(['Copying T1.mgz file... Done']);else error(status); end
-    success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/' subjectID '_nu_RAS_NoRS.nii.gz'],destinationFolder);
-    if success; disp(['Copying ' subjectID '_nu_RAS_NoRS.nii.gz file... Done']);else error(status); end
-    success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/' subjectID '_ribbon_RAS_NoRS.nii.gz'],destinationFolder);
-    if success; disp(['Copying ' subjectID '_ribbon_RAS_NoRS.nii.gz file... Done']);else error(status); end
-    success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/' subjectID '_T1_RAS_NoRS.nii.gz'],destinationFolder);
-    if success; disp(['Copying ' subjectID '_T1_RAS_NoRS.nii.gz file... Done']);else error(status); end
-    success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/t1_class.nii.gz'],destinationFolder);
-    if success; disp('Copying t1_class.nii.gz file... Done');else error(status); end
-    disp(' ');
+    disp('Copying nu.mgz file...'); success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/nu.mgz'],destinationFolder);
+    if success; disp(' Done');else error('Error while copying nu.mgz file'); end
+    
+    disp('Copying ribbon.mgz file... '); success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/ribbon.mgz'],destinationFolder);
+    if success; disp(' Done');else error('Error while copying ribbon.mgz file'); end
+    
+    disp('Copying T1.mgz file...');success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/T1.mgz'],destinationFolder);
+    if success; disp(' Done');else error('Error while copying T1.mgz file'); end
+    
+    disp(['Copying ' subjectID '_nu_RAS_NoRS.nii.gz file...'])
+        success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/' subjectID '_nu_RAS_NoRS.nii.gz'],destinationFolder);
+    if success; disp(' Done');else error('Error while copying _nu_RAS_NoRS file'); end
+    
+    disp(['Copying ' subjectID '_ribbon_RAS_NoRS.nii.gz file... Done']);
+        success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/' subjectID '_ribbon_RAS_NoRS.nii.gz'],destinationFolder);
+    if success; disp(' Done'); else error('Error while copying _ribbon_RAS_NoRSfile'); end
+    
+    disp(['Copying ' subjectID '_T1_RAS_NoRS.nii.gz file... Done']);
+        success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/' subjectID '_T1_RAS_NoRS.nii.gz'],destinationFolder);
+    if success; disp(' Done'); else error('Error while copying _T1_RAS_NoRS file'); end
+    
+    disp('Copying t1_class.nii.gz file... Done');
+        success = copyfile([getenv('SUBJECTS_DIR') '/' subjectID '/mri/t1_class.nii.gz'],destinationFolder);
+    if success; disp(' Done');else error('Error while copying t1_class.nii.gz file'); end
+    disp('  ');
     
     %check that itkGray files were actually put in the correct place
     cd(destinationFolder);
@@ -131,7 +147,6 @@ if answer==1 %I want to set up for itkGray
     else
         error('Some itkGray files missing in your mrVista segmentation folder! Please check');
     end
-    
 elseif answer==2 %I do want to set up for mrGray
      disp(' ');
         
@@ -164,12 +179,14 @@ elseif answer==2 %I do want to set up for mrGray
             disp('Necessary files for mrGray successfully copied!');
             disp(['Process complete for ' subjectID '!!']);
         else
-            error('Some mrGray files missing!');
+            error('Some mrGray files missing! Please check');
         end
         close all %closing any figures that 
         
 else
     error('Escaping...');
 end
+disp(' ---------------------------------------------------------------------------------------------')
 
+disp(' ------------------ AUTO SEGMENTATION PIPELINE FINISHED ------------------------------------------------------------ ');
 

@@ -14,5 +14,5 @@ mri_convert --out_orientation $2  $FREESURFER_HOME/subjects/$1/mri/$vol2.mgz $1_
 mri_convert --out_orientation $2  $FREESURFER_HOME/subjects/$1/mri/$vol3.mgz $1_${vol3}_$2_NoRS.nii.gz
 mri_convert --out_orientation $2  $FREESURFER_HOME/subjects/$1/mri/$vol4.mgz $1_${vol4}_$2_NoRS.nii.gz
 
-echo "Non reslicing version of mgz2nii.sh (mgz2niiOrNoRS.sh) -> output orientation is $2 - Chopin 2015”
-echo "done converting Freesurfer volumes"
+echo 'Non reslicing version of mgz2nii.sh (mgz2niiOrNoRS.sh / Chopin 2015) -> output orientation is ' $2
+echo 'Done converting Freesurfer volumes...'
