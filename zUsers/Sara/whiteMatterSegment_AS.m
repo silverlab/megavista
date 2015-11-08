@@ -98,7 +98,10 @@ disp(' ');
 if answer==1 %I want to set up for itkGray
     disp('Starting fs_ribbon2itk to convert nifti file to itkGray class file')
     if exist('t1_class.nii.gz','file')==2 %presence of this file indicates it was already run in the past
-        error('t1_class.nii.gz found: the code was already run in the past - please check')
+        disp('Error: t1_class.nii.gz found: the code was already run in the past - please check')
+        disp('Also note that this conversion is followed a step in which important files are copyied in the right location')
+        disp('So please do not skip that step if it was wrongly addressed')
+        error('See error above')
     else %OK run the code
         fs_ribbon2itk(subjectID);
     end
