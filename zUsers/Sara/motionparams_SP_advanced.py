@@ -7,8 +7,8 @@ obtained by running motioncorrect.py.
 100109 ASR wrote it
 2011-Oct-18 RD modified from dicom2vista_graphonly.py
 2015-Nov-09 SP modified to show in image where movement is greater than 
-    voxel width and save epi and TR numbers for later use, and also added
-    a third subplot that shows motion differences between TRs
+    voxel width and save epi and TR numbers for later use
+2015-Nov-11 SP modified to combine translation and rotation info
 """ 
 
 import os
@@ -65,10 +65,56 @@ if __name__ == "__main__":
     #voxel_size = np.array([1.,1.,1.]) ##TEMPORARY for testing
     print "Voxel size is %s" % voxel_size
 
+    #need to find a way to read in brain dimensions from subject data
+    #currently using average dimensions from this website
+    #https://faculty.washington.edu/chudler/facts.html
+    brain_dims = np.array([140.,93.,167.]) #TEMPORARY for testing
+    print "Brain dimensions are %s" % brain_dims
+    brain_dims = brain_dims/2
+
     #make vectors for differences between adjacent TRs
-    T1_differences = t1[1:] - t1[:-1]
-    T2_differences = t2[1:] - t2[:-1]
-    T3_differences = t3[1:] - t3[:-1]
+    T1_differences = np.abs(t1[1:] - t1[:-1])
+    T2_differences = np.abs(t2[1:] - t2[:-1])
+    T3_differences = np.abs(t3[1:] - t3[:-1])
+    R1_differences = np.abs(r1[1:] - r1[:-1])
+    R2_differences = np.abs(r2[1:] - r2[:-1])
+    R3_differences = np.abs(r3[1:] - r3[:-1])
+
+    delta_t1 = np.zeros(len(R1_differences))
+    delta_t2 = np.zeros(len(R2_differences))
+    delta_t3 = np.zeros(len(R3_differences))
+
+    for i in range(len(R1_differences)):
+        #converting r1 info to t2 and t3 values
+        delta_t2a_1 = brain_dims[2]*np.sin(R1_differences[i])
+        delta_t2a_2 = brain_dims[1]*np.cos(R1_differences[i]) - brain_dims[1]
+        delta_t2a = np.max(np.abs([delta_t2a_1, delta_t2a_2]))
+        delta_t3a_1 = brain_dims[1]*np.sin(R1_differences[i])
+        delta_t3a_2 = brain_dims[2]*np.cos(R1_differences[i]) - brain_dims[2]
+        delta_t3a = np.max(np.abs([delta_t3a_1, delta_t3a_2]))
+        #converting r2 info to t1 and t2 values
+        delta_t1a_1 = brain_dims[2]*np.sin(R2_differences[i])
+        delta_t1a_2 = brain_dims[0]*np.cos(R2_differences[i]) - brain_dims[0]
+        delta_t1a = np.max(np.abs([delta_t1a_1, delta_t1a_2]))
+        delta_t3b_1 = brain_dims[0]*np.sin(R2_differences[i])
+        delta_t3b_2 = brain_dims[2]*np.cos(R2_differences[i]) - brain_dims[2]
+        delta_t3b = np.max(np.abs([delta_t3b_1, delta_t3b_2]))
+        #converting r3 info to t1 and t2 values
+        delta_t1b_1 = brain_dims[1]*np.sin(R3_differences[i])
+        delta_t1b_2 = brain_dims[0]*np.cos(R3_differences[i]) - brain_dims[0]
+        delta_t1b = np.max(np.abs([delta_t1b_1, delta_t1b_2]))
+        delta_t2b_1 = brain_dims[0]*np.sin(R3_differences[i])
+        delta_t2b_2 = brain_dims[1]*np.cos(R3_differences[i]) - brain_dims[1]
+        delta_t2b = np.max(np.abs([delta_t2b_1, delta_t2b_2]))
+        #and now add together the delta_t values for each dimension
+        delta_t1[i] = delta_t1a + delta_t1b
+        delta_t2[i] = delta_t2a + delta_t2b
+        delta_t3[i] = delta_t3a + delta_t3b
+
+    total_T1_differences = T1_differences + delta_t1
+    total_T2_differences = T2_differences + delta_t2
+    total_T3_differences = T3_differences + delta_t3
+
 
     #finding out number of TRs per epi
     dicom_dir = sess_dir + '/' + sess_name + '_dicom'
@@ -98,8 +144,8 @@ if __name__ == "__main__":
     ax1.set_ylabel('Translation (mm)')
     #first look at dimension 1 for motion bigger than half voxel size
     index = 0
-    for movement in T1_differences:
-        if np.abs(movement)>voxel_size[0]/2:
+    for movement in total_T1_differences:
+        if movement>voxel_size[0]/2:
             #plot vertical line
             ax1.plot(np.array([index+0.5, index+0.5]),
                      np.array([ymin, ymax]),
@@ -123,8 +169,8 @@ if __name__ == "__main__":
 
     #then do the same for dimension 2
     index = 0
-    for movement in T2_differences:
-        if np.abs(movement)>voxel_size[1]/2:
+    for movement in total_T2_differences:
+        if movement>voxel_size[1]/2:
             #plot vertical line
             ax1.plot(np.array([index+0.5, index+0.5]),
                      np.array([ymin, ymax]),
@@ -148,8 +194,8 @@ if __name__ == "__main__":
 
     #and then for dimension 3
     index = 0
-    for movement in T3_differences:
-        if np.abs(movement)>voxel_size[2]/2:
+    for movement in total_T3_differences:
+        if movement>voxel_size[2]/2:
             #plot vertical line
             ax1.plot(np.array([index+0.5, index+0.5]),
                      np.array([ymin, ymax]),
@@ -173,24 +219,18 @@ if __name__ == "__main__":
             
     #SUBPLOT 2
     ax2 = fig.add_subplot(3,1,2)
-    ax2.plot(T1_differences,'b.') #blue dots
-    ax2.plot(T2_differences,'r.') #red dots
-    ax2.plot(T3_differences,'g.') #green dots
-    ax2.set_ylabel('Translation (mm)')
+    ax2.plot(total_T1_differences,'b.') #blue dots
+    ax2.plot(total_T2_differences,'r.') #red dots
+    ax2.plot(total_T3_differences,'g.') #green dots
+    ax2.set_ylabel('Abs Max Translation (mm)')
     ax2.set_xlabel('Time (TR)')
     xmin, xmax = plt.xlim()
     #plot horizontal thresholds
     ax2.plot(np.array([xmin, xmax]),np.array([voxel_size[0]/2, voxel_size[0]/2]),
              'b--')
-    ax2.plot(np.array([xmin, xmax]),np.array([voxel_size[0]/-2, voxel_size[0]/-2]),
-             'b--')
     ax2.plot(np.array([xmin, xmax]),np.array([voxel_size[1]/2, voxel_size[1]/2]),
              'r--')
-    ax2.plot(np.array([xmin, xmax]),np.array([voxel_size[1]/-2, voxel_size[1]/-2]),
-             'r--')
     ax2.plot(np.array([xmin, xmax]),np.array([voxel_size[2]/2, voxel_size[2]/2]),
-             'g--')
-    ax2.plot(np.array([xmin, xmax]),np.array([voxel_size[2]/-2, voxel_size[2]/-2]),
              'g--')
 
     #SUBPLOT 3

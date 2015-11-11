@@ -216,8 +216,9 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
         end 
              
         if success==0 %GOOD
-                disp('python motioncorrect/SP.py: DONE'); 
-                % CHECK PARAMS HERE
+            disp('python motioncorrect/SP.py: DONE'); 
+            % CHECK PARAMS HERE
+            if exist([preprocessPath_alt '/motionparams_SP.py'],'file')==2 %if you have the updated file for updated motion params, use it
                 %Need to write voxel size to a .txt file for
                 %motionparams.py to read in for the version in zUsers/Sara
                 first_epi_file = dir([subject_folderNIFTI '/epi01*']);
@@ -227,8 +228,8 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
                 fprintf(fileID,'%8.5f',voxel_size);
                 fclose(fileID);
                 disp('Please check the motion correction results...')
-%                 cd(preprocessPath);
-                success = system(['python motionparams_SP.py ', subject_folderMoco]);
+                cd(preprocessPath_alt);
+                success = system(['python motionparams_SP_advanced.py ', subject_folderMoco]);
                 if success==0 %GOOD
                     disp('python motionparams/SP.py: DONE')
                     beep; answer = input('Figure: Is everything OK? (y)es / (n)o: ', 's');
@@ -236,6 +237,18 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
                 else %NOT GOOD
                     error('python motionparams/SP.py: Something went wrong with last step')
                 end
+            else %otherwise use old version that does not look at whether motion > voxel width
+                cd(preprocessPath);
+                success = system(['python motionparams.py ', subject_folderMoco]);
+                if success==0 %GOOD
+                    disp('python motionparams.py: DONE')
+                    beep; answer = input('Figure: Is everything OK? (y)es / (n)o: ', 's');
+                    if strcmp(answer, 'n')==1; error('Something went wrong, according to you...');end
+                else %NOT GOOD
+                    error('python motionparams/SP.py: Something went wrong with last step')
+                end
+            end
+                    
         else %NOT GOOD
             error('python motioncorrect/SP.py: Something went wrong with last step')
         end
@@ -313,12 +326,20 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
             success = system(['python motioncorrect.py ', subject_folderMocoCheck]); 
         end  
         if success==0 %GOOD
-               disp('python motioncorrect/SP.py: DONE'); 
-                   % CHECK PARAMS HERE
+            disp('python motioncorrect/SP.py: DONE'); 
+            % CHECK PARAMS HERE
+            if exist([preprocessPath_alt '/motionparams_SP.py'],'file')==2 %if you have the updated file for updated motion params, use it
+                %Need to write voxel size to a .txt file for
+                %motionparams.py to read in for the version in zUsers/Sara
+                first_epi_file = dir([subject_folderNIFTI '/epi01*']);
+                ni = readFileNifti([subject_folderNIFTI '/' first_epi_file.name]);
+                voxel_size = ni.pixdim(1:3);
+                fileID = fopen([subject_folderMocoCheck '/' mocoCheckFolder '_nifti/voxelinfo.txt'],'w');
+                fprintf(fileID,'%8.5f',voxel_size);
+                fclose(fileID);
                 disp('Please check the motion correction results...')
-                [success, status] = copyfile([subject_folderMoco '/voxelinfo.txt'],[subject_folderMocoCheck '/' mocoCheckFolder '_nifti/voxelinfo.txt']);
-                if success; disp('voelinfo.txt file copied...');else error(status); end
-                success = system(['python motionparams_SP.py ', subject_folderMocoCheck]);
+                cd(preprocessPath_alt);
+                success = system(['python motionparams_SP_advanced.py ', subject_folderMocoCheck]);
                 if success==0 %GOOD
                     disp('python motionparams/SP.py: DONE')
                     beep; answer = input('Figure: Is everything OK? (y)es / (n)o: ', 's');
@@ -326,9 +347,22 @@ disp(['---------      04A   MOTION CORRECTION    (',dateTime,')   --------------
                 else %NOT GOOD
                     error('python motionparams/SP.py: Something went wrong with last step')
                 end
+            else %otherwise use old version that does not look at whether motion > voxel width
+                cd(preprocessPath);
+                success = system(['python motionparams.py ', subject_folderMocoCheck]);
+                if success==0 %GOOD
+                    disp('python motionparams.py: DONE')
+                    beep; answer = input('Figure: Is everything OK? (y)es / (n)o: ', 's');
+                    if strcmp(answer, 'n')==1; error('Something went wrong, according to you...');end
+                else %NOT GOOD
+                    error('python motionparams/SP.py: Something went wrong with last step')
+                end
+            end
+                    
         else %NOT GOOD
             error('python motioncorrect/SP.py: Something went wrong with last step')
         end
+        
         disp('Moving files back to mococheck root folder...')
                 [success, status]=copyfile([subject_folderMocoCheck,'/',mocoCheckFolder,'_nifti/*'],subject_folderMocoCheck); if success; disp('Done');else error(status); end
         disp('Deleting old folders...')
