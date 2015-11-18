@@ -83,34 +83,57 @@ if __name__ == "__main__":
     delta_t1 = np.zeros(len(R1_differences))
     delta_t2 = np.zeros(len(R2_differences))
     delta_t3 = np.zeros(len(R3_differences))
+    
+    #functions for rotation matrixes around each axis
+    def x_rotation(theta):
+        sin_t = np.sin(theta)
+        cos_t = np.cos(theta)
+        x_rot_mat = np.array([[1, 0, 0],
+                              [0, cos_t, -1*sin_t],
+                              [0, sin_t, cos_t]])
+        return x_rot_mat
+    
+    def y_rotation(theta):
+        sin_t = np.sin(theta)
+        cos_t = np.cos(theta)
+        y_rot_mat = np.array([[cos_t, 0, sin_t],
+                              [0, 1, 0],
+                              [-1*sin_t, 0, cos_t]])
+        return y_rot_mat
+    
+    def z_rotation(theta):
+        sin_t = np.sin(theta)
+        cos_t = np.cos(theta)
+        z_rot_mat = np.array([[cos_t, -1*sin_t, 0],
+                              [sin_t, cos_t, 0],
+                              [0, 0, 1]])
+        return z_rot_mat
+    
+    #and then combining all rotation matrices to get complete rotation
+    def all_dir_rotation(theta_1,theta_2,theta_3):
+        x_mat = x_rotation(theta_1)
+        y_mat = y_rotation(theta_2)
+        z_mat = z_rotation(theta_3)
+        all_rot_mat = z_mat.dot(y_mat.dot(x_mat.dot(np.eye(3))))
+        return all_rot_mat
 
     for i in range(len(R1_differences)):
-        #converting r1 info to t2 and t3 values
-        delta_t2a_1 = brain_dims[2]*np.sin(R1_differences[i])
-        delta_t2a_2 = brain_dims[1]*np.cos(R1_differences[i]) - brain_dims[1]
-        delta_t2a = np.max(np.abs([delta_t2a_1, delta_t2a_2]))
-        delta_t3a_1 = brain_dims[1]*np.sin(R1_differences[i])
-        delta_t3a_2 = brain_dims[2]*np.cos(R1_differences[i]) - brain_dims[2]
-        delta_t3a = np.max(np.abs([delta_t3a_1, delta_t3a_2]))
-        #converting r2 info to t1 and t2 values
-        delta_t1a_1 = brain_dims[2]*np.sin(R2_differences[i])
-        delta_t1a_2 = brain_dims[0]*np.cos(R2_differences[i]) - brain_dims[0]
-        delta_t1a = np.max(np.abs([delta_t1a_1, delta_t1a_2]))
-        delta_t3b_1 = brain_dims[0]*np.sin(R2_differences[i])
-        delta_t3b_2 = brain_dims[2]*np.cos(R2_differences[i]) - brain_dims[2]
-        delta_t3b = np.max(np.abs([delta_t3b_1, delta_t3b_2]))
-        #converting r3 info to t1 and t2 values
-        delta_t1b_1 = brain_dims[1]*np.sin(R3_differences[i])
-        delta_t1b_2 = brain_dims[0]*np.cos(R3_differences[i]) - brain_dims[0]
-        delta_t1b = np.max(np.abs([delta_t1b_1, delta_t1b_2]))
-        delta_t2b_1 = brain_dims[0]*np.sin(R3_differences[i])
-        delta_t2b_2 = brain_dims[1]*np.cos(R3_differences[i]) - brain_dims[1]
-        delta_t2b = np.max(np.abs([delta_t2b_1, delta_t2b_2]))
-        #and now add together the delta_t values for each dimension
-        delta_t1[i] = delta_t1a + delta_t1b
-        delta_t2[i] = delta_t2a + delta_t2b
-        delta_t3[i] = delta_t3a + delta_t3b
+        #find combined rotation matrix for all three rotations
+        all_rot_mat = all_dir_rotation(R1_differences[i],R2_differences[i],
+                                       R3_differences[i])
+        #then multiply the rotation matrix by each axis of the brain
+        new_x_brain_axis = all_rot_mat.dot(np.array([[brain_dims[0]],[0],[0]]))
+        new_y_brain_axis = all_rot_mat.dot(np.array([[0],[brain_dims[1]],[0]]))
+        new_z_brain_axis = all_rot_mat.dot(np.array([[0],[0],[brain_dims[2]]]))
+        #then find the maximum change from that original axis in each direction
+        delta_t1[i] = np.max(np.abs([brain_dims[0]-new_x_brain_axis[0],
+                                     new_y_brain_axis[0], new_z_brain_axis[0]]))
+        delta_t2[i] = np.max(np.abs([brain_dims[1]-new_y_brain_axis[1],
+                                     new_x_brain_axis[1], new_z_brain_axis[1]]))
+        delta_t3[i] = np.max(np.abs([brain_dims[2]-new_z_brain_axis[2],
+                                     new_x_brain_axis[2], new_y_brain_axis[2]]))
 
+    #and add translational change from rotations to raw translational changes
     total_T1_differences = T1_differences + delta_t1
     total_T2_differences = T2_differences + delta_t2
     total_T3_differences = T3_differences + delta_t3
